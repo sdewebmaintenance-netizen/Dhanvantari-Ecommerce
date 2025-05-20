@@ -1,0 +1,118 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Category {
+  id       Int       @id @default(autoincrement())
+  name     String    @unique @db.VarChar(32)
+  products Product[]
+}
+
+model User {
+  id              Int      @id @default(autoincrement())
+  username        String
+  email           String   @unique
+  isAdmin         Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  display_picture String?
+  reviews Review[]
+  orders  Order[]
+}
+
+model Product {
+  id           Int      @id @default(autoincrement())
+  name         String
+  image        String
+  brand        String
+  quantity     Int
+  category_id  Int
+  description  String
+  rating       Float    @default(0)
+  numReviews   Int      @default(0)
+  price        Float    @default(0)
+  countInStock Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  ProductCategory Category @relation(fields: [category_id], references: [id])
+
+  reviews    Review[]
+  orderItems OrderItem[]
+}
+
+model Review {
+  id         Int    @id @default(autoincrement())
+  name       String
+  rating     Float
+  comment    String
+  user_id    Int
+  product_id Int
+
+  ReviewProduct Product  @relation(fields: [product_id], references: [id])
+  ReviewUser    User     @relation(fields: [user_id], references: [id])
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model OrderItem {
+  id         Int    @id @default(autoincrement())
+  name       String
+  qty        Int
+  image      String
+  price      Float
+  product_id Int
+  order_id   Int
+
+  OrderItemProduct Product @relation(fields: [product_id], references: [id])
+  OrdersRecord     Order   @relation(fields: [order_id], references: [id])
+}
+
+model Order {
+  id                 Int         @id @default(autoincrement())
+  user_id            Int
+  orderItems         OrderItem[]
+  shippingAddress_id Int
+  paymentMethod      String
+  paymentResult_id   Int
+  itemsPrice         Float       @default(0)
+  taxPrice           Float       @default(0)
+  shippingPrice      Float       @default(0)
+  totalPrice         Float       @default(0)
+  isPaid             Boolean     @default(false)
+  paidAt             DateTime?
+  isDelivered        Boolean     @default(false)
+  deliveredAt        DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  OrderPaymentResult   PaymentResult   @relation(fields: [paymentResult_id], references: [id])
+  OrderShippingAddress ShippingAddress @relation(fields: [shippingAddress_id], references: [id])
+  OrderUser            User            @relation(fields: [user_id], references: [id])
+}
+
+model ShippingAddress {
+  id         Int    @id @default(autoincrement())
+  address    String
+  city       String
+  postalCode String
+  country    String
+
+  OrderShippingAddss Order[]
+}
+
+model PaymentResult {
+  id            Int    @id @default(autoincrement())
+  transactionId String
+  status        String
+  updateTime    String
+  emailAddress  String
+
+  OrderPaymentResult Order[]
+}
