@@ -1,0 +1,137 @@
+
+.form-container {
+  max-width: 40rem;
+  margin: 0 auto;
+}
+
+
+.form-group {
+  margin-bottom: var(--space-lg);
+}
+
+.form-row {
+  display: flex;
+  flex-wrap: wrap;
+  margin-right: calc(var(--space-sm) * -1);
+  margin-left: calc(var(--space-sm) * -1);
+}
+
+.form-row > .form-group {
+  flex: 1 0 0%;
+  padding-right: var(--space-sm);
+  padding-left: var(--space-sm);
+  max-width: 100%;
+}
+
+
+.form-label {
+  display: inline-block;
+  margin-bottom: var(--space-sm);
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.form-label-required::after {
+  content: '*';
+  margin-left: var(--space-xs);
+  color: var(--color-danger);
+}
+
+
+.form-control {
+  display: block;
+  width: 100%;
+  padding: var(--space-sm) var(--space-md);
+  font-size: var(--font-size-base);
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--color-text);
+  background-color: var(--color-bg-light);
+  background-clip: padding-box;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  transition: 
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast);
+}
+
+.form-control:focus {
+  color: var(--color-text);
+  background-color: var(--color-bg-light);
+  border-color: var(--color-primary-light);
+  outline: 0;
+  box-shadow: 0 0 0 0.2rem rgba(236, 72, 153, 0.25);
+}
+
+.form-control::placeholder {
+  color: var(--color-text-muted);
+  opacity: 1;
+}
+
+.form-control:disabled,
+.form-control[readonly] {
+  background-color: var(--color-bg);
+  opacity: 1;
+}
+
+
+textarea.form-control {
+  min-height: 100px;
+  resize: vertical;
+}
+
+
+select.form-control {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%239ca3af' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right var(--space-md) center;
+  background-size: 16px 12px;
+}
+
+
+.form-check {
+  position: relative;
+  display: block;
+  padding-left: 1.5em;
+}
+
+.form-check-input {
+  position: absolute;
+  margin-top: 0.3em;
+  margin-left: -1.5em;
+}
+
+.form-check-label {
+  margin-bottom: 0;
+}
+
+
+.is-invalid .form-control {
+  border-color: var(--color-danger);
+}
+
+.is-invalid .invalid-feedback {
+  display: block;
+  color: var(--color-danger);
+}
+
+.is-valid .form-control {
+  border-color: var(--color-success);
+}
+
+.invalid-feedback {
+  display: none;
+  width: 100%;
+  margin-top: var(--space-sm);
+  font-size: var(--font-size-sm);
+  color: var(--color-danger);
+}
+
+
+.form-text {
+  display: block;
+  margin-top: var(--space-sm);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
