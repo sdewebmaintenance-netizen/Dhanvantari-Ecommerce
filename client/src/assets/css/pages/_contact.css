@@ -1,0 +1,129 @@
+
+.contact-hero {
+  position: relative;
+  height: 40vh;
+  min-height: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  background-color: var(--color-bg-light);
+  overflow: hidden;
+}
+
+.contact-hero-title {
+  font-size: var(--font-size-4xl);
+  font-weight: 800;
+  color: var(--color-text);
+  margin-bottom: var(--space-md);
+  position: relative;
+  z-index: 2;
+}
+
+.contact-hero-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 1;
+  opacity: 0.3;
+}
+
+
+.contact-content {
+  padding: var(--space-2xl) 0;
+}
+
+.contact-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-2xl);
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+
+.contact-form {
+  background-color: var(--color-bg-light);
+  padding: var(--space-xl);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+.form-title {
+  font-size: var(--font-size-2xl);
+  font-weight: 700;
+  color: var(--color-primary);
+  margin-bottom: var(--space-lg);
+}
+
+
+.contact-info {
+  padding: var(--space-xl) 0;
+}
+
+.info-title {
+  font-size: var(--font-size-2xl);
+  font-weight: 700;
+  color: var(--color-primary);
+  margin-bottom: var(--space-lg);
+}
+
+.info-item {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: var(--space-lg);
+}
+
+.info-icon {
+  font-size: var(--font-size-xl);
+  color: var(--color-primary);
+  margin-right: var(--space-md);
+  flex-shrink: 0;
+}
+
+.info-text {
+  flex: 1;
+}
+
+.info-label {
+  font-weight: 600;
+  margin-bottom: var(--space-xs);
+}
+
+.contact-map {
+  height: 300px;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  margin-top: var(--space-xl);
+}
+
+.map-iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+
+@media (max-width: 992px) {
+  .contact-container {
+    grid-template-columns: 1fr;
+  }
+  
+  .contact-info {
+    padding-top: 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .contact-hero {
+    height: 30vh;
+    min-height: 250px;
+  }
+  
+  .contact-hero-title {
+    font-size: var(--font-size-3xl);
+  }
+}

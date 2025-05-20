@@ -1,0 +1,93 @@
+
+@import url('./base/_reset.css');
+@import url('./base/_variables.css');
+@import url('./base/_typography.css');
+
+
+@import url('./components/_buttons.css');
+@import url('./components/_forms.css');
+@import url('./components/_navigation.css');
+@import url('./components/_cards.css');
+
+
+@import url('./layout/_header.css');
+@import url('./layout/_footer.css');
+@import url('./layout/_grid.css');
+
+
+@import url('./pages/_home.css');
+@import url('./pages/_about.css');
+@import url('./pages/_contact.css');
+@import url('./pages/_products.css');
+@import url('./pages/_services.css');
+@import url('./pages/_carousel.css');
+@import url('./pages/_cart.css');
+@import url('./pages/_favorite.css');
+
+body {
+  background-color: var(--color-bg-lighter);
+  color: var(--color-text);
+  font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  line-height: 1.6;
+}
+
+.main-content {
+  min-height: calc(100vh - 200px); 
+  padding: var(--space-xl) 0;
+}
+
+.section {
+  padding: var(--space-xl) 0;
+}
+
+.section-dark {
+  background-color: var(--color-bg-dark);
+}
+
+.section-light {
+  background-color: var(--color-bg-light);
+}
+
+
+.text-primary {
+  color: var(--color-primary);
+}
+
+.bg-primary {
+  background-color: var(--color-primary);
+}
+
+.mt-1 { margin-top: var(--space-xs); }
+.mt-2 { margin-top: var(--space-sm); }
+.mt-3 { margin-top: var(--space-md); }
+.mt-4 { margin-top: var(--space-lg); }
+.mt-5 { margin-top: var(--space-xl); }
+
+.mb-1 { margin-bottom: var(--space-xs); }
+.mb-2 { margin-bottom: var(--space-sm); }
+.mb-3 { margin-bottom: var(--space-md); }
+.mb-4 { margin-bottom: var(--space-lg); }
+.mb-5 { margin-bottom: var(--space-xl); }
+
+.pt-1 { padding-top: var(--space-xs); }
+.pt-2 { padding-top: var(--space-sm); }
+.pt-3 { padding-top: var(--space-md); }
+.pt-4 { padding-top: var(--space-lg); }
+.pt-5 { padding-top: var(--space-xl); }
+
+.pb-1 { padding-bottom: var(--space-xs); }
+.pb-2 { padding-bottom: var(--space-sm); }
+.pb-3 { padding-bottom: var(--space-md); }
+.pb-4 { padding-bottom: var(--space-lg); }
+.pb-5 { padding-bottom: var(--space-xl); }
+
+
+@media (max-width: 768px) {
+  .mobile-hidden {
+    display: none;
+  }
+  
+  body {
+    padding-left: 0;
+  }
+}

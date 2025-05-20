@@ -1,0 +1,111 @@
+.carousel-container {
+  position: relative;
+  width: 100%;
+  height: 80vh; 
+  overflow: hidden;
+}
+
+.carousel-slide {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0;
+  transition: opacity var(--transition-slow);
+}
+
+.carousel-slide.active {
+  opacity: 1;
+}
+
+.slide-content {
+  position: absolute;
+  bottom: var(--space-3xl);
+  left: var(--space-3xl);
+  background-color: var(--color-secondary-lighter); 
+  color: var(--color-text);
+  padding: var(--space-md) var(--space-lg);
+  max-width: 500px;
+  border-radius: var(--radius-md);
+}
+
+.carousel-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: var(--color-bg-dark);
+  color: var(--color-text-muted);
+  border: none;
+  padding: var(--space-sm) var(--space-md);
+  cursor: pointer;
+  border-radius: var(--radius-full);
+  transition: background-color var(--transition-normal);
+}
+
+.carousel-btn:hover {
+  background-color: var(--color-secondary-lighter);
+  color: var(--color-text-muted);
+}
+
+.prev {
+  left: var(--space-xl);
+}
+
+.next {
+  right: var(--space-xl);
+}
+
+.carousel-dots {
+  position: absolute;
+  bottom: var(--space-xl);
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+}
+
+.dot {
+  width: 12px;
+  height: 12px;
+  margin: 0 var(--space-xs);
+  background-color: var(--color-bg-dark);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background-color var(--transition-normal);
+}
+
+.dot.active {
+  background-color: var(--color-secondary-lighter);
+}
+
+.dot:hover {
+   background-color: var(--color-secondary-lighter);
+}
+
+
+.carousel-product-info {
+  display: flex;
+  justify-content: center;
+}
+
+.product-info-card {
+  color:var(--color-primary-dark);
+  width: 100%;
+  padding: var(--space-lg);
+  border-radius: var(--radius-md);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.product-info-meta {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-md);
+}
+
+.product-info-meta p {
+  margin: var(--space-xs) 0;
+}
