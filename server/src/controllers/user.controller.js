@@ -22,14 +22,7 @@ const GetUser = asyncHandler(async (req, res) => {
   });
 });
 
-const logoutCurrentUser = asyncHandler(async (req, res) => {
-  res.cookie("jwt", "", {
-    httpOnly: true,
-    expires: new Date(0),
-  });
 
-  res.status(200).json({ message: "Logged out successfully" });
-});
 
 const getAllUsers = asyncHandler(async (req, res) => {
   const users = await prisma.user.findMany({
@@ -46,7 +39,7 @@ const getAllUsers = asyncHandler(async (req, res) => {
 
 const getCurrentUserProfile = asyncHandler(async (req, res) => {
   const user = await prisma.user.findUnique({
-    where: { id: req.user.id },
+    where: { id: req.user.user_id },
     select: {
       id: true,
       username: true,
@@ -63,7 +56,7 @@ const getCurrentUserProfile = asyncHandler(async (req, res) => {
 
 const updateCurrentUserProfile = asyncHandler(async (req, res) => {
   const user = await prisma.user.findUnique({
-    where: { id: req.user.id },
+    where: { id: req.user.user_id },
   });
 
   if (!user) {
@@ -77,7 +70,7 @@ const updateCurrentUserProfile = asyncHandler(async (req, res) => {
   }
 
   const updatedUser = await prisma.user.update({
-    where: { id: req.user.id },
+    where: { id: req.user.user_id },
     data: {
       username: req.body.username || user.username,
       email: req.body.email || user.email,
@@ -162,7 +155,6 @@ const updateUserById = asyncHandler(async (req, res) => {
 
 module.exports ={
   GetUser,
-  logoutCurrentUser,
   getAllUsers,
   getCurrentUserProfile,
   updateCurrentUserProfile,

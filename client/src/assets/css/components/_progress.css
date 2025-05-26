@@ -1,0 +1,42 @@
+.progress-steps {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--space-md);
+  margin-top: var(--space-md);
+}
+
+.step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.step-icon {
+  margin-top: var(--space-xs);
+  font-size: var(--font-size-lg);
+}
+
+.completed-step {
+  color: var(--color-success);
+}
+
+.incomplete-step {
+  color: var(--color-text-muted);
+  margin-left: 10%;
+}
+
+.step-connector {
+  height: 2px;
+  width: 20%;
+  background-color: var(--color-border);
+}
+
+.completed-connector {
+  background-color: var(--color-success);
+  width: 20%;
+}
+
+.future-step {
+  margin-left: 40%;
+}

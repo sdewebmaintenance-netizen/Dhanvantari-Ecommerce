@@ -1,0 +1,131 @@
+.invoice-container {
+  width: 210mm;
+  min-height: 297mm;
+  padding-left: var(--space-xl);
+  padding-right: var(--space-xl);
+  padding-top: var(--space-sm);
+  margin: 0 auto;
+  box-sizing: border-box;
+  background: white;
+  color: #000;
+}
+
+.Logo-pdf {
+  width: 5rem;
+  height: 7rem;
+}
+
+.invoice-header {
+  border-bottom: 2px solid var(--color-primary-dark);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.invoice-content {
+  text-align: left;
+  padding-bottom: var(--space-lg);
+  margin-bottom: var(--space-lg);
+}
+
+.invoice-header h1 {
+  margin-bottom: var(--space-md);
+}
+
+.invoice-header p {
+  margin: 3px 0;
+}
+
+.invoice-title {
+  text-align: center;
+  color: var(--color-primary-dark);
+  margin-bottom: var(--space-md);
+}
+
+.details-section {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.bill-to,
+.transport-details,
+.invoice-details {
+  width: 30%;
+}
+
+.bill-to p,
+.transport-details p,
+.invoice-details p {
+  margin: 3px 0;
+}
+
+.items-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: var(--space-md);
+}
+
+.items-table th,
+.items-table td {
+  border: 1px solid var(--color-border);
+  padding: 5px;
+  text-align: left;
+}
+
+.items-table th {
+  background-color: var(--color-secondary-lighter);
+  color: var(--color-primary-light);
+}
+
+.items-table tfoot td {
+  font-weight: bold;
+}
+
+.invoice-footer {
+  display: flex;
+  justify-content: space-between;
+  margin-top: var(--space-lg);
+}
+
+.amount-words {
+  width: 60%;
+}
+
+.amount-words p {
+  margin: 5px 0;
+}
+
+.amount-breakdown {
+  width: 30%;
+}
+
+.breakdown-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: var(--space-md);
+}
+
+.signature {
+  margin-top: var(--space-lg);
+  display: flex;
+  align-items: end;
+  justify-content: end;
+  flex-direction: column;
+}
+
+.signature p {
+  margin: 5px 0;
+}
+
+.signature-picture {
+  width: 10rem;
+  height: 5rem;
+}
+
+.total {
+  padding: var(--space-sm);
+  background-color: var(--color-secondary-lighter);
+  color: var(--color-primary-light);
+  font-weight: 700;
+}

@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
-import HeartIcon from "../../../HeartIcon";
+import HeartIcon from "../Product/HeartIcon";
 import getImage from "../../../../Utils/GetImage";
+import formatCurrency from "../../../../Utils/FormatCurrency";
 
 const SmallProduct = ({ product }) => {
   return (
@@ -22,10 +23,7 @@ const SmallProduct = ({ product }) => {
             <div>{product.name}</div>
             <span className="small-product-price">
               {" "}
-              {product?.price?.toLocaleString("en-IN", {
-                style: "currency",
-                currency: "INR",
-              })}
+              {formatCurrency(product?.price)}
             </span>
           </h2>
         </Link>

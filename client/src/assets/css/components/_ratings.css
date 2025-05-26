@@ -1,0 +1,26 @@
+.rating-container {
+  display: flex;
+  align-items: center;
+}
+
+.rating-star {
+  margin-left: var(--space-xs);
+  font-size: var(--font-size-md);
+}
+
+.full-star {
+  color: var(--color-primary);
+}
+
+.half-star {
+  color: var(--color-primary);
+}
+
+.empty-star {
+  color: var(--color-text-muted);
+}
+
+.rating-text {
+  margin-left: var(--space-sm);
+  color: var(--color-text);
+}

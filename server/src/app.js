@@ -43,20 +43,12 @@ app.use((req, res, next) => {
 app.use(express.json());
 app.use(session({ secret: SECRET, resave: false, saveUninitialized: true }));
 
-app.use(passport.initialize());
+app.use(passport.initialize()); 
 app.use(passport.session());
-
-console.log("in app");
-
 app.use("/", authRoutes);
-
 app.use(authentication);
-
-console.log("in asdegpp");
-
 app.use('/api/users',userRoutes);
 
-console.log("in app");
 app.use("/api/category", categoryRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/upload", uploadRoutes);

@@ -8,11 +8,17 @@
 @import url('./components/_forms.css');
 @import url('./components/_navigation.css');
 @import url('./components/_cards.css');
+@import url('./components/_loader.css');
+@import url('./components/_message.css');
+@import url('./components/_ratings.css');
+@import url('./components/_progress.css');
+@import url('./components/_template.css');
 
 
 @import url('./layout/_header.css');
 @import url('./layout/_footer.css');
 @import url('./layout/_grid.css');
+@import url('./layout/_pagination.css');
 
 
 @import url('./pages/_home.css');
@@ -23,6 +29,10 @@
 @import url('./pages/_carousel.css');
 @import url('./pages/_cart.css');
 @import url('./pages/_favorite.css');
+@import url('./pages/_shipping.css');
+@import url('./pages/_orders.css');
+@import url('./pages/_profile.css');
+
 
 body {
   background-color: var(--color-bg-lighter);

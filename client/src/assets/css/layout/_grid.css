@@ -5,6 +5,7 @@
   padding-top: var(--space-4xl);
   margin-right: auto;
   margin-left: auto;
+  margin-top: var(--space-lg);
 }
 
 @media (min-width: 576px) {

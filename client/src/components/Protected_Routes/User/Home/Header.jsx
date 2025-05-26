@@ -1,5 +1,5 @@
 import { useGetTopProductsQuery } from "../../../../redux/api/productApiSlice";
-import Loader from "../../../Loader";
+import Loader from "../../../Common/Loader";
 import SmallProduct from "../../User/Home/SmallProduct";
 import ProductCarousel from "../../User/Home/ProductCarousel";
 

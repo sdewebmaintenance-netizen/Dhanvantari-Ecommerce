@@ -163,7 +163,7 @@ const addProductReview = asyncHandler(async (req, res) => {
   }
 
   const alreadyReviewed = product.reviews.some(
-    review => review.user_id === req.user.id
+    review => review.user_id === req.user.user_id
   );
 
   if (alreadyReviewed) {
@@ -175,7 +175,7 @@ const addProductReview = asyncHandler(async (req, res) => {
       name: req.user.username,
       rating: parseFloat(rating),
       comment,
-      user_id: req.user.id,
+      user_id: req.user.user_id,
       product_id: productId
     }
   });
