@@ -7,5 +7,7 @@ module.exports = {
   DATABASE_URL: process.env.DATABASE_URL,
   NODE_ENV: process.env.NODE_ENV,
   JWT_SECRET: process.env.JWT_SECRET,
-  CALL_BACK_URL:process.env.CALL_BACK_URL
+  CALL_BACK_URL:process.env.CALL_BACK_URL,
+  RAZORPAY_KEY_ID:process.env.RAZORPAY_KEY_ID,
+  RAZORPAY_KEY_SECRET:process.env.RAZORPAY_KEY_SECRET
 };

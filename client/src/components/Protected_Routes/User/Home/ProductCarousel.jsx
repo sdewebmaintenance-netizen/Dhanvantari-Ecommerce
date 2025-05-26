@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useGetTopProductsQuery } from "../../../../redux/api/productApiSlice";
-import Message from "../../../Message";
+import Message from "../../../Common/Message";
 import moment from "moment";
 import {
   FaBox,
@@ -10,6 +10,7 @@ import {
   FaStore,
 } from "react-icons/fa";
 import getImage from "../../../../Utils/GetImage";
+import formatCurrency from "../../../../Utils/FormatCurrency";
 
 const ProductCarousel = () => {
   const { data: products = [], isLoading, error } = useGetTopProductsQuery();
@@ -88,13 +89,7 @@ const ProductCarousel = () => {
             {products[currentIndex] && (
               <div className="product-info-card">
                 <h2>{products[currentIndex].name}</h2>
-                <p>
-                  {" "}
-                  {products[currentIndex].price?.toLocaleString("en-IN", {
-                    style: "currency",
-                    currency: "INR",
-                  })}
-                </p>
+                <p> {formatCurrency(products[currentIndex].price)}</p>
 
                 <p>
                   {products[currentIndex].description?.substring(0, 170)} ...

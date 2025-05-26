@@ -162,3 +162,113 @@
     flex-direction: column;
   }
 }
+
+
+
+
+
+
+.avatar-menu-container {
+  position: relative;
+}
+
+.avatar {
+  width:var(--space-2xl);
+  height:var(--space-2xl);
+  border-radius: 50%;
+  background-color: var(--color-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.avatar:hover {
+  transform: scale(1.1);
+}
+
+.avatar-image {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.avatar-initial {
+  color: var(--color-secondary-light);
+  font-weight: bold;
+  font-size: var(--font-size-lg)
+}
+
+.avatar-dropdown {
+  position: absolute;
+  right: 0;
+  top: 5rem;
+  background: var(--color-bg-light);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  min-width: 10rem;
+  z-index: var(--z-index-dropdown);
+  overflow: hidden;
+}
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  padding: var(--space-md) var(--space-md);
+  color: var(--color-secondary-light);
+  text-decoration: none;
+  transition: background-color 0.2s ease;
+  font-weight: 700;
+}
+
+.dropdown-item:hover {
+  background-color: var(--color-secondary-lighter);
+  color: var(--color-primary-dark);
+}
+
+.dropdown-icon {
+  margin-right: var(--space-sm);
+}
+
+.cart-badge, .favorite-badge {
+  position: absolute;
+  top: -0.7rem;
+  right: -1.3rem;
+  background-color: var(--color-primary-light);
+  color: var(--color-secondary-light);
+  border-radius: var(--radius-full);
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-size-xs);
+  font-weight: bold;
+}
+
+@media (max-width: 768px) {
+  .avatar-dropdown {
+    position: static;
+    width: 100%;
+    box-shadow: none;
+    border-radius: 0;
+    background: var(--color-secondary);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.avatar-dropdown {
+  animation: fadeIn 0.2s ease-out forwards;
+}

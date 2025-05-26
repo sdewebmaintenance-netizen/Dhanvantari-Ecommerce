@@ -1,11 +1,15 @@
 import { apiSlice } from "./apiSlice";
-import { ORDERS_URL, PAYPAL_URL } from "../../config/config";
+import { ORDERS_URL } from "../../config/config";
 
 export const orderApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
+    getRazorPayKeyId: builder.query({
+      query: () => `${ORDERS_URL}/getKey`,
+    }),
+
     createOrder: builder.mutation({
       query: (order) => ({
-        url: ORDERS_URL,
+        url: `${ORDERS_URL}/createOrder`,
         method: "POST",
         body: order,
       }),
@@ -14,20 +18,6 @@ export const orderApiSlice = apiSlice.injectEndpoints({
     getOrderDetails: builder.query({
       query: (id) => ({
         url: `${ORDERS_URL}/${id}`,
-      }),
-    }),
-
-    payOrder: builder.mutation({
-      query: ({ orderId, details }) => ({
-        url: `${ORDERS_URL}/${orderId}/pay`,
-        method: "PUT",
-        body: details,
-      }),
-    }),
-
-    getPaypalClientId: builder.query({
-      query: () => ({
-        url: PAYPAL_URL,
       }),
     }),
 
@@ -66,13 +56,12 @@ export const orderApiSlice = apiSlice.injectEndpoints({
 });
 
 export const {
+  useGetRazorPayKeyIdQuery,
   useGetTotalOrdersQuery,
   useGetTotalSalesQuery,
   useGetTotalSalesByDateQuery,
   useCreateOrderMutation,
   useGetOrderDetailsQuery,
-  usePayOrderMutation,
-  useGetPaypalClientIdQuery,
   useGetMyOrdersQuery,
   useDeliverOrderMutation,
   useGetOrdersQuery,

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { toast } from "react-toastify";
 import {
   useGetProductDetailsQuery,
@@ -20,6 +20,7 @@ import {
 import moment from "moment";
 import ProductTabs from "./Tabs";
 import HeartIcon from "./HeartIcon";
+import { useGetUserInfoQuery } from "../../redux/api/usersApiSlice";
 
 const Product = () => {
   const { id: productId } = useParams();
@@ -37,7 +38,7 @@ const Product = () => {
     error,
   } = useGetProductDetailsQuery(productId);
 
-  const { userInfo } = useSelector((state) => state.auth);
+  const { data: userInfo } = useGetUserInfoQuery();
 
   const [createReview, { isLoading: loadingProductReview }] =
     useCreateReviewMutation();

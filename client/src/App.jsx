@@ -10,36 +10,41 @@ import UserHeader from "./components/Navigation/Header/UserHeader";
 import UserFooter from "./components/Navigation/Footer/UserFooter";
 import AdminFooter from "./components/Navigation/Footer/AdminFooter";
 import AdminHeader from "./components/Navigation/Header/AdminHeader";
-import PrivateRoute from "./components/PrivateRoute";
-import AdminRoute from "./pages/Admin/AdminRoute";
+import PrivateRoute from "./components/Auth/PrivateRoute";
+import AdminRoute from "./pages/Protected_Routes/Admin/AdminRoute";
 
-import LandingPage from "./pages/LandingPage";
-import GoogleCallback from "./pages/Auth/GoogleCallback";
+import LandingPage from "./pages/UnProtected_Routes/LandingPage";
+import GoogleCallback from "./components/Auth/GoogleCallback";
 
-import Home from "./pages/Home";
-import Favorites from "./pages/Products/Favorites";
-import ProductDetails from "./pages/Products/ProductDetails";
-import Cart from "./pages/Cart";
-import Shop from "./pages/Shop";
-import Profile from "./pages/User/Profile";
-import Shipping from "./pages/Orders/Shipping";
+import Home from "./pages/Protected_Routes/User/Home";
+import Favorites from "./pages/Protected_Routes/User/Favorites";
+import ProductDetails from "./components/Protected_Routes/User/Product/ProductDetails";
+import Cart from "./pages/Protected_Routes/User/Cart";
+import Shop from "./pages/Protected_Routes/User/Shop";
+import Profile from "./pages/Protected_Routes/User/Profile";
+import Shipping from "./pages/Protected_Routes/User/Shipping";
 import PlaceOrder from "./pages/Orders/PlaceOrder";
 import Order from "./pages/Orders/Order";
+import UserOrder from "./pages/Protected_Routes/User/UserOrder";
 
-import UserList from "./pages/Admin/UserList";
-import CategoryList from "./pages/Admin/CategoryList";
-import ProductList from "./pages/Admin/ProductList";
-import AllProducts from "./pages/Admin/AllProducts";
-import ProductUpdate from "./pages/Admin/ProductUpdate";
-import OrderList from "./pages/Admin/OrderList";
-import AdminDashboard from "./pages/Admin/AdminDashboard";
+import UserList from "./pages/Protected_Routes/Admin/UserList";
+import CategoryList from "./pages/Protected_Routes/Admin/CategoryList";
+import ProductList from "./pages/Protected_Routes/Admin/ProductList";
+import AllProducts from "./pages/Protected_Routes/Admin/AllProducts";
+import ProductUpdate from "./pages/Protected_Routes/Admin/ProductUpdate";
+import OrderList from "./pages/Protected_Routes/Admin/OrderList";
+import AdminDashboard from "./pages/Protected_Routes/Admin/AdminDashboard";
+import { useGetUserInfoQuery } from "./redux/api/usersApiSlice";
+
 
 const App = () => {
-  const IsAdmin = localStorage.getItem("isAdmin");
+
+  const {data} = useGetUserInfoQuery();     
+
   const renderHeader = () => {
-    if (!IsAdmin) {
+    if (!data) {
       return <GuestHeader />;
-    } else if (IsAdmin === true) {
+    } else if (data.isAdmin === true) {
       return <AdminHeader />;
     } else {
       return <UserHeader />;
@@ -47,9 +52,9 @@ const App = () => {
   };
 
   const renderFooter = () => {
-    if (!IsAdmin) {
+    if (!data) {
       return <GuestFooter />;
-    } else if (IsAdmin === true) {
+    } else if (data.isAdmin === true) {
       return <AdminFooter />;
     } else {
       return <UserFooter />;
@@ -76,6 +81,7 @@ const App = () => {
               <Route path="/shipping" element={<Shipping />} />
               <Route path="/placeorder" element={<PlaceOrder />} />
               <Route path="/order/:id" element={<Order />} />
+               <Route path="/user-orders" element={<UserOrder />} />
             </Route>
 
             <Route path="/admin" element={<AdminRoute />}>

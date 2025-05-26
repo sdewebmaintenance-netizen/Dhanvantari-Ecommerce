@@ -1,0 +1,32 @@
+.shipping-content {
+  margin-top: var(--space-xl);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.shipping-form {
+  width: 90%;
+  padding: var(--space-xl);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+}
+
+
+.payment-method-options {
+  margin-top: var(--space-sm);
+}
+
+.payment-method-option {
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+
+.payment-method-text {
+  margin-left: var(--space-sm);
+  color: var(--color-primary-dark);
+  font-weight: 700;
+}

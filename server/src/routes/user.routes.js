@@ -2,7 +2,6 @@ const express = require("express");
 
 const {
   GetUser,
-  logoutCurrentUser,
   getAllUsers,
   getCurrentUserProfile,
   updateCurrentUserProfile,
@@ -17,7 +16,6 @@ const router = express.Router();
 
 router.get("/getuser", GetUser);
 
-router.post("/logout", logoutCurrentUser);
 
 router
   .route("/profile")
