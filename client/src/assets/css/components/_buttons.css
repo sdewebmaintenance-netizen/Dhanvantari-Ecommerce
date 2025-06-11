@@ -5,7 +5,6 @@
   justify-content: center;
   padding: var(--space-sm) var(--space-md);
   border-radius: var(--radius-md);
-  font-weight: 600;
   text-align: center;
   white-space: nowrap;
   vertical-align: middle;
@@ -89,6 +88,7 @@
 .btn-group {
   display: inline-flex;
   vertical-align: middle;
+  gap:var(--space-md)
 }
 
 .btn-group > .btn {
@@ -109,10 +109,14 @@
 
 
 .btn-icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: var(--space-sm);
+  color: var(--color-secondary-lighter);
+  background-color:transparent;
+  border: none;
+  padding: var(--space-md);
+}
+
+.btn-icon:hover {
+  color: var(--color-primary-dark);
 }
 
 .btn-icon .icon {
@@ -127,7 +131,6 @@
   border: 2px solid var(--color-secondary-lighter);
   padding: var(--space-sm) var(--space-xl);
   font-size: 1rem;
-  font-weight: 600;
   border-radius: var(--radius-full);
   cursor: pointer;
   transition: background-color var(--transition-normal);
@@ -140,5 +143,5 @@
 
 .btn-customized:hover {
   background-color: var(--color-secondary-lighter);
-  color: var(--color-text);
+  color: var(--color-bg);
 }

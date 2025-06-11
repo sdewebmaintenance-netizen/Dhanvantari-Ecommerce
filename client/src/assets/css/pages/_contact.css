@@ -13,7 +13,6 @@
 
 .contact-hero-title {
   font-size: var(--font-size-4xl);
-  font-weight: 800;
   color: var(--color-text);
   margin-bottom: var(--space-md);
   position: relative;
@@ -54,7 +53,6 @@
 
 .form-title {
   font-size: var(--font-size-2xl);
-  font-weight: 700;
   color: var(--color-primary);
   margin-bottom: var(--space-lg);
 }
@@ -66,7 +64,6 @@
 
 .info-title {
   font-size: var(--font-size-2xl);
-  font-weight: 700;
   color: var(--color-primary);
   margin-bottom: var(--space-lg);
 }
@@ -89,7 +86,6 @@
 }
 
 .info-label {
-  font-weight: 600;
   margin-bottom: var(--space-xs);
 }
 

@@ -28,5 +28,4 @@
 .payment-method-text {
   margin-left: var(--space-sm);
   color: var(--color-primary-dark);
-  font-weight: 700;
 }

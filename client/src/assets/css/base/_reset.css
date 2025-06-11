@@ -8,12 +8,14 @@
 
 html {
   scroll-behavior: smooth;
+  font-size: var(--font-size-lg); 
 }
 
 body {
   min-height: 100vh;
   text-rendering: optimizeSpeed;
   line-height: 1.5;
+  
 }
 
 img,

@@ -2,14 +2,14 @@
   position: fixed;
   top: -1rem;
   width: 100%;
-  background: var(--color-secondary-lighter);
+  background: #fff;
   z-index: 1000;
   box-shadow: var(--shadow-xl);
   border-radius: var(--radius-xl);
 }
-
+  
 .navbar-container {
-  max-width: 1400px;
+  max-width: 1600px;
   margin: auto;
   display: flex;
   justify-content: space-between;
@@ -26,7 +26,6 @@
 }
 
 .nav-links a {
-  font-weight: 700;
   text-decoration: none;
   transition: color var(--transition-fast), transform var(--transition-slow);
   position: relative;
@@ -61,6 +60,7 @@
     display: block;
     cursor: pointer;
     z-index: 1001;
+    color: var(--color-secondary);
   }
 
   .nav-links {
@@ -91,7 +91,6 @@
     padding: 1rem;
     text-align: center;
     color: white;
-    font-weight: bold;
     border-top: 1px solid rgba(255, 255, 255, 0.1);
   }
 
@@ -110,7 +109,6 @@
     padding: 1rem;
     text-align: center;
     color: white;
-    font-weight: bold;
     border-top: 1px solid rgba(255, 255, 255, 0.1);
   }
 

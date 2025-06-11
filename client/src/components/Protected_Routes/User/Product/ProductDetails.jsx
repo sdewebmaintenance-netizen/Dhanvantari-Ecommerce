@@ -16,7 +16,6 @@ import {
   FaStore,
 } from "react-icons/fa";
 import moment from "moment";
-import HeartIcon from "./HeartIcon";
 import Ratings from "./Ratings";
 import ProductTabs from "./ProductTabs";
 import { addToCart } from "../../../../redux/features/cart/cartSlice";
@@ -89,11 +88,10 @@ const ProductDetails = () => {
                 alt={product.name}
                 className="product-main-image"
               />
-              <HeartIcon product={product} />
             </div>
-
+  
             <div className="product-info">
-              <h2 className="product-name">{product.name}</h2>
+              <h3 className="product-name">{product.name}</h3>
               <p className="product-description">{product.description}</p>
 
               <p className="product-details-price">
@@ -103,31 +101,31 @@ const ProductDetails = () => {
 
               <div className="product-stats">
                 <div className="stat-group">
-                  <h1 className="stat-item">
-                    <FaStore className="stat-icon" /> Brand: {product.brand}
-                  </h1>
-                  <h1 className="stat-item">
-                    <FaClock className="stat-icon" /> Added:{" "}
+                  <p className="stat-item">
+                    <FaStore className="stats-icon" /> Brand: {product.brand}
+                  </p>
+                  <p className="stat-item">
+                    <FaClock className="stats-icon" /> Added:{" "}
                     {moment(product.createAt).fromNow()}
-                  </h1>
-                  <h1 className="stat-item">
-                    <FaStar className="stat-icon" /> Reviews:{" "}
+                  </p>
+                  <p className="stat-item">
+                    <FaStar className="stats-icon" /> Reviews:{" "}
                     {product.numReviews}
-                  </h1>
+                  </p>
                 </div>
 
                 <div className="stat-group">
-                  <h1 className="stat-item">
-                    <FaStar className="stat-icon" /> Ratings: {rating}
-                  </h1>
-                  <h1 className="stat-item">
-                    <FaShoppingCart className="stat-icon" /> Quantity:{" "}
+                  <p className="stat-item">
+                    <FaStar className="stats-icon" /> Ratings: {rating}
+                  </p>
+                  <p className="stat-item">
+                    <FaShoppingCart className="stats-icon" /> Quantity:{" "}
                     {product.quantity}
-                  </h1>
-                  <h1 className="stat-item">
-                    <FaBox className="stat-icon" /> In Stock:{" "}
+                  </p>
+                  <p className="stat-item">
+                    <FaBox className="stats-icon" /> In Stock:{" "}
                     {product.countInStock}
-                  </h1>
+                  </p>
                 </div>
               </div>
 

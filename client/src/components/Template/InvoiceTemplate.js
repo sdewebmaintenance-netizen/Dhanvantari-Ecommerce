@@ -1,5 +1,6 @@
 import formatCurrency from "../../Utils/FormatCurrency";
-import formatDate from "../../Utils/FormatTime";
+import formatDate from "../../Utils/FormatDate";
+import formatTime from "../../Utils/FormatTime";
 import toTitleCase from "../../Utils/ToTiltleCase";
 import Signature from "../../assets/images/Signature-Template.png";
 import Dhanvantari from "../../assets/images/Dhanvantari-God.png";
@@ -56,7 +57,7 @@ const InvoiceTemplate = ({ order }) => {
           <h6>Invoice Details</h6>
           <p>Invoice No.: {order.id}</p>
           <p>Date: {formatDate(order.createdAt, "dd-MM-yyyy")}</p>
-          <p>Time: {formatDate(order.createdAt, "hh:mm a")}</p>
+          <p>Time: {formatTime(order.createdAt, "hh:mm a")}</p>
           <p>Place of Supply: 33-Tamil Nadu</p>
         </div>
       </div>

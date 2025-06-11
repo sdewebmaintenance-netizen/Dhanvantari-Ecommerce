@@ -7,17 +7,14 @@
 .message-success {
   background-color: var(--color-primary-light);
   color: var(--color-success);
-  font-weight: 700;
 }
 
 .message-danger {
   background-color: var(--color-primary-light);
   color: var(--color-danger);
-  font-weight: 700;
 }
 
 .message-default {
   background-color: var(--color-bg-light);
   color: var(--color-secondary-light);
-  font-weight: 700;
 }

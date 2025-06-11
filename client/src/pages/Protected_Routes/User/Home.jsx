@@ -5,7 +5,7 @@ import Message from "../../../components/Common/Message";
 import Header from "../../../components/Protected_Routes/User/Home/Header";
 import Product from "../../../components/Protected_Routes/User/Product/Product";
 
-const Home = () => {
+const   Home = () => {
   const { keyword } = useParams();
   const { data, isLoading, isError } = useGetProductsQuery({ keyword });
 

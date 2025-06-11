@@ -15,22 +15,19 @@
 .logo {
   display: flex;
   font-size: var(--font-size-xl);
-  font-weight: 700;
   color: var(--color-text);
+  flex-direction: column;
+}
+
+.logo-left{
+  display: flex;
 }
 
 .logo-img {
-  height: 2.5rem;
+  height: 4rem;
   margin-right: var(--space-sm);
 }
 
-.logo {
-  font-size: 28px;
-  font-weight: bold;
-  display: flex;
-  flex-direction: column;
-  color: var(--color-text);
-}
 
 .logo .green {
   color: var(--color-primary);
@@ -112,7 +109,6 @@
   height: 1.25rem;
   padding: 0 var(--space-xs);
   font-size: var(--font-size-xs);
-  font-weight: 600;
   color: var(--color-text);
   background-color: var(--color-primary);
   border-radius: var(--radius-full);
@@ -173,8 +169,8 @@
 }
 
 .avatar {
-  width:var(--space-2xl);
-  height:var(--space-2xl);
+  width:var(--space-xl);
+  height:var(--space-xl);
   border-radius: 50%;
   background-color: var(--color-primary);
   display: flex;
@@ -196,8 +192,7 @@
 }
 
 .avatar-initial {
-  color: var(--color-secondary-light);
-  font-weight: bold;
+  color: var(--color-bg);
   font-size: var(--font-size-lg)
 }
 
@@ -220,7 +215,6 @@
   color: var(--color-secondary-light);
   text-decoration: none;
   transition: background-color 0.2s ease;
-  font-weight: 700;
 }
 
 .dropdown-item:hover {
@@ -245,7 +239,6 @@
   align-items: center;
   justify-content: center;
   font-size: var(--font-size-xs);
-  font-weight: bold;
 }
 
 @media (max-width: 768px) {

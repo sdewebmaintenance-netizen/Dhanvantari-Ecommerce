@@ -11,18 +11,31 @@
   --font-size-4xl: 2.5rem;  
   --font-size-5xl: 3rem;    
   --font-size-6xl: 5rem;    
+
+  --font-weight-bold: 800;
+  --font-weight-bolder: 900;
 }
 
-body {
-  font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  font-size: var(--font-size-base);
-  line-height: 1.6;
-  color: var(--color-text);
+@media (max-width: 768px) {
+  :root {
+    --font-size-lg: 1rem; 
+  }
 }
 
-h1, h2, h3, h4, h5, h6 {
+
+h1, h2, h3, h4, h5, h6, Link, a {
   font-weight: 700;
   line-height: 1.2;
+  text-align: left;
+  color: var(--color-primary);
+}
+
+p{
+  font-weight: 500;
+  text-align: justify;
+  hyphens: auto;
+  margin-bottom: 1rem;
+  margin-top: 1rem;
 }
 
 h1 { font-size: var(--font-size-4xl); }
@@ -32,10 +45,6 @@ h4 { font-size: var(--font-size-xl); }
 h5 { font-size: var(--font-size-lg); }
 h6 { font-size: var(--font-size-md); }
 
-p {
-  margin-bottom: 1rem;
-  margin-top: 1rem;
-}
 
 a {
   color: var(--color-primary);
@@ -47,12 +56,6 @@ a:hover {
   color: var(--color-primary-dark);
 }
 
-.text-center { text-align: center; }
-.text-right { text-align: right; }
-.text-left { text-align: left; }
-.text-uppercase { text-transform: uppercase; }
-.text-bold { font-weight: 700; }
-.text-muted { color: var(--color-text-muted); }
 
 .text-animation {
   position: relative;
@@ -69,19 +72,20 @@ a:hover {
   bottom: -6px;
   width: 0%;
   height: 3px;
-  background-color: var(--color-primary); 
+  background-color: var(--color-secondary); 
   transition: width 0.3s ease;
 }
 
 .text-animation:hover {
   transform: translateY(-2px);
-  color: var(--color-primary); 
+  color: var(--color-secondary); 
 }
 
 .text-animation:hover::after {
   width: 100%;
 }
 
-.title{
-  color: var(--color-text-dark);
+
+.tab-indent {
+  text-indent: var(--space-2xl);
 }

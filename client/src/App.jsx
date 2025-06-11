@@ -1,5 +1,4 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { PayPalScriptProvider } from "@paypal/react-paypal-js";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./assets/css/main.css";
@@ -11,9 +10,14 @@ import UserFooter from "./components/Navigation/Footer/UserFooter";
 import AdminFooter from "./components/Navigation/Footer/AdminFooter";
 import AdminHeader from "./components/Navigation/Header/AdminHeader";
 import PrivateRoute from "./components/Auth/PrivateRoute";
-import AdminRoute from "./pages/Protected_Routes/Admin/AdminRoute";
+import AdminRoute from "../src/components/Auth/AdminRoute";
 
 import LandingPage from "./pages/UnProtected_Routes/LandingPage";
+import FoodStarch from "./components/UnProtected_Routes/FoodStarch";
+import Product from "./components/UnProtected_Routes/Product";
+import RetailInfo from "./components/UnProtected_Routes/RetailsInfo";
+
+
 import GoogleCallback from "./components/Auth/GoogleCallback";
 
 import Home from "./pages/Protected_Routes/User/Home";
@@ -31,15 +35,14 @@ import UserList from "./pages/Protected_Routes/Admin/UserList";
 import CategoryList from "./pages/Protected_Routes/Admin/CategoryList";
 import ProductList from "./pages/Protected_Routes/Admin/ProductList";
 import AllProducts from "./pages/Protected_Routes/Admin/AllProducts";
-import ProductUpdate from "./pages/Protected_Routes/Admin/ProductUpdate";
+import ProductUpdate from "./components/Protected_Routes/Admin/ProductUpdate";
 import OrderList from "./pages/Protected_Routes/Admin/OrderList";
 import AdminDashboard from "./pages/Protected_Routes/Admin/AdminDashboard";
 import { useGetUserInfoQuery } from "./redux/api/usersApiSlice";
-
+import ProductQuoteTable from "./components/UnProtected_Routes/Exports";
 
 const App = () => {
-
-  const {data} = useGetUserInfoQuery();     
+  const { data } = useGetUserInfoQuery();
 
   const renderHeader = () => {
     if (!data) {
@@ -62,43 +65,45 @@ const App = () => {
   };
 
   return (
-    <PayPalScriptProvider>
-      <BrowserRouter>
-        {renderHeader()}
-        <div className="container">
-          <ToastContainer />
-          <Routes>
-            <Route path="/" element={<LandingPage />} />
-            <Route path="/callback" element={<GoogleCallback />} />
+    <BrowserRouter>
+      {renderHeader()}
+      <div className="container">
+        <ToastContainer />
+        <Routes>
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/food-starch" element={<FoodStarch />} />
+          <Route path="/wholesale" element={<Product />} />
+          <Route path="/retail" element={<RetailInfo />} />
+          <Route path="/exports" element={<ProductQuoteTable />} />
 
-            <Route element={<PrivateRoute />}>
-              <Route path="/home" element={<Home />} />
-              <Route path="/favorite" element={<Favorites />} />
-              <Route path="/product/:id" element={<ProductDetails />} />
-              <Route path="/cart" element={<Cart />} />
-              <Route path="/shop" element={<Shop />} />
-              <Route path="/profile" element={<Profile  />} />
-              <Route path="/shipping" element={<Shipping />} />
-              <Route path="/placeorder" element={<PlaceOrder />} />
-              <Route path="/order/:id" element={<Order />} />
-               <Route path="/user-orders" element={<UserOrder />} />
-            </Route>
+          <Route path="/callback" element={<GoogleCallback />} />
 
-            <Route path="/admin" element={<AdminRoute />}>
-              <Route path="userlist" element={<UserList />} />
-              <Route path="categorylist" element={<CategoryList />} />
-              <Route path="productlist" element={<ProductList />} />
-              <Route path="allproductslist" element={<AllProducts />} />
-              <Route path="productlist/:pageNumber" element={<ProductList />} />
-              <Route path="product/update/:id" element={<ProductUpdate />} />
-              <Route path="orderlist" element={<OrderList />} />
-              <Route path="dashboard" element={<AdminDashboard />} />
-            </Route>
-          </Routes>
-        </div>
-        <div id="footer">{renderFooter()}</div>
-      </BrowserRouter>
-    </PayPalScriptProvider>
+          <Route element={<PrivateRoute />}>
+            <Route path="/home" element={<Home />} />
+            <Route path="/favorite" element={<Favorites />} />
+            <Route path="/product/:id" element={<ProductDetails />} />
+            <Route path="/cart" element={<Cart />} />
+            <Route path="/shop" element={<Shop />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/shipping" element={<Shipping />} />
+            <Route path="/placeorder" element={<PlaceOrder />} />
+            <Route path="/order/:id" element={<Order />} />
+            <Route path="/user-orders" element={<UserOrder />} />
+          </Route>
+
+          <Route path="/admin" element={<AdminRoute />}>
+            <Route path="userlist" element={<UserList />} />
+            <Route path="categorylist" element={<CategoryList />} />
+            <Route path="create-product" element={<ProductList />} />
+            <Route path="allproductslist" element={<AllProducts />} />
+            <Route path="product/update/:id" element={<ProductUpdate />} />
+            <Route path="orderlist" element={<OrderList />} />
+            <Route path="dashboard" element={<AdminDashboard />} />
+          </Route>
+        </Routes>
+      </div>
+      <div id="footer">{renderFooter()}</div>
+    </BrowserRouter>
   );
 };
 

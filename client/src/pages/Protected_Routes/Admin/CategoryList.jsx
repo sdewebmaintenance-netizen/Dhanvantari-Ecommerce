@@ -5,19 +5,25 @@ import {
   useDeleteCategoryMutation,
   useFetchCategoriesQuery,
 } from "../../../redux/api/categoryApiSlice";
-
+import Loader from "../../../components/Common/Loader";
+import Message from "../../../components/Common/Message";
 import { toast } from "react-toastify";
-import CategoryForm from "../../../components/CategoryForm";
-import Modal from "../../../components/Modal";
-import AdminMenu from "./AdminMenu";
+import CategoryForm from "../../../components/Protected_Routes/Admin/CategoryForm";
+import Modal from "../../../components/Protected_Routes/Admin/Modal";
 
 const CategoryList = () => {
-  const { data: categories } = useFetchCategoriesQuery();
+  const {
+    data: categories,
+    refetch,
+    isLoading,
+    error,
+  } = useFetchCategoriesQuery();
+
   const [name, setName] = useState("");
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [updatingName, setUpdatingName] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
-
+  const [loading, setLoading] = useState(false);
   const [createCategory] = useCreateCategoryMutation();
   const [updateCategory] = useUpdateCategoryMutation();
   const [deleteCategory] = useDeleteCategoryMutation();
@@ -31,7 +37,9 @@ const CategoryList = () => {
     }
 
     try {
+      setLoading(true);
       const result = await createCategory({ name }).unwrap();
+      await refetch();
       if (result.error) {
         toast.error(result.error);
       } else {
@@ -41,6 +49,8 @@ const CategoryList = () => {
     } catch (error) {
       console.error(error);
       toast.error("Creating category failed, try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -53,12 +63,14 @@ const CategoryList = () => {
     }
 
     try {
+      setLoading(true);
       const result = await updateCategory({
         categoryId: selectedCategory.id,
         updatedCategory: {
           name: updatingName,
         },
       }).unwrap();
+      await refetch();
 
       if (result.error) {
         toast.error(result.error);
@@ -70,69 +82,84 @@ const CategoryList = () => {
       }
     } catch (error) {
       console.error(error);
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleDeleteCategory = async () => {
     try {
+      setLoading(true);
       const result = await deleteCategory(selectedCategory.id).unwrap();
-
+      await refetch();
       if (result.error) {
         toast.error(result.error);
       } else {
-        toast.success(`${result.name} is deleted.`);
+        toast.success(`Deleted Sucessfully.`);
         setSelectedCategory(null);
         setModalVisible(false);
       }
     } catch (error) {
       console.error(error);
       toast.error("Category delection failed. Tray again.");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="ml-[10rem] flex flex-col md:flex-row">
-      <AdminMenu />
-      <div className="md:w-3/4 p-3">
-        <div className="h-12">Manage Categories</div>
-        <CategoryForm
-          value={name}
-          setValue={setName}
-          handleSubmit={handleCreateCategory}
-        />
-        <br />
-        <hr />
+    <>
+      {isLoading ? (
+        <Loader />
+      ) : error ? (
+        <Message variant="danger">
+          {error?.data?.message || error.error}
+        </Message>
+      ) : (
+        <div className="flex flex-col md-flex-row">
+          <div className="md-w-3/4 p-3">
+            <div>
+              <h1 className="title text-animation">Manage Categories</h1>
+              <CategoryForm
+                value={name}
+                setValue={setName}
+                handleSubmit={handleCreateCategory}
+                disabled={loading}
+              />
 
-        <div className="flex flex-wrap">
-          {categories?.map((category) => (
-            <div key={category.id}>
-              <button
-                className="bg-white border border-pink-500 text-pink-500 py-2 px-4 rounded-lg m-3 hover:bg-pink-500 hover:text-white focus:outline-none foucs:ring-2 focus:ring-pink-500 focus:ring-opacity-50"
-                onClick={() => {
-                  {
-                    setModalVisible(true);
-                    setSelectedCategory(category);
-                    setUpdatingName(category.name);
-                  }
-                }}
-              >
-                {category.name}
-              </button>
+              <div className="vertical-divider"></div>
             </div>
-          ))}
-        </div>
+            <div className="category-list">
+              {categories?.map((category) => (
+                <span key={category.id}>
+                  <button
+                    className="btn-customized"
+                    onClick={() => {
+                      setModalVisible(true);
+                      setSelectedCategory(category);
+                      setUpdatingName(category.name);
+                    }}
+                  >
+                    {category.name}
+                  </button>
+                </span>
+              ))}
+            </div>
 
-        <Modal isOpen={modalVisible} onClose={() => setModalVisible(false)}>
-          <CategoryForm
-            value={updatingName}
-            setValue={(value) => setUpdatingName(value)}
-            handleSubmit={handleUpdateCategory}
-            buttonText="Update"
-            handleDelete={handleDeleteCategory}
-          />
-        </Modal>
-      </div>
-    </div>
+            <Modal isOpen={modalVisible} onClose={() => setModalVisible(false)}>
+              <CategoryForm
+                value={updatingName}
+                setValue={(value) => setUpdatingName(value)}
+                handleSubmit={handleUpdateCategory}
+                buttonText="Update"
+                handleDelete={handleDeleteCategory}
+                disabled={loading}
+              />
+            </Modal>
+          </div>
+        </div>
+      )}
+    </>
   );
 };
 

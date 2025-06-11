@@ -88,7 +88,7 @@ const ProductCarousel = () => {
           <div className="carousel-product-info">
             {products[currentIndex] && (
               <div className="product-info-card">
-                <h2>{products[currentIndex].name}</h2>
+                <h6>{products[currentIndex].name}</h6>
                 <p> {formatCurrency(products[currentIndex].price)}</p>
 
                 <p>
@@ -98,27 +98,27 @@ const ProductCarousel = () => {
                 <div className="product-info-meta">
                   <div>
                     <p>
-                      <FaStore /> Brand: {products[currentIndex].brand}
+                      <span className="icon-product-desc"><FaStore /> </span>Brand: {products[currentIndex].brand}
                     </p>
                     <p>
-                      <FaClock /> Added:{" "}
+                      <span className="icon-product-desc"><FaClock /></span> Added:{" "}
                       {moment(products[currentIndex].createdAt).fromNow()}
                     </p>
                     <p>
-                      <FaStar /> Reviews: {products[currentIndex].numReviews}
+                      <span className="icon-product-desc"><FaStar /></span> Reviews: {products[currentIndex].numReviews}
                     </p>
                   </div>
                   <div>
                     <p>
-                      <FaStar /> Ratings:{" "}
+                      <span className="icon-product-desc"><FaStar /></span> Ratings:{" "}
                       {Math.round(products[currentIndex].rating)}
                     </p>
                     <p>
-                      <FaShoppingCart /> Quantity:{" "}
+                      <span className="icon-product-desc"><FaShoppingCart /></span> Quantity:{" "}
                       {products[currentIndex].quantity}
                     </p>
                     <p>
-                      <FaBox /> In Stock: {products[currentIndex].countInStock}
+                      <span className="icon-product-desc"><FaBox /></span> In Stock: {products[currentIndex].countInStock}
                     </p>
                   </div>
                 </div>

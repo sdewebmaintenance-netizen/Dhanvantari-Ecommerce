@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { FaTrash, FaEdit, FaCheck, FaTimes } from "react-icons/fa";
+import { FaTrash } from "react-icons/fa";
 import Message from "../../../components/Common/Message";
 import Loader from "../../../components/Common/Loader";
 import {
@@ -8,21 +8,92 @@ import {
   useUpdateUserMutation,
 } from "../../../redux/api/usersApiSlice";
 import { toast } from "react-toastify";
+import PaginationControls from "../../../Utils/PaginationControls";
+import { IoMdArrowRoundUp, IoMdArrowRoundDown } from "react-icons/io";
 
 const UserList = () => {
   const { data: users, refetch, isLoading, error } = useGetUsersQuery();
 
+  console.log("afbiu", users);
   const [deleteUser] = useDeleteUserMutation();
-
-  const [editableUserId, setEditableUserId] = useState(null);
-  const [editableUserName, setEditableUserName] = useState("");
-  const [editableUserEmail, setEditableUserEmail] = useState("");
-
   const [updateUser] = useUpdateUserMutation();
 
   useEffect(() => {
     refetch();
   }, [refetch]);
+
+  const [searchTerm, setSearchTerm] = useState("");
+  const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
+  const [pagination, setPagination] = useState({
+    currentPage: 1,
+    entriesPerPage: 10,
+    totalEntries: users?.length,
+  });
+
+  useEffect(() => {
+    if (users) {
+      setPagination((prev) => ({
+        ...prev,
+        totalEntries: users.length,
+      }));
+    }
+  }, [users]);
+
+  const requestSort = (key) => {
+    let direction = "asc";
+    if (sortConfig.key === key && sortConfig.direction === "asc") {
+      direction = "desc";
+    }
+    setSortConfig({ key, direction });
+  };
+
+  const getSortIcon = (key) => {
+    if (sortConfig.key !== key) return null;
+    return sortConfig.direction === "asc" ? (
+      <IoMdArrowRoundUp className="sort-icon" />
+    ) : (
+      <IoMdArrowRoundDown className="sort-icon" />
+    );
+  };
+
+  const getSortedData = () => {
+    if (!users) return [];
+
+    if (!sortConfig.key) return users;
+
+    return [...users].sort((a, b) => {
+      if (a[sortConfig.key] < b[sortConfig.key]) {
+        return sortConfig.direction === "asc" ? -1 : 1;
+      }
+      if (a[sortConfig.key] > b[sortConfig.key]) {
+        return sortConfig.direction === "asc" ? 1 : -1;
+      }
+      return 0;
+    });
+  };
+
+  const handlePageChange = (page) => {
+    setPagination((prev) => ({ ...prev, currentPage: page }));
+  };
+
+  const handleEntriesPerPageChange = (size) => {
+    setPagination((prev) => ({
+      ...prev,
+      entriesPerPage: size,
+      currentPage: 1,
+    }));
+  };
+
+  const filteredData = getSortedData().filter(
+    (order) =>
+      order?.username.toString().includes(searchTerm) ||
+      order?.email.toString().includes(searchTerm)
+  );
+
+  const paginatedData = filteredData.slice(
+    (pagination.currentPage - 1) * pagination.entriesPerPage,
+    pagination.currentPage * pagination.entriesPerPage
+  );
 
   const deleteHandler = async (id) => {
     if (window.confirm("Are you sure")) {
@@ -35,20 +106,12 @@ const UserList = () => {
     }
   };
 
-  const toggleEdit = (id, username, email) => {
-    setEditableUserId(id);
-    setEditableUserName(username);
-    setEditableUserEmail(email);
-  };
-
-  const updateHandler = async (id) => {
+  const updateHandler = async (id, role) => {
     try {
       await updateUser({
         userId: id,
-        username: editableUserName,
-        email: editableUserEmail,
+        userRole: role === 'admin',
       });
-      setEditableUserId(null);
       refetch();
     } catch (err) {
       toast.error(err?.data?.message || err.error);
@@ -57,7 +120,7 @@ const UserList = () => {
 
   return (
     <div className="p-4">
-      <h1 className="text-2xl font-semibold mb-4">Users</h1>
+      <h1 className="title text-animation">Users</h1>
       {isLoading ? (
         <Loader />
       ) : error ? (
@@ -65,93 +128,88 @@ const UserList = () => {
           {error?.data?.message || error.error}
         </Message>
       ) : (
-        <div className="flex flex-col md:flex-row">
-          {/* <AdminMenu /> */}
-          <table className="w-full md:w-4/5 mx-auto">
-            <thead>
+        <div className="orders-table-container">
+          <div className="table-controls">
+            <div className="entries-per-page">
+              <span>Show:</span>
+              <select
+                value={pagination.entriesPerPage}
+                onChange={(e) =>
+                  handleEntriesPerPageChange(Number(e.target.value))
+                }
+                className="form-control"
+              >
+                {[5, 10, 20, 50, 100].map((size) => (
+                  <option key={size} value={size}>
+                    {size}
+                  </option>
+                ))}
+              </select>
+              <span>entries</span>
+            </div>
+            <div className="search-control">
+              <label>Search:</label>
+              <input
+                type="text"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder="Search by name or email..."
+                className="form-control"
+              />
+            </div>
+          </div>
+
+          <table className="order-table">
+            <thead style={{ height: "4rem" }}>
               <tr>
-                <th className="px-4 py-2 text-left">ID</th>
-                <th className="px-4 py-2 text-left">NAME</th>
-                <th className="px-4 py-2 text-left">EMAIL</th>
-                <th className="px-4 py-2 text-left">ADMIN</th>
-                <th className="px-4 py-2"></th>
+                <th className="table-header">ID</th>
+                <th
+                  className="table-header sortable"
+                  onClick={() => requestSort("email")}
+                >
+                  NAME {getSortIcon("email")}
+                </th>
+                <th
+                  className="table-header sortable"
+                  onClick={() => requestSort("username")}
+                >
+                  EMAIL {getSortIcon("username")}
+                </th>
+                <th className="table-header">ADMIN</th>
+                <th className="table-header"></th>
               </tr>
             </thead>
             <tbody>
-              {users.map((user) => (
-                <tr key={user.id}>
-                  <td className="px-4 py-2">{user.id}</td>
-                  <td className="px-4 py-2">
-                    {editableUserId === user.id ? (
-                      <div className="flex items-center">
-                        <input
-                          type="text"
-                          value={editableUserName}
-                          onChange={(e) => setEditableUserName(e.target.value)}
-                          className="w-full p-2 border rounded-lg"
-                        />
-                        <button
-                          onClick={() => updateHandler(user.id)}
-                          className="ml-2 bg-blue-500 text-white py-2 px-4 rounded-lg"
-                        >
-                          <FaCheck />
-                        </button>
-                      </div>
-                    ) : (
-                      <div className="flex items-center">
-                        {user.username}{" "}
-                        <button
-                          onClick={() =>
-                            toggleEdit(user.id, user.username, user.email)
-                          }
-                        >
-                          <FaEdit className="ml-[1rem]" />
-                        </button>
-                      </div>
-                    )}
+              {paginatedData.map((user) => (
+                <tr key={user.id} className="table-row">
+                  <td className="table-cell">{user.id}</td>
+                  <td className="table-cell">
+                    <div className="d-flex align-items-center">
+                      {user.username}{" "}
+                    </div>
                   </td>
-                  <td className="px-4 py-2">
-                    {editableUserId === user.id ? (
-                      <div className="flex items-center">
-                        <input
-                          type="text"
-                          value={editableUserEmail}
-                          onChange={(e) => setEditableUserEmail(e.target.value)}
-                          className="w-full p-2 border rounded-lg"
-                        />
-                        <button
-                          onClick={() => updateHandler(user.id)}
-                          className="ml-2 bg-blue-500 text-white py-2 px-4 rounded-lg"
-                        >
-                          <FaCheck />
-                        </button>
-                      </div>
-                    ) : (
-                      <div className="flex items-center">
-                        <a href={`mailto:${user.email}`}>{user.email}</a>{" "}
-                        <button
-                          onClick={() =>
-                            toggleEdit(user.id, user.name, user.email)
-                          }
-                        >
-                          <FaEdit className="ml-[1rem]" />
-                        </button>
-                      </div>
-                    )}
+                  <td className="table-cell">
+                    <div className="d-flex align-items-center">
+                      <a href={`mailto:${user.email}`}>{user.email}</a>{" "}
+                    </div>
                   </td>
-                  <td className="px-4 py-2">
-                    {user.isAdmin ? (
-                      <FaCheck style={{ color: "green" }} />
-                    ) : (
-                      <FaTimes style={{ color: "red" }} />
-                    )}
+                  <td className="table-cell">
+                    <select
+                      className="form-control"
+                      value={user.isAdmin ? "admin" : "user"}
+                      onChange={(e) => updateHandler(user.id, e.target.value)}
+                    >
+                      <option value="admin">Admin</option>
+                      <option value="user">User</option>
+                    </select>
                   </td>
-                  <td className="px-4 py-2">
+
+                  <td className="table-cell">
                     {!user.isAdmin && (
-                      <div className="flex">
+                      <div className="d-flex">
                         <button
                           onClick={() => deleteHandler(user.id)}
-                          className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+                          className="btn btn-danger"
                         >
                           <FaTrash />
                         </button>
@@ -162,6 +220,16 @@ const UserList = () => {
               ))}
             </tbody>
           </table>
+
+          <PaginationControls
+            currentPage={pagination.currentPage}
+            totalPages={Math.ceil(
+              filteredData.length / pagination.entriesPerPage
+            )}
+            onPageChange={handlePageChange}
+            entriesPerPage={pagination.entriesPerPage}
+            totalEntries={filteredData.length}
+          />
         </div>
       )}
     </div>

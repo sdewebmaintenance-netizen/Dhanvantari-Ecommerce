@@ -1,35 +1,127 @@
-import React, { useState } from 'react';
+import { useState, useRef, useEffect } from "react";
+import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { logout } from "../../../redux/features/auth/authSlice";
+import { apiSlice } from "../../../redux/api/apiSlice";
+import { FiMoreVertical, FiUser, FiLogOut } from "react-icons/fi";
+import { useGetUserInfoQuery } from "../../../redux/api/usersApiSlice";
+import getImage from "../../../Utils/GetImage";
 
 const AdminHeader = () => {
-  const [showDropdown, setShowDropdown] = useState(false);
+  const { data: userInfo } = useGetUserInfoQuery();
+  const [avatarMenuOpen, setAvatarMenuOpen] = useState(false);
+  const avatarRef = useRef(null);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const logoutHandler = async () => {
+    try {
+      dispatch(logout());
+      dispatch(apiSlice.util.resetApiState());
+      navigate("/");
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (avatarRef.current && !avatarRef.current.contains(event.target)) {
+        setAvatarMenuOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 768);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   return (
     <header className="navbar">
       <div className="navbar-container">
-        <div className="logo">
-          <span className="green">WORLD</span><span className="brown">EXPORT</span>
-          <div className="tagline">High quality Wood Manufacturer</div>
+       <div className="logo-left">
+                 <img src={getImage("Logo.jpeg")} className="logo-img" />
+                 <div className="logo">
+                   <span className="green">Sri</span>
+                   <span className="brown">Dhanvantari Exports</span>
+                   <div className="tagline">Purity in Every Grain</div>
+                 </div>
+               </div>
+
+        <div
+          className="mobile-menu-icon"
+          onClick={() => setMenuOpen(!menuOpen)}
+        >
+          <FiMoreVertical size={24} />
         </div>
-        <nav className="nav-links">
-          <a href="#">ABOUT US</a>
-          <a href="#">PRODUCT</a>
-          <div
-            className="dropdown"
-            onMouseEnter={() => setShowDropdown(true)}
-            onMouseLeave={() => setShowDropdown(false)}
-          >
-            <a href="#" className="green-link">SERVICES</a>
-            {showDropdown && (
-              <div className="dropdown-content">
-                <a href="#">DOMESTIC<br />TRANSPORT</a>
-                <a href="#">LOGISTICS PARTNER<br />WORLD WIDE</a>
-                <a href="#">FAST & EASY<br />PROCEDURE</a>
+
+        <nav
+          className={`nav-links ${menuOpen ? "open" : ""}`}
+          onClick={() => {
+            setMenuOpen(false);
+          }}
+        >
+          <Link to="/admin/dashboard">Dashboard</Link>
+          <Link to="/admin/orderlist">Orders</Link>
+          <Link to="/admin/allproductslist">Products</Link>
+          <Link to="/admin/categorylist">Category</Link>
+          <Link to="/admin/userlist">Users</Link>
+          {isMobile ? (
+            <>
+              <Link to="/profile" className="dropdown-item">
+                <FiUser className="dropdown-icon" />
+                Profile
+              </Link>
+              <Link onClick={logoutHandler}>
+                <FiLogOut className="dropdown-icon" />
+                Logout
+              </Link>
+            </>
+          ) : (
+            <div className="avatar-menu-container" ref={avatarRef}>
+              <div
+                className="avatar"
+                onClick={() => setAvatarMenuOpen(!avatarMenuOpen)}
+              >
+                <div className="avatar-initial">
+                  {userInfo?.username?.charAt(0).toUpperCase()}
+                </div>
               </div>
-            )}
-          </div>
-          <a href="#">EXPORT MARKET</a>
-          <a href="#">CONTACT</a>
-          <span className="search-icon">🔍</span>
+
+              {avatarMenuOpen && (
+                <div className="avatar-dropdown">
+                  <Link
+                    to="/profile"
+                    className="dropdown-item"
+                    onClick={() => setAvatarMenuOpen(false)}
+                  >
+                    <FiUser className="dropdown-icon" />
+                    Profile
+                  </Link>
+                  <div
+                    className="dropdown-item"
+                    onClick={() => {
+                      logoutHandler();
+                      setAvatarMenuOpen(false);
+                    }}
+                  >
+                    <FiLogOut className="dropdown-icon" />
+                    Logout
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
         </nav>
       </div>
     </header>

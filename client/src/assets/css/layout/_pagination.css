@@ -41,7 +41,6 @@
 
 .entries-info {
   color: var(--color-secondary-lighter);
-  font-weight: 700;
 }
 
 .page-navigation {
@@ -58,7 +57,6 @@
   border-radius: var(--radius-sm);
   cursor: pointer;
   transition: all var(--transition-fast);
-  font-weight: 700;
 }
 
 .page-navigation button:hover:not(:disabled) {
@@ -74,5 +72,4 @@
 .page-navigation span {
   margin: 0 var(--space-sm);
   color: var(--color-secondary-lighter);
-  font-weight: 700;
 }

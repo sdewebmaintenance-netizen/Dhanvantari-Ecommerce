@@ -138,9 +138,7 @@ const updateUserById = asyncHandler(async (req, res) => {
   const updatedUser = await prisma.user.update({
     where: { id: parseInt(req.params.id) },
     data: {
-      username: req.body.username || user.username,
-      email: req.body.email || user.email,
-      isAdmin: Boolean(req.body.isAdmin),
+      isAdmin: Boolean(req.body.userRole),
     },
     select: {
       id: true,

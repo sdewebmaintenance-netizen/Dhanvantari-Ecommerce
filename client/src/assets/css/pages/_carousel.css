@@ -27,7 +27,7 @@
   bottom: var(--space-3xl);
   left: var(--space-3xl);
   background-color: var(--color-secondary-lighter); 
-  color: var(--color-text);
+  color: var(--color-bg);
   padding: var(--space-md) var(--space-lg);
   max-width: 500px;
   border-radius: var(--radius-md);
@@ -92,7 +92,6 @@
 }
 
 .product-info-card {
-  color:var(--color-primary-dark);
   width: 100%;
   padding: var(--space-lg);
   border-radius: var(--radius-md);
@@ -108,4 +107,9 @@
 
 .product-info-meta p {
   margin: var(--space-xs) 0;
+}
+
+
+.icon-product-desc{
+  color: var(--color-primary);
 }
