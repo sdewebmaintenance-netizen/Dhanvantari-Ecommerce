@@ -31,9 +31,9 @@ const GuestHeader = () => {
           <Link to="/retail">RETAIL</Link>
           <Link to="/wholesale">WHOLESALE</Link>
           <Link to="/exports">EXPORTS</Link>
-          <Link onClick={() => {handleGoogleSignIn(); }}>LOGIN</Link>
+          <Link to="/login-options">LOGIN</Link> 
         </nav>
-      </div>
+      </div>  
     </header>
   );
 };  
