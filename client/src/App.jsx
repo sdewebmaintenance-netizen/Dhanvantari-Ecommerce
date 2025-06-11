@@ -39,7 +39,12 @@ import ProductUpdate from "./components/Protected_Routes/Admin/ProductUpdate";
 import OrderList from "./pages/Protected_Routes/Admin/OrderList";
 import AdminDashboard from "./pages/Protected_Routes/Admin/AdminDashboard";
 import { useGetUserInfoQuery } from "./redux/api/usersApiSlice";
+
 import ProductQuoteTable from "./components/UnProtected_Routes/Exports";
+import LoginOptions from "./components/Auth/LoginOptions";
+import Login from "./components/Auth/Phone/Login";
+import Signup from "./components/Auth/Phone/Signup";
+import ForgotPassword from "./components/Auth/Phone/ForgotPassword";
 
 const App = () => {
   const { data } = useGetUserInfoQuery();
@@ -76,6 +81,10 @@ const App = () => {
           <Route path="/retail" element={<RetailInfo />} />
           <Route path="/exports" element={<ProductQuoteTable />} />
 
+          <Route path="/login-options" element={<LoginOptions />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/sign-up" element={<Signup />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/callback" element={<GoogleCallback />} />
 
           <Route element={<PrivateRoute />}>
