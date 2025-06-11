@@ -13,11 +13,10 @@
 
 .products-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: var(--space-lg);
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: var(--space-xs);
   margin-bottom: var(--space-xl);
   margin-top: var(--space-xl);
-  padding-right: var(--space-xl);
 }
 
 .product-card {
@@ -38,12 +37,6 @@
   background-color: var(--color-bg-lighter);
 }
 
-.product-name {
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: var(--color-text-dark);
-  margin-bottom: var(--space-xs);
-}
 
 .product-description {
   font-size: 0.9rem;
@@ -54,7 +47,7 @@
 }
 
 .product-card:hover .product-description {
-  color: var(--color-text-dark);
+  color: var(--color-secondary);
   transform: translateY(-2px);
 }
 
@@ -70,13 +63,12 @@
   align-items: center;
   gap: var(--space-xl);
   flex: 1;
-  padding: var(--space-lg);
   background-color: var(--color-bg-lighter);
   border-radius: var(--radius-lg);
 }
 
 .cta-section h4 {
-  color: var(--color-text-dark);
+  color: var(--color-secondary);
   margin-bottom: var(--space-md);
 }
 
@@ -91,6 +83,21 @@
     display: none;
   }
 }
+
+
+.product-weight-badge {
+  background-color: #f0f0f0;
+  color: #444;
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 12px;
+  margin-left: 8px;
+  display: inline-block;
+  vertical-align: middle;
+  border: 1px solid #ccc;
+}
+
 
 .shop-container {
   max-width: 1200px;
@@ -173,6 +180,7 @@
   background-color: var(--color-secondary-lighter);
   padding: var(--space-sm);
   margin: var(--space-xs) 0;
+  color: var(--color-bg-light);
 }
 
 .filter-section {
@@ -186,7 +194,6 @@
   background-color: var(--color-secondary-dark);
   border-radius: var(--radius-full);
   margin-bottom: var(--space-sm);
-  color: var(--color-text);
 }
 
 .filter-options {
@@ -219,7 +226,6 @@
 
 .filter-label {
   font-size: var(--font-size-sm);
-  color: var(--color-text);
 }
 
 .price-input {
@@ -228,7 +234,7 @@
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   background-color: var(--color-bg-light);
-  color: var(--color-secondary);
+  
 }
 
 .filter-actions {
@@ -241,15 +247,16 @@
   border: 1px solid var(--color-border);
   padding: var(--space-sm) 0;
   margin: var(--space-md) 0;
-  background-color: transparent;
-  color: var(--color-text);
+  background-color: var(--color-bg-light);
   border-radius: var(--radius-md);
   cursor: pointer;
   transition: background-color var(--transition-fast);
 }
 
 .reset-btn:hover {
-  background-color: var(--color-secondary-light);
+  background-color:transparent;
+  color: var(--color-bg-light);
+  
 }
 
 .shop-products {
@@ -261,7 +268,6 @@
   font-size: var(--font-size-lg);
   text-align: center;
   margin-bottom: var(--space-sm);
-  color: var(--color-primary-dark);
 }
 
 .product-item {
@@ -277,7 +283,6 @@
   border: none;
   font-size: 1.5rem;
   cursor: pointer;
-  color: var(--color-text);
 }
 
 @media (max-width: 767px) {
@@ -298,6 +303,7 @@
 
 .product-image-wrapper {
   position: relative;
+  width: 100%;
 }
 
 .product-main-image {
@@ -308,6 +314,11 @@
   border-radius: var(--radius-md);
 }
 
+.product-main-image.empty {
+  max-width: 0rem;
+  max-height: 0rem;
+}
+
 .product-info {
   display: flex;
   flex-direction: column;
@@ -315,10 +326,10 @@
 }
 
 .product-name {
-  font-size: var(--font-size-2xl);
-  font-weight: 600;
   margin-bottom: var(--space-md);
   color: var(--color-secondary);
+  cursor: pointer;
+  text-decoration: none;
 }
 
 .product-description {
@@ -329,15 +340,12 @@
 
 .product-details-price {
   font-size: var(--font-size-4xl);
-  font-weight: 800;
   color: var(--color-primary-dark);
 }
 
 .product-stats {
   display: flex;
   justify-content: space-between;
-  width: 20rem;
-  margin: var(--space-md) 0;
 }
 
 .stat-group {
@@ -348,14 +356,14 @@
 .stat-item {
   display: flex;
   align-items: center;
-  margin-bottom: var(--space-lg);
+  margin-bottom: var(--space-xs);
   font-size: var(--font-size-sm);
   color: var(--color-secondary);
 }
 
-.stat-icon {
+.stats-icon {
   margin-right: var(--space-sm);
-  color: var(--color-primary-dark);
+  color: var(--color-primary);
 }
 
 .product-details-actions {
@@ -407,7 +415,6 @@
 }
 
 .active-tab {
-  font-weight: 700;
   color: var(--color-primary);
   border-bottom: 2px solid var(--color-primary);
 }
@@ -440,7 +447,6 @@
   padding: var(--space-sm);
   background-color: var(--color-bg-light);
   border-radius: var(--radius-md);
-  font-weight: 500;
 }
 
 .reviews-list {

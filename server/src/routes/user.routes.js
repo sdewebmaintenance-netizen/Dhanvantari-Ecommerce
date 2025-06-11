@@ -10,23 +10,21 @@ const {
   updateUserById,
 } = require("../controllers/user.controller.js");
 
-const { authenticate, authorizeAdmin } =require("../middlewares/authMiddleware.js");
-
 const router = express.Router();
+
+router.get("/getAllUsers", getAllUsers);
 
 router.get("/getuser", GetUser);
 
-
 router
   .route("/profile")
-  .get(authenticate, getCurrentUserProfile)
-  .put(authenticate, updateCurrentUserProfile);
-
+  .get(getCurrentUserProfile)
+  .put(updateCurrentUserProfile);
 
 router
   .route("/:id")
-  .delete(authenticate, authorizeAdmin, deleteUserById)
-  .get(authenticate, authorizeAdmin, getUserById)
-  .put(authenticate, authorizeAdmin, updateUserById);
+  .delete(deleteUserById)
+  .get(getUserById)
+  .put(updateUserById);
 
 module.exports = router;

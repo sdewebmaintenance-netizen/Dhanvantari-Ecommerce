@@ -3,7 +3,6 @@ import { AiOutlineShoppingCart } from "react-icons/ai";
 import { useDispatch } from "react-redux";
 import { addToCart } from "../../../../redux/features/cart/cartSlice";
 import { toast } from "react-toastify";
-import HeartIcon from "./HeartIcon";
 import getImage from "../../../../Utils/GetImage";
 import formatCurrency from "../../../../Utils/FormatCurrency";
 
@@ -26,14 +25,11 @@ const ProductCard = ({ p }) => {
             alt={p.name}
           />
         </Link>
-        <div className="heart-icon">
-          <HeartIcon product={p} />
-        </div>
       </section>
 
       <div className="product-card-body">
         <div className="product-card-header">
-          <h5 className="product-card-name">{p?.name}</h5>
+          <p className="product-card-name">{p?.name}</p>
           <p className="product-card-price">
             {formatCurrency(p?.price)}
            
@@ -45,7 +41,7 @@ const ProductCard = ({ p }) => {
         </p>
 
         <section className="product-card-actions">
-          <Link to={`/product/${p.id}`} className="btn-customized">
+          <Link to={`/product/${p.id}`} className="btn-customized" style={{padding:"0.5rem"}}>
             Read More
             <svg
               className="read-more-icon"

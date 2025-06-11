@@ -10,7 +10,6 @@
 
 .profile-title {
   font-size: var(--font-size-2xl);
-  font-weight: 600;
   margin-bottom: var(--space-lg);
   color: var(--color-text);
   text-align: center;

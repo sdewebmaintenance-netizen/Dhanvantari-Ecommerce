@@ -192,6 +192,7 @@ const getAllOrders = asyncHandler(async (req, res) => {
           username: true,
         },
       },
+      orderItems:true
     },
   });
   res.json(orders);
@@ -223,16 +224,18 @@ const calculateTotalSales = asyncHandler(async (req, res) => {
 });
 
 const calcualteTotalSalesByDate = asyncHandler(async (req, res) => {
-  const salesByDate = await prisma.$queryRaw`
+    const salesByDate = await prisma.$queryRawUnsafe(`
     SELECT 
       DATE(paidAt) as date,
       SUM(totalPrice) as totalSales
-    FROM "Order"
+    FROM \`Order\`
     WHERE isPaid = true
     GROUP BY DATE(paidAt)
-  `;
+  `);
+
   res.json(salesByDate);
 });
+
 
 const findOrderById = asyncHandler(async (req, res) => {
   const order = await prisma.order.findUnique({

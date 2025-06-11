@@ -5,10 +5,7 @@ import {
   useGetTotalSalesByDateQuery,
   useGetTotalSalesQuery,
 } from "../../../redux/api/orderApiSlice";
-
 import { useState, useEffect } from "react";
-import AdminMenu from "./AdminMenu";
-import OrderList from "./OrderList";
 import Loader from "../../../components/Common/Loader";
 
 const AdminDashboard = () => {
@@ -17,15 +14,29 @@ const AdminDashboard = () => {
   const { data: orders, isLoading: loadingTwo } = useGetTotalOrdersQuery();
   const { data: salesDetail } = useGetTotalSalesByDateQuery();
 
+  console.log("sahflb", salesDetail, sales, customers, orders);
+
   const [state, setState] = useState({
     options: {
       chart: {
-        type: "line",
+        type: "line"   
       },
       tooltip: {
-        theme: "dark",
+        mode: "light",
       },
-      colors: ["#00E396"],
+      toolbar: {
+        show: true,
+        tools: {
+          download: true,
+          selection: true,
+          zoom: true,
+          zoomin: true,
+          zoomout: true,
+          pan: true,
+          reset: true,
+        },
+      },
+      colors: ["#323145"],
       dataLabels: {
         enabled: true,
       },
@@ -61,14 +72,15 @@ const AdminDashboard = () => {
         offsetY: -25,
         offsetX: -5,
       },
+      
     },
     series: [{ name: "Sales", data: [] }],
   });
 
   useEffect(() => {
-    if (salesDetail) {
+    if (salesDetail && Array.isArray(salesDetail)) {
       const formattedSalesDate = salesDetail.map((item) => ({
-        x: item.id,
+        x: new Date(item.date).toLocaleDateString(), // nicely formatted
         y: item.totalSales,
       }));
 
@@ -80,7 +92,6 @@ const AdminDashboard = () => {
             categories: formattedSalesDate.map((item) => item.x),
           },
         },
-
         series: [
           { name: "Sales", data: formattedSalesDate.map((item) => item.y) },
         ],
@@ -89,57 +100,40 @@ const AdminDashboard = () => {
   }, [salesDetail]);
 
   return (
-    <>
-      <AdminMenu />
-
-      <section className="xl:ml-[4rem] md:ml-[0rem]">
-        <div className="w-[80%] flex justify-around flex-wrap">
-          <div className="rounded-lg bg-black p-5 w-[20rem] mt-5">
-            <div className="font-bold rounded-full w-[3rem] bg-pink-500 text-center p-3">
-              $
-            </div>
-
-            <p className="mt-5">Sales</p>
-            <h1 className="text-xl font-bold">
-              $ {isLoading ? <Loader /> : sales.totalSales.toFixed(2)}
-            </h1>
-          </div>
-          <div className="rounded-lg bg-black p-5 w-[20rem] mt-5">
-            <div className="font-bold rounded-full w-[3rem] bg-pink-500 text-center p-3">
-              $
-            </div>
-
-            <p className="mt-5">Customers</p>
-            <h1 className="text-xl font-bold">
-              $ {isLoading ? <Loader /> : customers?.length}
-            </h1>
-          </div>
-          <div className="rounded-lg bg-black p-5 w-[20rem] mt-5">
-            <div className="font-bold rounded-full w-[3rem] bg-pink-500 text-center p-3">
-              $
-            </div>
-
-            <p className="mt-5">All Orders</p>
-            <h1 className="text-xl font-bold">
-              $ {isLoading ? <Loader /> : orders?.totalOrders}
-            </h1>
-          </div>
+    <section>
+      <div className="stats-container">
+        <div className="stat-card">
+          <div className="stat-icon"> ₹</div>
+          <p className="stat-label">Sales</p>
+          <h1 className="stat-value">
+            ₹ {isLoading ? <Loader /> : sales?.totalSales?.toFixed(2)}
+          </h1>
         </div>
-
-        <div className="ml-[10rem] mt-[4rem]">
-          <Chart
-            options={state.options}
-            series={state.series}
-            type="bar"
-            width="70%"
-          />
+        <div className="stat-card">
+          <div className="stat-icon"> ₹</div>
+          <p className="stat-label">Customers</p>
+          <h1 className="stat-value">
+            {loading ? <Loader /> : customers?.length}
+          </h1>
         </div>
-
-        <div className="mt-[4rem]">
-          <OrderList />
+        <div className="stat-card">
+          <div className="stat-icon"> ₹</div>
+          <p className="stat-label">All Orders</p>
+          <h1 className="stat-value">
+            {loadingTwo ? <Loader /> : orders?.totalOrders}
+          </h1>
         </div>
-      </section>
-    </>
+      </div>
+
+      <div className="chart-container">
+        <Chart
+          options={state.options}
+          series={state.series}
+          type="bar"
+          width="100%"
+        />
+      </div>
+    </section>
   );
 };
 

@@ -2,11 +2,12 @@ import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import FavoritesCount from "../../../pages/Products/FavoritesCount";
+import FavoritesCount from "../../Protected_Routes/User/Favorite/FavoritesCount";
 import { logout } from "../../../redux/features/auth/authSlice";
 import { apiSlice } from "../../../redux/api/apiSlice";
 import { FiMoreVertical, FiUser, FiLogOut } from "react-icons/fi";
 import { useGetUserInfoQuery } from "../../../redux/api/usersApiSlice";
+import getImage from "../../../Utils/GetImage";
 
 const UserHeader = () => {
   const { data: userInfo } = useGetUserInfoQuery();
@@ -50,17 +51,20 @@ const UserHeader = () => {
   return (
     <div className="navbar">
       <div className="navbar-container">
-        <div className="logo">
-          <span className="green">Sri</span>
-          <span className="brown">Dhanvantari Exports</span>
-          <div className="tagline">Purity in Every Grain</div>
+        <div className="logo-left">
+          <img src={getImage("Logo.jpeg")} className="logo-img" />
+          <div className="logo">
+            <span className="green">Sri</span>
+            <span className="brown">Dhanvantari Exports</span>
+            <div className="tagline">Purity in Every Grain</div>
+          </div>
         </div>
 
         <div
           className="mobile-menu-icon"
           onClick={() => setMenuOpen(!menuOpen)}
         >
-          <FiMoreVertical size={24} color="white" />
+          <FiMoreVertical size={24} />
         </div>
 
         <nav
@@ -82,12 +86,12 @@ const UserHeader = () => {
             )}
           </Link>
 
-          <Link to="/favorite">
+          {/* <Link to="/favorite">
             FAVORITES
             <div className="favorite-badge">
               <FavoritesCount />
             </div>
-          </Link>
+          </Link> */}
 
           {isMobile ? (
             <>
@@ -95,7 +99,7 @@ const UserHeader = () => {
                 <FiUser className="dropdown-icon" />
                 Profile
               </Link>
-              <Link onClick={logoutHandler} >
+              <Link onClick={logoutHandler}>
                 <FiLogOut className="dropdown-icon" />
                 Logout
               </Link>

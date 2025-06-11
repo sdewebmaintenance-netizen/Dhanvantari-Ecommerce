@@ -7,12 +7,13 @@ import {
 } from "../../redux/api/orderApiSlice";
 import { useGetUserInfoQuery } from "../../redux/api/usersApiSlice";
 import getImage from "../../Utils/GetImage";
-import formatDate from "../../Utils/FormatTime";
+import formatDate from "../../Utils/FormatDate";
 import { useRef } from "react";
 import { toPng } from "html-to-image";
 import jsPDF from "jspdf";
 import InvoiceTemplate from "../../components/Template/InvoiceTemplate";
 import formatCurrency from "../../Utils/FormatCurrency";
+import formatTime from "../../Utils/FormatTime";
 
 const Order = () => {
   const { id: orderId } = useParams();
@@ -177,7 +178,7 @@ const Order = () => {
 
             {order.isPaid ? (
               <Messsage variant="success">
-                Paid on {formatDate(order.paidAt)}
+                Paid on {formatDate(order.paidAt)} {formatTime(order.paidAt)}
               </Messsage>
             ) : (
               <Messsage variant="danger">Not paid</Messsage>

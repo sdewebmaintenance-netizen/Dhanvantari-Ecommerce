@@ -1,0 +1,6 @@
+.category-list{
+    display: flex;
+    gap:var(--space-md);
+    flex-wrap: wrap;
+    margin-top: var(--space-md);
+}

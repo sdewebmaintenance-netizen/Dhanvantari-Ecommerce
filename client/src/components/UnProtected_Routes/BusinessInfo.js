@@ -1,45 +1,63 @@
+import GlobalStats from "./GlobalStats";
+import Certifications from "./Certifications";
+
 const BusinessInfo = () => {
-  const infoSections = [
+  const highlights = [
     {
-      title: "Nature of Business",
-      content: "Trader - Retailer",
+      title: "Delivered",
+      content: "5000+",
     },
     {
-      title: "Annual Turnover",
-      content: "0 - 40 L",
+      title: "Verified Suppliers",
+      content: "10 Nos",
     },
     {
-      title: "Total Number of Employees",
-      content: "Upto 10 People",
+      title: "Quality Rejects",
+      content: "0 %",
     },
     {
-      title: "IndiaMART Certification",
-      content: "Trust Seal Verified",
+      title: "Cost Saved for Buyers",
+      content: "20 PCT",
     },
   ];
 
   return (
     <div className="business-info-container">
-      <h2 className="title text-animation">About Us</h2>
+      <h2 className="title">
+        Native Food Ingredients Supply for Retail, Wholesale & Overseas
+        Manufacturers.{" "}
+      </h2>
       <p>
-        Established in the year 2016, Sri Dhanvantari Exports has become one of
-        the most prominent and leading suppliers and Exporters of Tapioca Starch
-        Products products all over the world. In a short span of time, we have
-        become renowned for very high client satisfaction. Our products score
-        high in terms of quality but are cost-effective at the same time. The
-        aroma, freshness, nutritional content and taste of our products are
-        unbeatable.We believe in building international standards for innovation
-        and providing quality in products services.
+        Digital Tech Platform for Buying Food Starch within India & Beyond.{" "}
+      </p>
+      <br />
+
+      <h2 className="title text-animation">Why SDE?</h2>
+      <p>
+        Native Food Ingredients Supply for Retail, Wholesale & Overseas
+        Manufacturers.Digital Tech Platform for Buying Food Starch within India
+        & Beyond.One stop starch sourcing solution from India. Power your
+        business with a modern sourcing backbone. Solving disparity in price
+        difference between states — Get the same wholesale price as you pay from
+        manufacturer.
+        <br />
+        <br />
+        <strong>Be ready for the digital tomorrow:</strong> Our operations are
+        fully digitized with real-time track and trace visibility of order
+        placements, quality checks, and logistics.
       </p>
 
       <div className="all-info-grid">
-        {infoSections.map((section, index) => (
+        {highlights.map((item, index) => (
           <div key={index} className="info-item">
-            <h4>{section.title}</h4>
-            <p>{section.content}</p>
+            <h4>{item.content}</h4>
+            <p>{item.title}</p>
           </div>
         ))}
       </div>
+
+      <GlobalStats />
+      <Certifications />
     </div>
   );
 };

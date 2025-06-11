@@ -29,24 +29,24 @@ const GuestFooter = () => {
         </div>
         <div className="footer-section">
           <h3 className="footer-title">Contact</h3>
-          <div className="footer-links">
-            <p>
-              <strong>Sri Dhanvantri Exports</strong>
-            </p>
-            <p>
+          <div className="footer-links-content">
+            <div>
+              <strong>Sri Dhanvantari Exports</strong>
+            </div>
+            <div>
               Ganesh Nagar, Puzhuthivakkam, Madipakkam
               Chennai-600091, Tamil Nadu, India
-            </p>
-            <p> <strong>Email: </strong>supportwe@dhanvantri.com</p>
-            <p><strong>Mobile / Whatsapp </strong></p>
-            <p>+91 99999 77777 (English)</p>
+            </div>
+            <div> <strong>Email: </strong>supportwe@dhanvantari.com</div>
+            <div><strong>Mobile / Whatsapp </strong></div>
+            <div>+91 99999 77777</div>
           </div>
         </div>
       </div>
 
       <div className="footer-bottom">
         <p className="footer-copyright">
-          &copy; {new Date().getFullYear()} Sree Dhanvantri Exports. All rights
+          &copy; {new Date().getFullYear()} Sree Dhanvantari Exports. All rights
           reserved.
         </p>
       </div>

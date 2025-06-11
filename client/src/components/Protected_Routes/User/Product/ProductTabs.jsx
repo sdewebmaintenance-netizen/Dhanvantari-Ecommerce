@@ -98,7 +98,7 @@ const ProductTabs = ({
               </form>
             ) : (
               <p className="sign-in-prompt">
-                Please <Link to="/login" className="sign-in-link">sign in</Link> to write a review
+                Please <Link to="/" className="sign-in-link">sign in</Link> to write a review
               </p>
             )}
           </div>

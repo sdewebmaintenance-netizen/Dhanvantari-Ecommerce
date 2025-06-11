@@ -40,7 +40,6 @@
 .card-title {
   margin-bottom: var(--space-sm);
   font-size: var(--font-size-lg);
-  font-weight: 600;
 }
 
 .card-subtitle {
@@ -130,7 +129,6 @@
   z-index: 1;
   padding: var(--space-xs) var(--space-sm);
   font-size: var(--font-size-xs);
-  font-weight: 600;
   color: var(--color-text);
   background-color: var(--color-primary);
   border-radius: var(--radius-sm);
@@ -155,7 +153,6 @@
 
 .product-price {
   font-size: var(--font-size-lg);
-  font-weight: 700;
   color: var(--color-primary);
 }
 
@@ -188,27 +185,9 @@
   object-fit: cover;
 }
 
-.heart-icon {
-  position: absolute;
-  top: var(--space-xs);
-  right: var(--space-sm);
-  z-index: 10;
-  cursor: pointer;
-}
-
-.heart-icon-inner {
-  color: var(--color-secondary);
-  transition: color var(--transition-normal);
-}
-
-.heart-icon:hover .heart-icon-inner {
-  color: var(--color-primary);
-}
-
-
 
 .small-product-details {
-  padding: var(--space-md);
+  padding-top: var(--space-sm);
 }
 
 .small-product-link {
@@ -221,14 +200,13 @@
   justify-content: space-between;
   align-items: center;
   margin: 0;
-  font-size: var(--font-size-md);
+  font-size: var(--font-size-sm);
 }
 
 .small-product-price {
-  background-color: var(--color-primary-light);
-  color: var(--color-secondary);
+  background-color: var(--color-secondary);
+  color: var(--color-bg-light);
   font-size: var(--font-size-xs);
-  font-weight: 600;
   padding: var(--space-xs) var(--space-sm);
   border-radius: var(--radius-full);
 }
@@ -261,7 +239,6 @@
   background-color: var(--color-primary-light);
   color: var(--color-secondary);
   font-size: var(--font-size-xs);
-  font-weight: 600;
   padding: var(--space-xs) var(--space-sm);
   border-radius: var(--radius-full);
 }
@@ -285,16 +262,17 @@
 
 .product-card-name {
   color: var(--color-primary);
+  font-weight: 600;
 }
 
 .product-card-price {
   color: var(--color-primary);
-  font-weight: 600;
 }
 
 .product-card-description {
   margin-bottom: var(--space-md);
   color: var(--color-text-muted);
+  text-align: left;
 }
 
 .product-card-actions {

@@ -38,8 +38,8 @@ const addProduct = asyncHandler(async (req, res) => {
 });
 
 const updateProductDetails = asyncHandler(async (req, res) => {
-  const { name, description, price, category, quantity, brand } = req.fields;
-
+  console.log("afiuhs", req.fields)
+  const { name, description, price, category, quantity, brand, countInStock } = req.fields;
 
   switch (true) {
     case !name:
@@ -65,7 +65,7 @@ const updateProductDetails = asyncHandler(async (req, res) => {
       category_id: parseInt(category),
       quantity: parseInt(quantity),
       brand,
-      countInStock: parseInt(quantity),
+      countInStock: parseInt(countInStock),
       ...(req.fields.image && { image: req.fields.image })
     }
   });

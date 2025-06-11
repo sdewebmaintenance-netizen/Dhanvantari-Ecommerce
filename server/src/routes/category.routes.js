@@ -9,19 +9,13 @@ const {
   readCategory,
 } = require("../controllers/category.controller.js");
 
-const {
-  authenticate,
-  authorizeAdmin,
-} = require("../middlewares/authMiddleware.js");
 
-router.route("/").post(authenticate, authorizeAdmin, createCategory);
-router.route("/:categoryId").put(authenticate, authorizeAdmin, updateCategory);
+router.post("/", createCategory);
+router.put("/:categoryId", updateCategory);
 router
-  .route("/:categoryId")
-  .delete(authenticate, authorizeAdmin, removeCategory);
-
-router.route("/categories").get(listCategory);
-router.route("/:id").get(readCategory);
+  .delete("/:categoryId", removeCategory);
+router.get("/categories", listCategory);
+router.get("/:id", readCategory);
 
   
 module.exports = router;

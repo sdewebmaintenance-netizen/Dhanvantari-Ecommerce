@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Message from "../../../components/Common/Message";
 import Loader from "../../../components/Common/Loader";
 import { Link } from "react-router-dom";
@@ -7,6 +7,7 @@ import getImage from "../../../Utils/GetImage";
 import PaginationControls from "../../../Utils/PaginationControls";
 import { IoMdArrowRoundUp, IoMdArrowRoundDown } from "react-icons/io";
 import formatCurrency from "../../../Utils/FormatCurrency";
+import formatDate from "../../../Utils/FormatDate";
 
 const UserOrder = () => {
   const { data: orders = [], isLoading, error } = useGetMyOrdersQuery();
@@ -73,7 +74,6 @@ const UserOrder = () => {
   const filteredData = getSortedData().filter(
     (order) =>
       order.id.toString().includes(searchTerm) ||
-      order.createdAt.includes(searchTerm) ||
       order.totalPrice.toString().includes(searchTerm)
   );
 
@@ -116,7 +116,7 @@ const UserOrder = () => {
                 type="text"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder="Search orders..."
+                placeholder="Search orders by price..."
                 className="form-control"
               />
             </div>
@@ -162,7 +162,7 @@ const UserOrder = () => {
                   </td>
                   <td className="order-table-cell">{order.id}</td>
                   <td className="order-table-cell">
-                    {order.createdAt.substring(0, 10)}
+                    {formatDate(order.createdAt)}
                   </td>
                   <td className="order-table-cell">
                     {formatCurrency(order.totalPrice)}

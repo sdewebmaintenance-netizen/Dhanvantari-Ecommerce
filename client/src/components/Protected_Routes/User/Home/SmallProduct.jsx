@@ -1,5 +1,4 @@
 import { Link } from "react-router-dom";
-import HeartIcon from "../Product/HeartIcon";
 import getImage from "../../../../Utils/GetImage";
 import formatCurrency from "../../../../Utils/FormatCurrency";
 
@@ -12,20 +11,17 @@ const SmallProduct = ({ product }) => {
           alt={product.name}
           className="small-product-image"
         />
-        <div className="heart-icon">
-          <HeartIcon product={product} />
-        </div>
       </div>
 
       <div className="small-product-details">
         <Link to={`/product/${product.id}`} className="small-product-link">
-          <h2 className="small-product-title">
+          <div className="small-product-title">
             <div>{product.name}</div>
             <span className="small-product-price">
               {" "}
               {formatCurrency(product?.price)}
             </span>
-          </h2>
+          </div>
         </Link>
       </div>
     </div>

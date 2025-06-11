@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 
 const UserFooter = () => {
   return (
-    <footer className="footer">
+    <footer className="footer">  
       <div className="footer-container">
         <div className="footer-section">
           <h3 className="footer-title">Quick Links</h3>
@@ -24,7 +24,7 @@ const UserFooter = () => {
       
       <div className="footer-bottom">
          <p className="footer-copyright">
-          &copy; {new Date().getFullYear()} Sree Dhanvantri Exports. All rights
+          &copy; {new Date().getFullYear()} Sree Dhanvantari Exports. All rights
           reserved.
         </p>
       </div>

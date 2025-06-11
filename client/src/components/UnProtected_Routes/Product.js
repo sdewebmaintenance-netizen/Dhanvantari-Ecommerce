@@ -1,55 +1,64 @@
 import React, { useState } from "react";
 import handleGoogleSignIn from "../../Utils/HandleGoogleSignIn";
+import HowItWorks from "./HowItWorks";
 
 const Product = () => {
   const allProducts = [
     {
       id: 1,
-      name: "Sago Starch Powder",
+      name: "Tapioca Starch",
+      weight: "50 KGS",
       description:
-        "High purity sago starch extracted from the pith of sago palm stems, ideal for food and industrial applications.",
+        "High-quality tapioca starch suitable for various industrial and food applications.",
     },
     {
       id: 2,
-      name: "Potato Starch Powder",
+      name: "Tapioca Starch",
+      weight: "30 KGS",
       description:
-        "Premium quality potato starch with excellent binding properties, perfect for food processing.",
+        "Fine-grade tapioca starch ideal for cooking, baking, and industrial use.",
     },
     {
       id: 3,
-      name: "Tapioca Flour",
+      name: "Tapioca Thippu Flour",
+      weight: "50 KGS",
       description:
-        "Finely ground tapioca flour, gluten-free alternative for baking and cooking needs.",
+        "Derived from tapioca residue, used in animal feed and secondary starch applications.",
     },
     {
       id: 4,
-      name: "Starch Powder",
+      name: "Tapioca Thippi Flour",
+      weight: "30 KGS",
       description:
-        "Versatile starch powder suitable for various industrial applications including textiles and paper.",
+        "Processed flour from tapioca waste, economical choice for bulk use.",
     },
     {
       id: 5,
-      name: "Maize Starch Powder",
+      name: "Sago Broken Flour",
+      weight: "50 KGS",
       description:
-        "High-quality maize starch with multiple uses in food and pharmaceutical industries.",
+        "Coarse flour made from broken sago pearls, commonly used in snacks and mixes.",
     },
     {
       id: 6,
-      name: "Cassava Flour",
+      name: "Sago Broken Flour",
+      weight: "30 KGS",
       description:
-        "Nutritious cassava flour, a great wheat substitute for gluten-free recipes.",
+        "Lightweight sago broken flour ideal for economical bulk requirements.",
     },
     {
       id: 7,
-      name: "Export Documentation",
+      name: "Corn Starch Powder",
+      weight: "50 KGS",
       description:
-        "Comprehensive export documentation services for hassle-free international trade.",
+        "Refined corn starch with smooth texture, excellent for food and pharma applications.",
     },
     {
       id: 8,
-      name: "Trade Consultation",
+      name: "Native Potato Starch",
+      weight: "50 KGS",
       description:
-        "Expert trade consultation to navigate global starch market dynamics.",
+        "Natural potato starch ideal for thickening and binding in food production.",
     },
   ];
 
@@ -65,13 +74,17 @@ const Product = () => {
 
   return (
     <>
+    <HowItWorks />
       <h2 className="title text-animation ">Our Products</h2>
       <div className="product-list-container">
         <div className="product-list-main">
           <div className="products-grid">
             {allProducts.slice(0, visibleCount).map((product) => (
               <div key={product.id} className="product-card">
-                <div className="product-name">{product.name}</div>
+                <h2 className="product-name">
+                  {product.name}
+                  <span className="product-weight-badge">{product.weight}</span>
+                </h2>
                 <div className="product-description">{product.description}</div>
               </div>
             ))}

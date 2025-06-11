@@ -1,13 +1,14 @@
-const formatDate = (date) => {
-  const paidAt = new Date(date);
-  return paidAt.toLocaleString("en-IN", {
-    day: "2-digit",
-    month: "short",  
-    year: "numeric",
-    hour: "numeric",
-    minute: "2-digit",
-    hour12: true,
-  });
+const formatTime = (date) => {
+  const d = new Date(date);
+  let [time, modifier] = d
+    .toLocaleTimeString("en-IN", {
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
+    })
+    .split(" ");
+  
+  return `${time} ${modifier.toUpperCase()}`;
 };
 
-export default formatDate;
+export default formatTime;

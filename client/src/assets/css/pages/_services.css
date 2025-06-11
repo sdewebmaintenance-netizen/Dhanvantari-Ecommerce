@@ -13,7 +13,6 @@
 
 .services-hero-title {
   font-size: var(--font-size-4xl);
-  font-weight: 800;
   color: var(--color-text);
   margin-bottom: var(--space-md);
   position: relative;
@@ -66,7 +65,6 @@
 
 .service-title {
   font-size: var(--font-size-xl);
-  font-weight: 700;
   margin-bottom: var(--space-md);
   color: var(--color-primary);
 }
@@ -85,7 +83,6 @@
 
 .cta-title {
   font-size: var(--font-size-3xl);
-  font-weight: 700;
   margin-bottom: var(--space-md);
 }
 

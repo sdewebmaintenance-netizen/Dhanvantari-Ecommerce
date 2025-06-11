@@ -16,7 +16,6 @@
   padding: var(--space-xs) var(--space-sm);
   text-align: left;
   border-bottom: 1px solid var(--color-border);
-  font-weight: 700;
   color: var(--color-secondary-light);
 }
 
@@ -71,7 +70,6 @@
 }
 
 .price-label {
-  font-weight: 700;
   margin-right: var(--space-sm);
   color: var(--color-secondary-light);
 }
@@ -79,7 +77,6 @@
 .info-text {
   color: var(--color-primary-dark);
   line-height: 1.6;
-  font-weight: 500;
 }
 
 .place-order-container {
@@ -118,7 +115,6 @@
   padding: var(--space-xs);
   text-align: left;
   border-bottom: 2px solid var(--color-border);
-  font-weight: 700;
   color: var(--color-secondary-light);
 }
 
@@ -130,7 +126,6 @@
   padding: var(--space-xs);
   vertical-align: middle;
   color: var(--color-primary-dark);
-  font-weight: 700;
 }
 
 .order-item-image {
@@ -162,7 +157,6 @@
   margin-bottom: var(--space-md);
   margin-top: var(--space-md);
   color: var(--color-secondary-light);
-  font-weight: 700;
 }
 
 .highlight-text {
@@ -174,7 +168,6 @@
   justify-content: space-between;
   margin-bottom: var(--space-sm);
   color: var(--color-secondary-light);
-  font-weight: 600;
   padding-top: var(--space-sm);
 }
 
@@ -225,7 +218,6 @@
   text-align: left;
   background-color: var(--color-secondary-light);
   color: var(--color-text);
-  font-weight: 600;
   border-bottom: 2px solid var(--color-border);
 }
 
@@ -253,7 +245,6 @@
   padding: var(--space-xs) var(--space-sm);
   border-radius: 10%;
   font-size: var(--font-size-sm);
-  font-weight: 500;
   text-align: center;
   min-width: 6rem;
 }

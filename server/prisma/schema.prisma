@@ -76,7 +76,6 @@ model OrderItem {
 model Order {
   id                 Int         @id @default(autoincrement())
   user_id            Int
-  orderItems         OrderItem[]
   shippingAddress_id Int
   paymentMethod      String
   paymentResult_id   Int
@@ -91,7 +90,7 @@ model Order {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
+  orderItems         OrderItem[]
   OrderPaymentResult   PaymentResult   @relation(fields: [paymentResult_id], references: [id])
   OrderShippingAddress ShippingAddress @relation(fields: [shippingAddress_id], references: [id])
   OrderUser            User            @relation(fields: [user_id], references: [id])

@@ -17,23 +17,17 @@ const {
 
 router.get("/getKey", getKey);
 
-/* router
-  .route("/")
-  .post(authenticate, createOrder)
-  .get(authenticate, authorizeAdmin, getAllOrders); */
+router.get("/getAllOrders", getAllOrders);
 
 router.post("/createOrder", createOrder);
-router.post('/updatePayment',updatePaymentStatus)
+router.post("/updatePayment", updatePaymentStatus);
 
-
-router.route("/mine").get(getUserOrders);
-router.route("/total-orders").get(countTotalOrders);
-router.route("/total-sales").get(calculateTotalSales);
-router.route("/total-sales-by-date").get(calcualteTotalSalesByDate);
+router.get("/mine", getUserOrders);
+router.get("/total-orders", countTotalOrders);
+router.get("/total-sales", calculateTotalSales);
+router.get("/total-sales-by-date", calcualteTotalSalesByDate);
 router.get("/:id", findOrderById);
-router.put("/:id/pay", markOrderAsPaid); 
-/* router
-  .route("/:id/deliver")
-  .put(authenticate, authorizeAdmin, markOrderAsDelivered);*/
+router.put("/:id/pay", markOrderAsPaid);
+router.put("/:id/deliver", markOrderAsDelivered);
 
 module.exports = router;
