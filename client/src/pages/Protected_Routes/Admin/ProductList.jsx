@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   useCreateProductMutation,
@@ -9,26 +9,35 @@ import { toast } from "react-toastify";
 import getImage from "../../../Utils/GetImage";
 
 const ProductList = () => {
-  const [image, setImage] = useState("");
+  const [image, setImage] = useState([]);
+  const [imagePreviews, setImagePreviews] = useState([]);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
   const [category, setCategory] = useState("");
   const [quantity, setQuantity] = useState("");
   const [brand, setBrand] = useState("");
-  const [stock, setStock] = useState(0);
-  const [imageUrl, setImageUrl] = useState(null);
+  const [stock, setStock] = useState("");
   const navigate = useNavigate();
 
   const [uploadProductImage] = useUploadProductImageMutation();
   const [createProduct] = useCreateProductMutation();
   const { data: categories } = useFetchCategoriesQuery();
 
+  console.log("categories", categories);
+
+  useEffect(() => {
+    if (categories && categories.length > 0) {
+      setCategory(categories[0].id);
+    }
+  }, [categories]);
+  
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const productData = new FormData();
-      productData.append("image", image);
+
       productData.append("name", name);
       productData.append("description", description);
       productData.append("price", price);
@@ -37,64 +46,100 @@ const ProductList = () => {
       productData.append("brand", brand);
       productData.append("countInStock", stock);
 
-      const { data } = await createProduct(productData);
+      image.forEach((img) => {
+      productData.append("images", img);
+    });
 
-      if (data.error) {
+
+      const {data, error} = await createProduct(productData);
+
+      if (error) {
         toast.error("Product create failed. Try Again.");
       } else {
-        toast.success(`${data.name} is created`);
         navigate("/admin/allproductslist");
       }
     } catch (error) {
+      toast.error(error);
       console.error(error);
-      toast.error("Product create failed. Try Again.");
     }
   };
 
   const uploadFileHandler = async (e) => {
+    const files = Array.from(e.target.files).slice(0, 4);
+
+    if (files.length + image.length > 4) {
+      toast.error("You can only upload up to 4 images");
+      return;
+    }
+
     const formData = new FormData();
-    formData.append("image", e.target.files[0]);
+    files.forEach((file) => formData.append("images", file));
 
     try {
-      const res = await uploadProductImage(formData).unwrap();
-      console.log("ajfb", res)
-      toast.success(res.message);
-      setImage(res.image);
-      setImageUrl(res.image);
+      setImage((prev) => [...prev, ...files]);
+      const newPreviews = files.map((file) => URL.createObjectURL(file));
+      setImagePreviews((prev) => [...prev, ...newPreviews]);
     } catch (error) {
       toast.error(error?.data?.message || error.error);
     }
   };
 
+  const removeImage = (index) => {
+    setImage((prev) => prev.filter((_, i) => i !== index));
+    setImagePreviews((prev) => prev.filter((_, i) => i !== index));
+    URL.revokeObjectURL(imagePreviews[index]);
+  };
+
+  console.log("asljhasbafsuiqwbkjla", image);
   return (
     <div>
       <h1 className="title text-animation">Create Product</h1>
 
       <div className="product-details-content">
-        <div className="product-image-wrapper">
-          <img
-            className={`product-main-image ${!imageUrl ? "empty" : ""}`}
-            src={getImage(imageUrl) || ""}
-            alt={name}
-            style={{ marginBottom: "2rem" }}
-          />
-          <div className="form-group">
-          <label className="form-label" style={{width:"100%"}}>
-            {image ? image.name : "Upload image"}
-            <input
-              type="file"
-              name="image"
-              accept="image/*"
-              onChange={uploadFileHandler}
-              className="form-control"
-            />
-          </label>
+        <div className="product-images-section">
+          <div className="image-preview-grid">
+            {imagePreviews.map((preview, index) => (
+              <div key={index} className="image-preview-container">
+                <img
+                  src={preview}
+                  alt={`Preview ${index + 1}`}
+                  className="product-preview-image"
+                />
+                <button
+                  type="button"
+                  className="remove-image-btn"
+                  onClick={() => removeImage(index)}
+                >
+                  ×
+                </button>
+              </div>
+            ))}
+
+            {imagePreviews.length < 4 && (
+              <div className="upload-placeholder">
+                <label className="upload-label">
+                  <input
+                    type="file"
+                    multiple
+                    accept="image/*"
+                    onChange={uploadFileHandler}
+                    className="upload-input"
+                  />
+                  <span className="upload-icon">+</span>
+                  <span className="upload-text">
+                    Add Image ({4 - imagePreviews.length} remaining)
+                  </span>
+                </label>
+              </div>
+            )}
           </div>
         </div>
 
         <div className="product-info" style={{ width: "100%" }}>
           <div className="form-group">
-            <label htmlFor="name" className="form-label">Name</label>
+            <label htmlFor="name" className="form-label">
+              Name
+            </label>
             <input
               type="text"
               className="form-control"
@@ -103,7 +148,9 @@ const ProductList = () => {
             />
           </div>
           <div className="form-group">
-            <label htmlFor="name" className="form-label">Price</label>
+            <label htmlFor="name" className="form-label">
+              Price
+            </label>
             <input
               type="number"
               className="form-control"
@@ -112,7 +159,9 @@ const ProductList = () => {
             />
           </div>
           <div className="form-group">
-            <label htmlFor="name" className="form-label">Quantity</label>
+            <label htmlFor="name" className="form-label">
+              Quantity
+            </label>
             <input
               type="number"
               className="form-control"
@@ -121,7 +170,9 @@ const ProductList = () => {
             />
           </div>
           <div className="form-group">
-            <label htmlFor="name" className="form-label">Brand</label>
+            <label htmlFor="name" className="form-label">
+              Brand
+            </label>
             <input
               type="text"
               className="form-control"
@@ -142,7 +193,7 @@ const ProductList = () => {
           <div className="form-group">
             <label className="form-label">Count In Stock</label>
             <input
-              type="text"
+              type="number"
               className="form-control"
               value={stock}
               onChange={(e) => setStock(e.target.value)}
@@ -163,7 +214,11 @@ const ProductList = () => {
             </select>
           </div>
 
-          <button onClick={handleSubmit} className="btn-customized" style={{width:"100%"}}>
+          <button
+            onClick={handleSubmit}
+            className="btn-customized"
+            style={{ width: "100%" }}
+          >
             Submit
           </button>
         </div>

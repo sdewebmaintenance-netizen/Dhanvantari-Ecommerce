@@ -43,9 +43,11 @@ app.use((req, res, next) => {
 app.use(express.json());
 app.use(session({ secret: SECRET, resave: false, saveUninitialized: true }));
 
-app.use(passport.initialize()); 
+app.use(passport.initialize());   
 app.use(passport.session());
+
 app.use("/", authRoutes);
+
 app.use(authentication);
 app.use('/api/users',userRoutes);
 

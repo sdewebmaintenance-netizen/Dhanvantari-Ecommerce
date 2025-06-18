@@ -21,7 +21,7 @@ const ProductCard = ({ p }) => {
           <span className="product-brand-badge">{p?.brand}</span>
           <img
             className="product-card-image"
-            src={getImage(p.image)}
+            src={getImage(p.image, "ProductImage")}
             alt={p.name}
           />
         </Link>

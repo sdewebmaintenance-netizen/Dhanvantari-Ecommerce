@@ -11,7 +11,7 @@ const {
 } = require("../controllers/user.controller.js");
 
 const router = express.Router();
-
+   
 router.get("/getAllUsers", getAllUsers);
 
 router.get("/getuser", GetUser);
@@ -26,5 +26,6 @@ router
   .delete(deleteUserById)
   .get(getUserById)
   .put(updateUserById);
+
 
 module.exports = router;

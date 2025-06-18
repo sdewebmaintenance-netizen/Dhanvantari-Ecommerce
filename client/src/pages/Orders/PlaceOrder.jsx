@@ -100,7 +100,7 @@ const PlaceOrder = () => {
                   <tr key={index} className="table-row">
                     <td className="table-cell">
                       <img
-                        src={getImage(item?.image)}
+                        src={getImage(item?.image, "ProductImage")}
                         alt={item.name}
                         className="product-thumbnail"
                       />

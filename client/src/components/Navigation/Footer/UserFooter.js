@@ -24,7 +24,7 @@ const UserFooter = () => {
       
       <div className="footer-bottom">
          <p className="footer-copyright">
-          &copy; {new Date().getFullYear()} Sree Dhanvantari Exports. All rights
+          &copy; {new Date().getFullYear()} Sri Dhanvantari Exports. All rights
           reserved.
         </p>
       </div>

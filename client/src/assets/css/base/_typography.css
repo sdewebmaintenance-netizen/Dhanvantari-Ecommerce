@@ -36,6 +36,7 @@ p{
   hyphens: auto;
   margin-bottom: 1rem;
   margin-top: 1rem;
+  color: var(--color-secondary-light);
 }
 
 h1 { font-size: var(--font-size-4xl); }

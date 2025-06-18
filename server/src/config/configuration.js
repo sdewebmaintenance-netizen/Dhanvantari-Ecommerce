@@ -9,5 +9,6 @@ module.exports = {
   JWT_SECRET: process.env.JWT_SECRET,
   CALL_BACK_URL:process.env.CALL_BACK_URL,
   RAZORPAY_KEY_ID:process.env.RAZORPAY_KEY_ID,
-  RAZORPAY_KEY_SECRET:process.env.RAZORPAY_KEY_SECRET
+  RAZORPAY_KEY_SECRET:process.env.RAZORPAY_KEY_SECRET,
+  SALT_ROUNDS:parseInt(process.env.SALT_ROUNDS)
 };

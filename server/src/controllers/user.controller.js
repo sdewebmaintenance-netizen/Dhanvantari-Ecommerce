@@ -1,28 +1,36 @@
 const bcrypt = require("bcryptjs");
-const createToken = require("../utils/createToken");
 const { prisma } = require("../config/prismaClient.config.js");
 const asyncHandler = require("../middlewares/asyncHandler.js");
 
 const GetUser = asyncHandler(async (req, res) => {
   console.log("abgiuolrfwsa", req.user);
 
-  const existingUser = await prisma.user.findUnique({
-    where: { email: req.user.email },
-  });
+  let existingUser;
+
+  if (req.user.email ) {
+    existingUser = await prisma.user.findUnique({
+      where: { email: req.user.email },
+    });
+  } else {
+    existingUser = await prisma.user.findUnique({
+      where: { phone: req.user.phone },
+    });
+  }
+
+  console.log("ssa", existingUser)
 
   if (!existingUser) {
     return res.status(401).json({ error: "Invalid email" });
   }
-  
+
   res.status(200).json({
     id: existingUser.id,
     username: existingUser.username,
     email: existingUser.email,
+    phone: existingUser.phone,
     isAdmin: existingUser.isAdmin,
   });
 });
-
-
 
 const getAllUsers = asyncHandler(async (req, res) => {
   const users = await prisma.user.findMany({
@@ -151,7 +159,7 @@ const updateUserById = asyncHandler(async (req, res) => {
   res.json(updatedUser);
 });
 
-module.exports ={
+module.exports = {
   GetUser,
   getAllUsers,
   getCurrentUserProfile,

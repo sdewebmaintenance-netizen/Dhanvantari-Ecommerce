@@ -15,6 +15,7 @@
 .logo {
   display: flex;
   font-size: var(--font-size-xl);
+  font-weight: 600;
   color: var(--color-text);
   flex-direction: column;
 }
@@ -41,7 +42,7 @@
   width: fit-content;
   font-size: 12px;
   background: var(--color-primary);
-  color: var(--color-text);
+  color: var(--color-secondary);
   padding: 2px 8px;
   border-radius: 4px;
   margin-top: 2px;

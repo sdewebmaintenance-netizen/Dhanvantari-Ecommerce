@@ -1,17 +1,16 @@
 :root {
-   --color-primary: #17BA8F;
-  --color-primary-light: #79eecf;
-  --color-primary-dark: #129572;
+  --color-primary: #ffbc38;
+  --color-primary-light: #ffd66c;
+  --color-primary-dark: #d99b00;
 
-  --color-secondary: #3E3D56;
-  --color-secondary-light: #9695b4;
-  --color-secondary-lighter: #323145;
-
+  --color-secondary: #241f21;
+  --color-secondary-light: #3a3537;
+  --color-secondary-lighter: #4e474a;
 
   --color-accent: #ffbc38;
   --color-danger: #d94f4f;
   --color-warning: #f2ae49;
-  --color-success: #17BA8F;
+  --color-success: #5dad6d;
 
   --color-accent-light: #ffe2a4;
   --color-danger-light: #f3b3b3;
@@ -22,18 +21,18 @@
   --color-danger-dark: #a63434;
   --color-warning-dark: #c28700;
   --color-success-dark: #417c4e;
-  
-  --color-text: #3E3D56;
-  --color-text-muted: #9695b4;
-  --color-text-dark: #38374d;
 
-  --color-bg: #e4fcf5;
-  --color-bg-light: #f2fdfa;
-  --color-bg-lighter: #fafefd;
-  --color-bg-dark: #d7faf1;
+  --color-text: #fff7e6;
+  --color-text-muted: #bfae99;
+  --color-text-dark: #241f21;
 
-  --color-border: #cbcad9;
-  --color-border-light: #e0dfe8;
+  --color-bg: #fdf5e1;
+  --color-bg-light: #fff7e6;
+  --color-bg-lighter: #fefdfa;
+  --color-bg-dark: #f2e9cf;
+
+  --color-border: #d6cfc3;
+  --color-border-light: #ede5d3;
 
   --space-xs: 0.25rem;
   --space-sm: 0.5rem;

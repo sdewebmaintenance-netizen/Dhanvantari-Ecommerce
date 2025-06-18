@@ -41,7 +41,7 @@ const HowItWorks = () => {
   return (
     <section style={{marginBottom:"2rem"}}>
       <h2 className="title">How SDE Works</h2>
-      <p>B2B purchase keeping your needs in mind</p>
+      <p>B2B and B2C purchase keeping your needs in mind</p>
       <div className="steps">
         {steps.map((step, index) => (
           <div className="step" key={index}>

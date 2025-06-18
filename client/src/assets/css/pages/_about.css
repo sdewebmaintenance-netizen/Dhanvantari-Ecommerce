@@ -5,7 +5,6 @@
 }
 
 .business-info-container p {
-  color: var(--color-secondary);
   font-size: 1rem;
   line-height: 1.6;
 }
@@ -46,7 +45,7 @@
 }
 
 .info-item:hover p {
-  color: var(--color-secondary);
+  color: var(--color-secondary-light);
 }
 
 @media (max-width: 768px) {
@@ -104,7 +103,7 @@
 
 .stat-box .label {
   font-size: 0.9rem;
-  color: #444;
+  color: var(--color-secondary-light);
 }
 
 .top-left {
@@ -155,39 +154,61 @@
   margin: 0 auto;
 }
 
-.cert-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 2rem;
-  justify-items: center;
+.certifications-header {
+  display: flex;
   align-items: center;
-  margin-top: var(--space-md);
+  gap: 1rem;
+  overflow: hidden;
+  padding: 1rem 2rem;
+}
+
+
+.slider {
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+}
+
+.slider-track {
+  display: flex;
+  width: max-content;
+  animation: scrollSlider 10s linear infinite;
+}
+
+.slider.paused .slider-track {
+  animation-play-state: paused;
+}
+
+@keyframes scrollSlider {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
 }
 
 .cert-logo {
+  flex: 0 0 auto;
+  margin: 0;
+  padding: 0 1rem;
   display: flex;
-  flex-direction: column;
   align-items: center;
-  cursor: pointer;
-  transition: transform var(--transition-normal);
-}
-
-.cert-logo:hover {
-  transform: translateY(-5px);
+  justify-content: center;
 }
 
 .cert-logo img {
-  width: 100%;
-  max-width: 180px;
-  height: 60%;
-  max-height: var(--space-3xl);
+  height: 60px;
+  width: auto;
   object-fit: contain;
   opacity: 0.6;
+  transition: opacity 0.3s ease;
 }
 
 .cert-logo:hover img {
   opacity: 1;
 }
+
 
 .preview-overlay {
   position: fixed;
@@ -299,10 +320,16 @@
   }
 }
 
+
 .retail-list {
   list-style-type: disc;
   margin-left: var(--space-2xl);
   padding-left: var(--shadow-md);
+  color: var(--color-secondary-light);
+}
+
+.retail-list li{
+  margin-top: 1rem;
 }
 
 .hero-section {
@@ -313,10 +340,12 @@
   margin-bottom: var(--space-lg);
 }
 
+
 .feature-list {
   list-style-type: disc;
   padding-left: var(--space-xl);
   margin: var(--space-md) 0;
+  color: var(--color-secondary-light);
 }
 
 .feature-list li {
@@ -336,6 +365,7 @@
   background-color: #fff;
   box-shadow: var(--transition-normal);
   margin-top: var(--space-lg);
+  color: var(--color-secondary-light);
 }
 
 .parameter-table:hover {
@@ -448,8 +478,12 @@
 }
 
 .tab-button.active {
-  background-color: var(--color-primary);
+  background-color: var(--color-secondary-lighter);
   color: var(--color-bg-light);
+}
+
+.product-table{
+  color: var(--color-secondary-light);
 }
 
 .product-table th,
@@ -506,4 +540,5 @@
 .step ul {
   list-style: none;
   font-size: var(--font-size-xs);
+  color: var(--color-secondary-light);
 }

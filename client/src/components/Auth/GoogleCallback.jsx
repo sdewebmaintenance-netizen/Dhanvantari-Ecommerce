@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams  } from "react-router-dom";
 import { setCredentials } from "../../redux/features/auth/authSlice";
 import { useDispatch } from "react-redux";
 
@@ -7,17 +7,16 @@ const GoogleCallback = () => {
   const navigate = useNavigate();
 
   const dispatch = useDispatch();
+   const [searchParams] = useSearchParams();
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const token = params.get("token");
-    const isAdmin = params.get("isAdmin");
+    const token = searchParams.get("token");
+    const isAdmin = searchParams.get("isAdmin");
+    console.log("sdliha", token, isAdmin)
     const isAdminBool = isAdmin === "true";
-
     if (token) {
       dispatch(setCredentials(token));
       localStorage.setItem("isAdmin", isAdmin);
-
       if (isAdminBool) {
         navigate("/admin/dashboard");
       } else {

@@ -47,7 +47,7 @@ const Cart = () => {
             <div key={item.id} className="cart-item">
               <div className="cart-item-image">
                 <img
-                  src={getImage(item?.image)}
+                  src={getImage(item?.image, "ProductImage")}
                   alt={item.name}
                   className="product-image"
                 />

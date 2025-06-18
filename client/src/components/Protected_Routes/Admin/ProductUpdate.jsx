@@ -13,7 +13,6 @@ import getImage from "../../../Utils/GetImage";
 const AdminProductUpdate = () => {
   const params = useParams();
   const { data: productData } = useGetProductByIdQuery(params.id);
-  console.log("adsui", productData);
   const [image, setImage] = useState(productData?.image || "");
   const [name, setName] = useState(productData?.name || "");
   const [description, setDescription] = useState(
@@ -26,10 +25,12 @@ const AdminProductUpdate = () => {
   const [stock, setStock] = useState(productData?.countInStock);
   const navigate = useNavigate();
   const { data: categories = [] } = useFetchCategoriesQuery();
-  const [uploadProductImage] = useUploadProductImageMutation();
   const [updateProduct] = useUpdateProductMutation();
   const [deleteProduct] = useDeleteProductMutation();
+  const [images, setImages] = useState([]);
+  const [previews, setPreviews] = useState([]);
 
+  console.log("sss", productData);
   useEffect(() => {
     if (productData && productData.id) {
       setName(productData.name);
@@ -40,19 +41,46 @@ const AdminProductUpdate = () => {
       setBrand(productData.brand);
       setImage(productData.image);
       setStock(productData.countInStock);
+      const initialImages = productData.ProductImages.map((img) => ({
+        type: "existing",
+        id: img.id,
+        image_name: img.image_name,
+      }));
+      setImages(initialImages);
+      setPreviews(
+        initialImages.map((img) => getImage(img.image_name, "ProductImage"))
+      );
     }
   }, [productData]);
 
   const uploadFileHandler = async (e) => {
-    const formData = new FormData();
-    formData.append("image", e.target.files[0]);
-    try {
-      const res = await uploadProductImage(formData).unwrap();
-      toast.success("Item added successfully");
-      setImage(res.image);
-    } catch (err) {
-      toast.error("Upload failed. Try again.");
+    const files = Array.from(e.target.files);
+    const availableSlots = 4 - images.length;
+
+    if (files.length > availableSlots) {
+      toast.error(`You can only add ${availableSlots} more image(s)`);
+      return;
     }
+
+    const newImages = files.map((file) => ({
+      type: "new",
+      file,
+    }));
+
+    setImages((prev) => [...prev, ...newImages]);
+    setPreviews((prev) => [
+      ...prev,
+      ...files.map((file) => URL.createObjectURL(file)),
+    ]);
+  };
+
+  const removeImage = (index) => {
+    if (images[index].type === "new") {
+      URL.revokeObjectURL(previews[index]);
+    }
+
+    setImages((prev) => prev.filter((_, i) => i !== index));
+    setPreviews((prev) => prev.filter((_, i) => i !== index));
   };
 
   const handleSubmit = async (e) => {
@@ -68,12 +96,22 @@ const AdminProductUpdate = () => {
       formData.append("brand", brand);
       formData.append("countInStock", stock);
 
+      const existingToKeep = images
+        .filter((img) => img.type === "existing")
+        .map((img) => img.id);
+      formData.append("existingImages", JSON.stringify(existingToKeep));
+
+      images
+        .filter((img) => img.type === "new")
+        .forEach((img) => {
+          formData.append("images", img.file);
+        });
+
       const data = await updateProduct({ productId: params.id, formData });
 
       if (data?.error) {
         toast.error(data.error);
       } else {
-        toast.success(`Product successfully updated`);
         navigate("/admin/allproductslist");
       }
     } catch (err) {
@@ -91,7 +129,6 @@ const AdminProductUpdate = () => {
 
       await deleteProduct(params.id);
 
-      toast.success(`Deleted Sucessfully`);
       navigate("/admin/allproductslist");
     } catch (err) {
       console.log(err);
@@ -104,23 +141,43 @@ const AdminProductUpdate = () => {
       <h1 className="title text-animation">Update / Delete Product</h1>
 
       <div className="product-details-content">
-        <div className="product-image-wrapper">
-          <img
-            src={getImage(image)}
-            alt={name}
-            className="product-main-image"
-            style={{ marginBottom: "2rem" }}
-          />
-          <label className="form-label">
-            {image ? image.name : "Upload image"}
-            <input
-              type="file"
-              name="image"
-              accept="image/*"
-              onChange={uploadFileHandler}
-              className="form-control"
-            />
-          </label>
+        <div className="product-images-section">
+          <div className="image-preview-grid">
+            {previews.map((preview, index) => (
+              <div key={index} className="image-preview-container">
+                <img
+                  src={preview}
+                  alt={`Preview ${index + 1}`}
+                  className="product-preview-image"
+                />
+                <button
+                  type="button"
+                  className="remove-image-btn"
+                  onClick={() => removeImage(index)}
+                >
+                  ×
+                </button>
+              </div>
+            ))}
+
+            {previews.length < 4 && (
+              <div className="upload-placeholder">
+                <label className="upload-label">
+                  <input
+                    type="file"
+                    multiple
+                    accept="image/*"
+                    onChange={uploadFileHandler}
+                    className="upload-input"
+                  />
+                  <span className="upload-icon">+</span>
+                  <span className="upload-text">
+                    Add Image ({4 - previews.length} remaining)
+                  </span>
+                </label>
+              </div>
+            )}
+          </div>
         </div>
 
         <div className="product-info" style={{ width: "100%" }}>

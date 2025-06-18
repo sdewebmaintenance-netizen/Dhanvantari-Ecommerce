@@ -2,6 +2,8 @@ const express = require("express");
 const router = express.Router();
 const formidable = require("express-formidable");
 
+const uploadMultipleImages = require("./upload.routes"); 
+
 const {
   addProduct,
   updateProductDetails,
@@ -17,10 +19,11 @@ const {
 
 const checkId =require("../middlewares/checkId.js");
 
+
 router
   .route("/")
   .get(fetchProducts)
-  .post(formidable(), addProduct);
+  .post(uploadMultipleImages, addProduct);
 
 router.route("/allproducts").get(fetchAllProducts);
 router.route("/:id/reviews").post(checkId, addProductReview);
@@ -31,7 +34,7 @@ router.get("/new", fetchNewProducts);
 router
   .route("/:id")
   .get(fetchProductById)
-  .put(formidable(), updateProductDetails)
+  .put(uploadMultipleImages, updateProductDetails)
   .delete(removeProduct);
 
 router.route("/filtered-products").post(filterProducts);

@@ -1,24 +1,12 @@
 const { prisma } = require("../config/prismaClient.config.js");
 const asyncHandler = require("../middlewares/asyncHandler.js");
 
-
 const addProduct = asyncHandler(async (req, res) => {
-  const { name, description, price, category, quantity, brand } = req.fields;
+  const { name, description, price, category, quantity, brand } = req.body;
+  const images = req.files;
 
-
-  switch (true) {
-    case !name:
-      return res.status(400).json({ error: "Name is required" });
-    case !brand:
-      return res.status(400).json({ error: "Brand is required" });
-    case !description:
-      return res.status(400).json({ error: "Description is required" });
-    case !price:
-      return res.status(400).json({ error: "Price is required" });
-    case !category:
-      return res.status(400).json({ error: "Category is required" });
-    case !quantity:
-      return res.status(400).json({ error: "Quantity is required" });
+  if (!name || !description || !price || !category || !quantity || !brand) {
+    return res.status(400).json({ error: "All fields are required" });
   }
 
   const product = await prisma.product.create({
@@ -30,52 +18,100 @@ const addProduct = asyncHandler(async (req, res) => {
       quantity: parseInt(quantity),
       brand,
       countInStock: parseInt(quantity),
-      image: req.fields.image || ""
-    }
+    },
   });
 
+  if (images && images.length > 0) {
+    await prisma.productImage.createMany({
+      data: images.map((img) => ({
+        image_name: img.filename,
+        product_id: product.id,
+      })),
+    });
+  }
   res.status(201).json(product);
 });
 
 const updateProductDetails = asyncHandler(async (req, res) => {
-  console.log("afiuhs", req.fields)
-  const { name, description, price, category, quantity, brand, countInStock } = req.fields;
+  const {
+    name,
+    description,
+    price,
+    category,
+    quantity,
+    brand,
+    countInStock,
+    existingImages,
+  } = req.body;
+   const newImages = req.files || [];
 
-  switch (true) {
-    case !name:
-      return res.status(400).json({ error: "Name is required" });
-    case !brand:
-      return res.status(400).json({ error: "Brand is required" });
-    case !description:
-      return res.status(400).json({ error: "Description is required" });
-    case !price:
-      return res.status(400).json({ error: "Price is required" });
-    case !category:
-      return res.status(400).json({ error: "Category is required" });
-    case !quantity:
-      return res.status(400).json({ error: "Quantity is required" });
+  if (!name || !description || !price || !category || !quantity || !brand) {
+    return res.status(400).json({ error: "All fields are required" });
   }
 
-  const product = await prisma.product.update({
-    where: { id: parseInt(req.params.id) },
-    data: {
-      name,
-      description,
-      price: parseFloat(price),
-      category_id: parseInt(category),
-      quantity: parseInt(quantity),
-      brand,
-      countInStock: parseInt(countInStock),
-      ...(req.fields.image && { image: req.fields.image })
-    }
-  });
+  try {
+    const updatedProduct = await prisma.$transaction(async (prisma) => {
+      
+      const product = await prisma.product.update({
+        where: { id: parseInt(req.params.id) },
+        data: {
+          name,
+          description,
+          price: parseFloat(price),
+          category_id: parseInt(category),
+          quantity: parseInt(quantity),
+          brand,
+          countInStock: parseInt(countInStock),
+        },
+        include: {
+          ProductImages: true,
+        },
+      });
 
-  res.json(product);
+      const existingImageIds = existingImages
+        ? Array.isArray(existingImages)
+          ? existingImages.map((id) => parseInt(id))
+          : JSON.parse(existingImages).map((id) => parseInt(id))
+        : [];
+
+      await prisma.productImage.deleteMany({
+        where: {
+          product_id: product.id,
+          id: {
+            notIn: existingImageIds,
+          },
+        },
+      });
+
+      if (newImages.length > 0) {
+        await prisma.productImage.createMany({
+          data: newImages.map((file) => ({
+            image_name: file.filename,
+            product_id: product.id,
+          })),
+        });
+      }
+
+      const currentImages = await prisma.productImage.findMany({
+        where: { product_id: product.id },
+      });
+
+      if (currentImages.length > 4) {
+        throw new Error("Product cannot have more than 4 images");
+      }
+
+      return product;
+    });
+    res.json(updatedProduct);
+  } catch (error) {
+    console.error(error);
+    res.status(400).json({ error: error.message });
+  }
 });
 
 const removeProduct = asyncHandler(async (req, res) => {
   await prisma.product.delete({
-    where: { id: parseInt(req.params.id) }
+    where: { id: parseInt(req.params.id) },
   });
   res.json({ message: "Product removed" });
 });
@@ -86,8 +122,8 @@ const fetchProducts = asyncHandler(async (req, res) => {
     ? {
         name: {
           contains: req.query.keyword,
-          mode: "insensitive"
-        }
+          mode: "insensitive",
+        },
       }
     : {};
 
@@ -97,16 +133,16 @@ const fetchProducts = asyncHandler(async (req, res) => {
       where: keyword,
       take: pageSize,
       include: {
-        ProductCategory: true
-      }
-    })
+        ProductCategory: true,
+      },
+    }),
   ]);
 
   res.json({
     products,
     page: 1,
     pages: Math.ceil(count / pageSize),
-    hasMore: false
+    hasMore: false,
   });
 });
 
@@ -115,16 +151,17 @@ const fetchProductById = asyncHandler(async (req, res) => {
     where: { id: parseInt(req.params.id) },
     include: {
       ProductCategory: true,
+      ProductImages: true,
       reviews: {
         include: {
           ReviewUser: {
             select: {
-              username: true
-            }
-          }
-        }
-      }
-    }
+              username: true,
+            },
+          },
+        },
+      },
+    },
   });
 
   if (!product) {
@@ -137,12 +174,13 @@ const fetchProductById = asyncHandler(async (req, res) => {
 const fetchAllProducts = asyncHandler(async (req, res) => {
   const products = await prisma.product.findMany({
     include: {
-      ProductCategory: true
+      ProductCategory: true,
+      ProductImages: true,
     },
     take: 12,
     orderBy: {
-      createdAt: "desc"
-    }
+      createdAt: "desc",
+    },
   });
   res.json(products);
 });
@@ -154,8 +192,8 @@ const addProductReview = asyncHandler(async (req, res) => {
   const product = await prisma.product.findUnique({
     where: { id: productId },
     include: {
-      reviews: true
-    }
+      reviews: true,
+    },
   });
 
   if (!product) {
@@ -163,7 +201,7 @@ const addProductReview = asyncHandler(async (req, res) => {
   }
 
   const alreadyReviewed = product.reviews.some(
-    review => review.user_id === req.user.user_id
+    (review) => review.user_id === req.user.user_id
   );
 
   if (alreadyReviewed) {
@@ -176,35 +214,35 @@ const addProductReview = asyncHandler(async (req, res) => {
       rating: parseFloat(rating),
       comment,
       user_id: req.user.user_id,
-      product_id: productId
-    }
+      product_id: productId,
+    },
   });
 
-
   const reviews = await prisma.review.findMany({
-    where: { product_id: productId }
+    where: { product_id: productId },
   });
 
   const numReviews = reviews.length;
-  const ratingAvg = reviews.reduce((acc, item) => item.rating + acc, 0) / numReviews;
+  const ratingAvg =
+    reviews.reduce((acc, item) => item.rating + acc, 0) / numReviews;
 
   const updatedProduct = await prisma.product.update({
     where: { id: productId },
     data: {
       rating: ratingAvg,
-      numReviews
+      numReviews,
     },
     include: {
       reviews: {
         include: {
           ReviewUser: {
             select: {
-              username: true
-            }
-          }
-        }
-      }
-    }
+              username: true,
+            },
+          },
+        },
+      },
+    },
   });
 
   res.status(201).json({ message: "Review added", product: updatedProduct });
@@ -213,9 +251,9 @@ const addProductReview = asyncHandler(async (req, res) => {
 const fetchTopProducts = asyncHandler(async (req, res) => {
   const products = await prisma.product.findMany({
     orderBy: {
-      rating: "desc"
+      rating: "desc",
     },
-    take: 4
+    take: 4,
   });
   res.json(products);
 });
@@ -223,9 +261,9 @@ const fetchTopProducts = asyncHandler(async (req, res) => {
 const fetchNewProducts = asyncHandler(async (req, res) => {
   const products = await prisma.product.findMany({
     orderBy: {
-      id: "desc"
+      id: "desc",
     },
-    take: 5
+    take: 5,
   });
   res.json(products);
 });
@@ -235,7 +273,7 @@ const filterProducts = asyncHandler(async (req, res) => {
 
   let where = {};
   if (checked && checked.length > 0) {
-    where.category_id = { in: checked.map(id => parseInt(id)) };
+    where.category_id = { in: checked.map((id) => parseInt(id)) };
   }
   if (radio && radio.length === 2) {
     where.price = { gte: radio[0], lte: radio[1] };
@@ -244,8 +282,8 @@ const filterProducts = asyncHandler(async (req, res) => {
   const products = await prisma.product.findMany({
     where,
     include: {
-      ProductCategory: true
-    }
+      ProductCategory: true,
+    },
   });
 
   res.json(products);

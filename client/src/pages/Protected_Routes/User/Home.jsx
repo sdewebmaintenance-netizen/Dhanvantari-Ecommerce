@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useGetProductsQuery } from "../../../redux/api/productApiSlice";
 import Loader from "../../../components/Common/Loader";
@@ -8,6 +9,15 @@ import Product from "../../../components/Protected_Routes/User/Product/Product";
 const   Home = () => {
   const { keyword } = useParams();
   const { data, isLoading, isError } = useGetProductsQuery({ keyword });
+
+  useEffect(() => {
+    const hasRefreshed = sessionStorage.getItem("hasRefreshed");
+    
+    if (!hasRefreshed) {
+      sessionStorage.setItem("hasRefreshed", "true");
+      window.location.reload();
+    }
+  }, []);
 
   return (
     <>

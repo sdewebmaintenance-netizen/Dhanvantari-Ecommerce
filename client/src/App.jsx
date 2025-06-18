@@ -47,9 +47,10 @@ import Signup from "./components/Auth/Phone/Signup";
 import ForgotPassword from "./components/Auth/Phone/ForgotPassword";
 
 const App = () => {
-  const { data } = useGetUserInfoQuery();
 
-  const renderHeader = () => {
+  const { data } = useGetUserInfoQuery();
+ 
+  const renderHeader = () => {   
     if (!data) {
       return <GuestHeader />;
     } else if (data.isAdmin === true) {
@@ -57,7 +58,7 @@ const App = () => {
     } else {
       return <UserHeader />;
     }
-  };
+  }; 
 
   const renderFooter = () => {
     if (!data) {
@@ -89,7 +90,6 @@ const App = () => {
 
           <Route element={<PrivateRoute />}>
             <Route path="/home" element={<Home />} />
-            <Route path="/favorite" element={<Favorites />} />
             <Route path="/product/:id" element={<ProductDetails />} />
             <Route path="/cart" element={<Cart />} />
             <Route path="/shop" element={<Shop />} />
