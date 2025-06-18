@@ -40,7 +40,7 @@ const GlobalStats = () => {
     <div className="global-stats-container">
         <h2 className="title" style={{marginTop:"1rem"}}>Our Global Reach</h2>
       <div className="globe-background">
-        <img src={getImage("globe.png", "Web-BG")} alt="Globe" className="globe" />
+        <img src={getImage("globe.png", "Web-bg")} alt="Globe" className="globe" />
       </div>
       {stats.map((stat, index) => (
         <div key={index} className={`stat-box ${stat.className}`}>
