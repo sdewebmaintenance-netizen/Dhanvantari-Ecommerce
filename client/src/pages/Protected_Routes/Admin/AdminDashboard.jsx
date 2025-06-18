@@ -9,6 +9,16 @@ import { useState, useEffect } from "react";
 import Loader from "../../../components/Common/Loader";
 
 const AdminDashboard = () => {
+  
+  useEffect(() => {
+    const hasRefreshed = sessionStorage.getItem("hasRefreshed");
+
+    if (!hasRefreshed) {
+      sessionStorage.setItem("hasRefreshed", "true");
+      window.location.reload();
+    }
+  }, []);
+
   const { data: sales, isLoading } = useGetTotalSalesQuery();
   const { data: customers, isLoading: loading } = useGetUsersQuery();
   const { data: orders, isLoading: loadingTwo } = useGetTotalOrdersQuery();
@@ -19,7 +29,7 @@ const AdminDashboard = () => {
   const [state, setState] = useState({
     options: {
       chart: {
-        type: "line"   
+        type: "line",
       },
       tooltip: {
         mode: "light",
@@ -72,7 +82,6 @@ const AdminDashboard = () => {
         offsetY: -25,
         offsetX: -5,
       },
-      
     },
     series: [{ name: "Sales", data: [] }],
   });

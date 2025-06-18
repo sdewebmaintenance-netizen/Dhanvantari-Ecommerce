@@ -2,8 +2,8 @@ import formatCurrency from "../../Utils/FormatCurrency";
 import formatDate from "../../Utils/FormatDate";
 import formatTime from "../../Utils/FormatTime";
 import toTitleCase from "../../Utils/ToTiltleCase";
-import Signature from "../../assets/images/Signature-Template.png";
-import Dhanvantari from "../../assets/images/Dhanvantari-God.png";
+import Signature from "../../assets/images/Logo/Signature-Template.png";
+import Dhanvantari from "../../assets/images/Logo/Dhanvantari-God.png";
 const converter = require("number-to-words");
 
 const InvoiceTemplate = ({ order }) => {

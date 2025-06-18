@@ -11,19 +11,19 @@ import getImage from "../../Utils/GetImage";
 const stats = [
   {
     icon: <FaUserCheck />,
-    value: "150+",
+    value: "10+",
     label: "verified suppliers",
     className: "top-left",
   },
   {
     icon: <FaFlag />,
-    value: "15+",
+    value: "2+",
     label: "Countries Served",
     className: "bottom-left",
   },
   {
     icon: <FaTruck />,
-    value: "5000 MT",
+    value: "100 MT",
     label: "Delivered",
     className: "top-right",
   },
@@ -40,7 +40,7 @@ const GlobalStats = () => {
     <div className="global-stats-container">
         <h2 className="title" style={{marginTop:"1rem"}}>Our Global Reach</h2>
       <div className="globe-background">
-        <img src={getImage("globe.png")} alt="Globe" className="globe" />
+        <img src={getImage("globe.png", "Web-BG")} alt="Globe" className="globe" />
       </div>
       {stats.map((stat, index) => (
         <div key={index} className={`stat-box ${stat.className}`}>

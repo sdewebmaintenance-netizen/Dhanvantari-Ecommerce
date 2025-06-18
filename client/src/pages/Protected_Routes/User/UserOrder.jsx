@@ -155,7 +155,7 @@ const UserOrder = () => {
                 <tr key={order.id} className="table-row">
                   <td className="order-table-cell">
                     <img
-                      src={getImage(order?.orderItems[0]?.image)}
+                      src={getImage(order?.orderItems[0]?.image, "ProductImage")}
                       alt={order.user}
                       className="order-item-image"
                     />

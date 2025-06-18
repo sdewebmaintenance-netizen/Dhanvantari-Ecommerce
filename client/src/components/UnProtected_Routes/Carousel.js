@@ -1,43 +1,54 @@
 import React, { useEffect } from "react";
-import Sago_Starch from "../../assets/images/Sago_Starch.png";
-import Potato_Starch from "../../assets/images/Potato_Starchs.png";
-import Tapiacpo_Starch from "../../assets/images/Tapiaco_Starch.png";
-import Maize_Starch from "../../assets/images/Maize_Starchs.png";
-import Trade_Needs from "../../assets/images/Trade_Needs.png";
+import Tapiacpo_Starch from "../../assets/images/Website-bg/Tapiaco_Starch.jpeg";
+import Tapiacpo_Thippu from "../../assets/images/Website-bg/Tapiaco_Thippu.jpg";
+import Sago_Starch from "../../assets/images/Website-bg/Sago_Starch_1.jpeg";
+import Corn_Starch from "../../assets/images/Website-bg/Corn_Starch.jpg";
+import Native_Potato_Starch from "../../assets/images/Website-bg/Potato_Starchs.jpeg";
+import Trade_Needs from "../../assets/images/Website-bg/Trade_Needs.jpg";
 
-const Carousel = () => {
+const Carousel = () => { 
   const slides = [
     {
       id: 1,
-      bgImage: `url(${Potato_Starch})`,
-      title: "Potato Starch Powder",
-      subtitle: "High-grade potato starch for food and non-food uses",
+      bgImage: `url(${Tapiacpo_Starch})`,
+      title: "Tapioca Starch - Top Selling Product",
+      subtitle:
+        "Refined tapioca starch ideal for food, textile, and paper industries",
     },
     {
       id: 2,
-
-      bgImage: `url(${Maize_Starch})`,
-      title: "Maize Starch Powder",
-      subtitle: "Versatile maize starch for diverse manufacturing requirements",
+      bgImage: `url(${Corn_Starch})`,
+      title: "Corn Starch Powder",
+      subtitle:
+        "Multi-purpose corn starch used in food processing and packaging",
     },
     {
       id: 3,
-      bgImage: `url(${Tapiacpo_Starch})`,
-      title: "Tapioca Flour",
-      subtitle: "Pure tapioca flour for culinary and industrial needs",
-    },
-    {
-      id: 4,
       bgImage: `url(${Sago_Starch})`,
-      title: "Sago Starch Powder",
+      title: "Sago Broken Flour",
       subtitle:
-        "Premium quality sago starch for various industrial applications",
+        "Crushed sago flour suitable for snacks, adhesives, and textiles",
     },
+    /* {
+      id: 4,
+      bgImage: `url(${Tapiacpo_Thippu})`,
+      title: "Tapioca Thippu Flour",
+      subtitle:
+        "Economical byproduct flour used in cattle feed and industrial purposes",
+    }, */
     {
       id: 5,
+      bgImage: `url(${Native_Potato_Starch})`,
+      title: "Native Potato Starch",
+      subtitle:
+        "Natural potato starch with high viscosity for food and pharma uses",
+    },
+    {
+      id: 6,
       bgImage: `url(${Trade_Needs})`,
       title: "Trade Consultation Service",
-      subtitle: "Expert guidance for your starch import/export needs",
+      subtitle:
+        "Specialized support for global starch trade and supply chain planning",
     },
   ];
 

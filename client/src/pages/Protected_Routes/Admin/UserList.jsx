@@ -86,8 +86,8 @@ const UserList = () => {
 
   const filteredData = getSortedData().filter(
     (order) =>
-      order?.username.toString().includes(searchTerm) ||
-      order?.email.toString().includes(searchTerm)
+      order?.username?.toString().includes(searchTerm) ||
+      order?.email?.toString().includes(searchTerm)
   );
 
   const paginatedData = filteredData.slice(

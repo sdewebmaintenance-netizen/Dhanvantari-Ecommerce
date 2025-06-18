@@ -85,6 +85,8 @@ const OrderList = () => {
     pagination.currentPage * pagination.entriesPerPage
   );
 
+  console.log("Sss", isLoading)
+
   return (
     <>
       {isLoading ? (
@@ -155,7 +157,7 @@ const OrderList = () => {
                 <tr key={order.id} className="table-row">
                   <td className="table-cell">
                     <img
-                      src={getImage(order.orderItems[0].image)}
+                      src={getImage(order.orderItems[0].image, "ProductImage")}
                       alt={order.id}
                       className="order-item-image"
                     />

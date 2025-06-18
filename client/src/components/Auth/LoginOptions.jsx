@@ -16,7 +16,7 @@ const LoginOptions = () => {
             handleGoogleSignIn();
           }}
         >
-          <img src={getImage("Google_Logo.png")} style={{ width: "2rem", padding:"0.1rem" }} />
+          <img src={getImage("Google_Logo.png","Logo")} style={{ width: "2rem", padding:"0.1rem" }} />
           Login with Google
         </button>
         <button

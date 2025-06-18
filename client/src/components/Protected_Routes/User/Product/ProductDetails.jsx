@@ -58,7 +58,7 @@ const ProductDetails = () => {
     } catch (error) {
       toast.error(error?.data || error.message);
     }
-  };
+  };   
 
   const addToCartHandler = () => {
     dispatch(addToCart({ ...product, qty }));
@@ -84,7 +84,7 @@ const ProductDetails = () => {
           <div className="product-details-content">
             <div className="product-image-wrapper">
               <img
-                src={getImage(product.image)}
+                src={getImage(product.image, "ProductImage")}
                 alt={product.name}
                 className="product-main-image"
               />

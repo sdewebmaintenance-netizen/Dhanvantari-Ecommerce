@@ -35,18 +35,18 @@ const GuestFooter = () => {
             </div>
             <div>
               Ganesh Nagar, Puzhuthivakkam, Madipakkam
-              Chennai-600091, Tamil Nadu, India
+              Chennai-600091, Tamil Nadu, India.
             </div>
-            <div> <strong>Email: </strong>supportwe@dhanvantari.com</div>
+            <div> <strong>Email: </strong>sales@sridhanvantariexports.com</div>
             <div><strong>Mobile / Whatsapp </strong></div>
-            <div>+91 99999 77777</div>
+            <div>+91 99437 60055</div>
           </div>
         </div>
       </div>
 
       <div className="footer-bottom">
         <p className="footer-copyright">
-          &copy; {new Date().getFullYear()} Sree Dhanvantari Exports. All rights
+          &copy; {new Date().getFullYear()} Sri Dhanvantari Exports. All rights
           reserved.
         </p>
       </div>

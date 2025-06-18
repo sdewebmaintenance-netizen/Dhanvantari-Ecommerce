@@ -7,7 +7,7 @@ const SmallProduct = ({ product }) => {
     <div className="small-product">
       <div className="small-product-image-container">
         <img
-          src={getImage(product?.image)}
+          src={getImage(product?.image, "ProductImage")}
           alt={product.name}
           className="small-product-image"
         />

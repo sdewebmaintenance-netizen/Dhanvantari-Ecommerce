@@ -33,6 +33,10 @@
   border-radius: var(--radius-md);
 }
 
+.slide-content p {
+  color: var(--color-text);
+}
+
 .carousel-btn {
   position: absolute;
   top: 50%;

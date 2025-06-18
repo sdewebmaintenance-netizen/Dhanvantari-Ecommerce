@@ -108,7 +108,7 @@ const Order = () => {
                       <tr key={index} className="order-table-row">
                         <td className="order-table-cell">
                           <img
-                            src={getImage(item?.image)}
+                            src={getImage(item?.image, "ProductImage")}
                             alt={item.name}
                             className="order-item-image"
                           />
