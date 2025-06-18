@@ -1,4 +1,5 @@
 const getImage = (imageName, source) => {
+  console.log("source", source)
   try {
     let images;
     if (source == "Web-bg") {
