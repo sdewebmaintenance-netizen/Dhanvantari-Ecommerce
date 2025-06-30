@@ -1,46 +1,82 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { Country } from "country-state-city";
 import {
   useUpdateProductMutation,
   useDeleteProductMutation,
   useGetProductByIdQuery,
-  useUploadProductImageMutation,
 } from "../../../redux/api/productApiSlice";
-import { useFetchCategoriesQuery } from "../../../redux/api/categoryApiSlice";
+import {
+  useFetchCategoriesQuery,
+} from "../../../redux/api/categoryApiSlice";
+import { useFetchIncoTermsQuery } from "../../../redux/api/incoTermApiSlice";
+import { useFetchPortsQuery } from "../../../redux/api/portApiSlice";
 import { toast } from "react-toastify";
 import getImage from "../../../Utils/GetImage";
 
 const AdminProductUpdate = () => {
   const params = useParams();
   const { data: productData } = useGetProductByIdQuery(params.id);
-  const [image, setImage] = useState(productData?.image || "");
-  const [name, setName] = useState(productData?.name || "");
-  const [description, setDescription] = useState(
-    productData?.description || ""
-  );
-  const [price, setPrice] = useState(productData?.price || "");
-  const [category, setCategory] = useState(productData?.category || "");
-  const [quantity, setQuantity] = useState(productData?.quantity || "");
-  const [brand, setBrand] = useState(productData?.brand || "");
-  const [stock, setStock] = useState(productData?.countInStock);
   const navigate = useNavigate();
+
+  const [image, setImage] = useState("");
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [price, setPrice] = useState("");
+  const [category, setCategory] = useState("");
+  const [quantity, setQuantity] = useState("");
+  const [brand, setBrand] = useState("");
+  const [stock, setStock] = useState("");
+  const [hsnSac, setHsnSac] = useState("");
+  const [cgst, setCgst] = useState("");
+  const [sgst, setSgst] = useState("");
+  const [isVisible, setIsVisible] = useState(true);
+
+  const [productType, setProductType] = useState("WHOLESALE");
+  const [incoTerm, setIncoTerm] = useState("");
+  const [port, setPort] = useState("");
+  const [country, setCountry] = useState("");
+
   const { data: categories = [] } = useFetchCategoriesQuery();
+  const { data: incoTerms = [] } = useFetchIncoTermsQuery();
+  const { data: ports = [] } = useFetchPortsQuery();
   const [updateProduct] = useUpdateProductMutation();
   const [deleteProduct] = useDeleteProductMutation();
+
   const [images, setImages] = useState([]);
   const [previews, setPreviews] = useState([]);
+  const [countryOptions, setCountryOptions] = useState([]);
 
-  console.log("sss", productData);
+  useEffect(() => {
+    const countries = Country.getAllCountries().map((c) => ({
+      name: c.name,
+      isoCode: c.isoCode,
+    }));
+    setCountryOptions(countries);
+  }, []);
+
   useEffect(() => {
     if (productData && productData.id) {
       setName(productData.name);
       setDescription(productData.description);
       setPrice(productData.price);
-      setCategory(productData.ProductCategory?.id);
-      setQuantity(productData.quantity);
+      setCategory(productData.ProductCategory?.id || "");
+      setQuantity(productData.weight);
       setBrand(productData.brand);
-      setImage(productData.image);
       setStock(productData.countInStock);
+      setHsnSac(productData.hsnSac || "");
+      setCgst(productData.CGST || "");
+      setSgst(productData.SGST || "");
+      setIsVisible(productData.isVisible);
+
+      setProductType(productData.productType);
+      setIncoTerm(productData.ProductIncoTerm?.id || "");
+      setPort(productData.ProductPort?.id || "");
+
+      if (productData.variant) {
+        setCountry(productData.variant);
+      }
+
       const initialImages = productData.ProductImages.map((img) => ({
         type: "existing",
         id: img.id,
@@ -51,7 +87,7 @@ const AdminProductUpdate = () => {
         initialImages.map((img) => getImage(img.image_name, "ProductImage"))
       );
     }
-  }, [productData]);
+  }, [productData, countryOptions]);
 
   const uploadFileHandler = async (e) => {
     const files = Array.from(e.target.files);
@@ -87,7 +123,6 @@ const AdminProductUpdate = () => {
     e.preventDefault();
     try {
       const formData = new FormData();
-      formData.append("image", image);
       formData.append("name", name);
       formData.append("description", description);
       formData.append("price", price);
@@ -95,6 +130,17 @@ const AdminProductUpdate = () => {
       formData.append("quantity", quantity);
       formData.append("brand", brand);
       formData.append("countInStock", stock);
+      formData.append("productType", productType);
+      formData.append("hsnSac", hsnSac);
+      formData.append("cgst", cgst);
+      formData.append("sgst", sgst);
+      formData.append("isVisible", isVisible);
+
+      if (productType === "EXPORT") {
+        formData.append("incoTerm", incoTerm);
+        formData.append("port", port);
+        formData.append("variant", country);
+      }
 
       const existingToKeep = images
         .filter((img) => img.type === "existing")
@@ -107,31 +153,35 @@ const AdminProductUpdate = () => {
           formData.append("images", img.file);
         });
 
-      const data = await updateProduct({ productId: params.id, formData });
+      const { data, error } = await updateProduct({
+        productId: params.id,
+        formData,
+      });
 
-      if (data?.error) {
-        toast.error(data.error);
+      if (error) {
+        toast.error(error.data?.message || "Update failed");
       } else {
+        toast.success("Product updated successfully");
         navigate("/admin/allproductslist");
       }
     } catch (err) {
-      console.log(err);
+      console.error(err);
       toast.error("Product update failed. Try again.");
     }
   };
 
   const handleDelete = async () => {
     try {
-      let answer = window.confirm(
+      const answer = window.confirm(
         "Are you sure you want to delete this product?"
       );
       if (!answer) return;
 
-      await deleteProduct(params.id);
-
+      await deleteProduct(params.id).unwrap();
+      toast.success("Product deleted successfully");
       navigate("/admin/allproductslist");
     } catch (err) {
-      console.log(err);
+      console.error(err);
       toast.error("Delete failed. Try again.");
     }
   };
@@ -182,9 +232,39 @@ const AdminProductUpdate = () => {
 
         <div className="product-info" style={{ width: "100%" }}>
           <div className="form-group">
-            <label htmlFor="name" className="form-label">
-              Name
-            </label>
+            <label className="form-label">Product Type</label>
+            <select
+              className="form-control"
+              value={productType}
+              onChange={(e) => setProductType(e.target.value)}
+            >
+              <option value="WHOLESALE">Wholesale</option>
+              <option value="EXPORT">Export</option>
+            </select>
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">Visibility</label>
+            <div className="visibility-toggle">
+              <button
+                type="button"
+                className={`toggle-btn ${isVisible ? "active" : ""}`}
+                onClick={() => setIsVisible(true)}
+              >
+                Visible
+              </button>
+              <button
+                type="button"
+                className={`toggle-btn ${!isVisible ? "active" : ""}`}
+                onClick={() => setIsVisible(false)}
+              >
+                Hidden
+              </button>
+            </div>
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">Name</label>
             <input
               type="text"
               className="form-control"
@@ -194,9 +274,7 @@ const AdminProductUpdate = () => {
           </div>
 
           <div className="form-group">
-            <label htmlFor="name" className="form-label">
-              Price
-            </label>
+            <label className="form-label">Price</label>
             <input
               type="number"
               className="form-control"
@@ -206,9 +284,7 @@ const AdminProductUpdate = () => {
           </div>
 
           <div className="form-group">
-            <label htmlFor="name" className="form-label">
-              Quantity
-            </label>
+            <label className="form-label">Weight (in KG)</label>
             <input
               type="number"
               min="1"
@@ -217,10 +293,9 @@ const AdminProductUpdate = () => {
               onChange={(e) => setQuantity(e.target.value)}
             />
           </div>
+
           <div className="form-group">
-            <label htmlFor="name" className="form-label">
-              Brand
-            </label>
+            <label className="form-label">Brand</label>
             <input
               type="text"
               className="form-control"
@@ -230,9 +305,40 @@ const AdminProductUpdate = () => {
           </div>
 
           <div className="form-group">
+            <label className="form-label">HSN/SAC Code</label>
+            <input
+              type="number"
+              className="form-control"
+              value={hsnSac}
+              onChange={(e) => setHsnSac(e.target.value)}
+            />
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">CGST (%)</label>
+            <input
+              type="number"
+              step="0.01"
+              className="form-control"
+              value={cgst}
+              onChange={(e) => setCgst(e.target.value)}
+            />
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">SGST (%)</label>
+            <input
+              type="number"
+              step="0.01"
+              className="form-control"
+              value={sgst}
+              onChange={(e) => setSgst(e.target.value)}
+            />
+          </div>
+
+          <div className="form-group">
             <label className="form-label">Description</label>
             <textarea
-              type="text"
               className="form-control"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
@@ -242,7 +348,7 @@ const AdminProductUpdate = () => {
           <div className="form-group">
             <label className="form-label">Count In Stock</label>
             <input
-              type="text"
+              type="number"
               className="form-control"
               value={stock}
               onChange={(e) => setStock(e.target.value)}
@@ -253,8 +359,8 @@ const AdminProductUpdate = () => {
             <label className="form-label">Category</label>
             <select
               className="form-control"
-              onChange={(e) => setCategory(e.target.value)}
               value={category}
+              onChange={(e) => setCategory(e.target.value)}
             >
               {categories?.map((c) => (
                 <option key={c.id} value={c.id}>
@@ -263,6 +369,57 @@ const AdminProductUpdate = () => {
               ))}
             </select>
           </div>
+
+          {productType === "EXPORT" && (
+            <>
+              <div className="form-group">
+                <label className="form-label">Variant</label>
+                <select
+                  className="form-control"
+                  value={country}
+                  onChange={(e) => setCountry(e.target.value)}
+                >
+                  <option value="">Select Country</option>
+                  {countryOptions.map((c) => (
+                    <option key={c.isoCode} value={c.name}>
+                      {c.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">Inco Term</label>
+                <select
+                  className="form-control"
+                  value={incoTerm}
+                  onChange={(e) => setIncoTerm(e.target.value)}
+                >
+                  {incoTerms?.map((term) => (
+                    <option key={term.id} value={term.id}>
+                      {term.inco_term_name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">Port</label>
+                <select
+                  className="form-control"
+                  value={port}
+                  onChange={(e) => setPort(e.target.value)}
+                >
+                  {ports?.map((p) => (
+                    <option key={p.id} value={p.id}>
+                      {p.district} - {p.country}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </>
+          )}
+
           <div className="btn-group">
             <button onClick={handleSubmit} className="btn btn-primary">
               Update

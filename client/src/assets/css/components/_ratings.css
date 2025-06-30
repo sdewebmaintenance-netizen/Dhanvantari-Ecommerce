@@ -1,6 +1,7 @@
 .rating-container {
   display: flex;
   align-items: center;
+  
 }
 
 .rating-star {
@@ -22,5 +23,6 @@
 
 .rating-text {
   margin-left: var(--space-sm);
-  color: var(--color-text);
+  color: var(--color-secondary-lighter);
+  font-weight: 600;
 }

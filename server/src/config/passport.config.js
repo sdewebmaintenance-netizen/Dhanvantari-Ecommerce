@@ -37,6 +37,7 @@ passport.use(
           user_id: user.id,
           username: user.username,
           email: user.email,
+          phone: user.phone,
           isAdmin:user.isAdmin
         });
       } catch (error) {

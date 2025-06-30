@@ -1,85 +1,39 @@
 const {
   RAZORPAY_KEY_ID,
   RAZORPAY_KEY_SECRET,
+  NODEMAILER_USERNAME,
 } = require("../config/configuration.js");
 const { prisma } = require("../config/prismaClient.config.js");
 const asyncHandler = require("../middlewares/asyncHandler.js");
 const Razorpay = require("razorpay");
 const razorpay = require("../config/razorPayInstance.js");
-
-function calcPrices(orderItems) {
-  const itemsPrice = orderItems.reduce(
-    (acc, item) => acc + item.price * item.qty,
-    0
-  );
-
-  const shippingPrice = itemsPrice > 100 ? 0 : 10;
-  const taxRate = 0.15;
-  const taxPrice = (itemsPrice * taxRate).toFixed(2);
-
-  const totalPrice = (
-    itemsPrice +
-    shippingPrice +
-    parseFloat(taxPrice)
-  ).toFixed(2);
-
-  return {
-    itemsPrice: itemsPrice.toFixed(2),
-    shippingPrice: shippingPrice.toFixed(2),
-    taxPrice,
-    totalPrice,
-  };
-}
+const { EmailTransmitter } = require("../utils/nodemailer.js");
+const EmailTemplates = require("../utils/EmailTemplates.js");
 
 const getKey = async (req, res) => {
   res.status(200).json(RAZORPAY_KEY_ID);
 };
 
 const createOrder = asyncHandler(async (req, res) => {
-  const { orderItems, shippingAddress, paymentMethod } = req.body;
+  console.log("Ssss", req.body);
+  const {
+    orderItems,
+    shippingAddress,
+    paymentMethod,
+    itemsPrice,
+    SGST,
+    CGST,
+    totalPrice,
+  } = req.body;
+
+  const { user_id } = req.user;
 
   if (!orderItems || orderItems.length === 0) {
     return res.status(400).json({ error: "No order items" });
   }
 
-  const productIds = orderItems.map((item) => parseInt(item.id));
-  const products = await prisma.product.findMany({
-    where: { id: { in: productIds } },
-  });
-
-  const dbOrderItems = orderItems.map((itemFromClient) => {
-    const matchingProduct = products.find(
-      (product) => product.id === parseInt(itemFromClient.id)
-    );
-
-    if (!matchingProduct) {
-      throw new Error(`Product not found: ${itemFromClient.id}`);
-    }
-
-    return {
-      name: matchingProduct.name,
-      qty:parseInt(itemFromClient.qty),
-      image: matchingProduct.image,
-      price: matchingProduct.price,
-      product_id: matchingProduct.id,
-    };
-  });
-
-  const { itemsPrice, taxPrice, shippingPrice, totalPrice } =
-    calcPrices(dbOrderItems);
-
-  const createdShippingAddress = await prisma.shippingAddress.create({
-    data: {
-      address: shippingAddress.address,
-      city: shippingAddress.city,
-      state: shippingAddress.state,
-      postalCode: shippingAddress.postalCode,
-      country: shippingAddress.country,
-    },
-  });
-
   const orderOptions = {
-    amount: parseFloat(totalPrice) * 100,
+    amount: Math.round(totalPrice * 100),
     currency: "INR",
     receipt: `receipt_${Date.now()}`,
   };
@@ -87,48 +41,46 @@ const createOrder = asyncHandler(async (req, res) => {
   let RazorPay_Order;
   try {
     RazorPay_Order = await razorpay.orders.create(orderOptions);
-    console.log("Creating Razorpay order with:", orderOptions);
-    console.log("afjcoia", RazorPay_Order);
-
     if (!RazorPay_Order?.id) throw new Error("Failed to create Razorpay order");
   } catch (err) {
     console.error("Razorpay order creation error:", err);
     return res.status(500).json({ error: "Failed to create Razorpay order" });
   }
-  console.log("bfcsliuqf", req.user);
 
-  let payment;
+  const payment = await prisma.PaymentResult.create({
+    data: {
+      transactionId: RazorPay_Order.id,
+      status: "Success",
+      emailAddress: req.user.email,
+    },
+  });
 
-  if (RazorPay_Order.id) {
-    payment = await prisma.PaymentResult.create({
-      data: {
-        transactionId: RazorPay_Order.id,
-        status: "Success",
-        emailAddress: req.user.email,
-      },
-    });
-  }
-
-  console.log("dborder", dbOrderItems);
-
-  const order = await prisma.order.create({
+  const order = await prisma.Order.create({
     data: {
       user_id: req.user.user_id,
+      shippingAddress_id: shippingAddress.id,
+      paymentMethod,
+      paymentResult_id: payment.id,
+      itemsUnitPrice: parseFloat(itemsPrice),
+      SGST: parseFloat(SGST),
+      CGST: parseFloat(CGST),
+      totalPrice: parseFloat(totalPrice),
       isPaid: true,
       paidAt: new Date(),
-      shippingAddress_id: createdShippingAddress.id,
-      paymentMethod,
-      itemsPrice: parseFloat(itemsPrice),
-      taxPrice: parseFloat(taxPrice),
-      shippingPrice: parseFloat(shippingPrice),
-      totalPrice: parseFloat(totalPrice),
       orderItems: {
-        create: dbOrderItems,
+        create: orderItems.map((item) => ({
+          name: item.name,
+          qty: item.quantity,
+          product_id: item.product_id,
+        })),
       },
-      paymentResult_id: payment.id,
     },
     include: {
-      orderItems: true,
+      orderItems: {
+        include: {
+          OrderItemProduct: true,
+        },
+      },
       OrderUser: {
         select: {
           id: true,
@@ -139,6 +91,90 @@ const createOrder = asyncHandler(async (req, res) => {
       OrderShippingAddress: true,
     },
   });
+
+  const orderDate = new Date().toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+
+  const expectedShipment = new Date(
+    Date.now() + 7 * 24 * 60 * 60 * 1000
+  ).toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+
+  console.log("ss", order);
+  order.orderItems.map((item) => {
+    console.log("sabkj", item);
+  });
+
+  const emptyCart = await prisma.cart.deleteMany({
+    where: { user_id: parseInt(user_id) },
+  });
+
+  const orderPlacedData = {
+    orderNumber: order.id.toString(),
+    customer: {
+      name: req.user.username,
+      email: req.user.email,
+      phone: req.user.phone,
+    },
+    shippingAddress: `${shippingAddress.address}, ${shippingAddress.city}, ${shippingAddress.state} - ${shippingAddress.postalCode}, ${shippingAddress.country}`,
+    items: order.orderItems.map((item) => ({
+      name: item.name,
+      quantity: item.qty.toString(),
+      unit: "kg",
+      unitPrice: `₹${item.OrderItemProduct.price.toFixed(2)}`,
+      totalPrice: `₹${(item.OrderItemProduct.price * item.qty).toFixed(2)}`,
+    })),
+    subtotal: `₹${order.itemsUnitPrice.toFixed(2)}`,
+    taxAmount: `₹${order.SGST.toFixed(2) + order.CGST.toFixed(2)}`,
+    totalAmount: `₹${order.totalPrice.toFixed(2)}`,
+    paymentMethod: paymentMethod,
+    paymentStatus: "Paid",
+    transactionId: RazorPay_Order.id,
+    expectedShipment: expectedShipment,
+  };
+
+  const orderConfirmationData = {
+    orderNumber: order.id.toString(),
+    orderDate: orderDate,
+    estimatedDelivery: expectedShipment,
+    items: order.orderItems.map((item) => ({
+      name: item.name,
+      quantity: item.qty.toString(),
+      unit: "kg",
+      price: `₹${(item.OrderItemProduct.price * item.qty).toFixed(2)}`,
+    })),
+    totalAmount: `₹${order.totalPrice.toFixed(2)}`,
+    shippingMethod: "Wholesale Shipping",
+    shippingAddress: `${shippingAddress.address}, ${shippingAddress.city}, ${shippingAddress.state} - ${shippingAddress.postalCode}, ${shippingAddress.country}`,
+  };
+
+  const ownerHtml = EmailTemplates.orderPlacedTemplate(orderPlacedData);
+  const customerHtml = EmailTemplates.orderConfirmationTemplate(
+    req.user.username,
+    orderConfirmationData
+  );
+
+  try {
+    await EmailTransmitter(
+      NODEMAILER_USERNAME,
+      `New Order Placed - #${order.id}`,
+      ownerHtml
+    );
+
+    await EmailTransmitter(
+      req.user.email,
+      `Your Order Confirmation - #${order.id}`,
+      customerHtml
+    );
+  } catch (emailError) {
+    console.error("Error sending emails:", emailError);
+  }
 
   res.status(201).json({ order, RazorPay_Order });
 });
@@ -192,11 +228,11 @@ const getAllOrders = asyncHandler(async (req, res) => {
           username: true,
         },
       },
-      orderItems:true
+      orderItems: true,
     },
   });
   res.json(orders);
-}); 
+});
 
 const getUserOrders = asyncHandler(async (req, res) => {
   const orders = await prisma.order.findMany({
@@ -224,7 +260,7 @@ const calculateTotalSales = asyncHandler(async (req, res) => {
 });
 
 const calcualteTotalSalesByDate = asyncHandler(async (req, res) => {
-    const salesByDate = await prisma.$queryRawUnsafe(`
+  const salesByDate = await prisma.$queryRawUnsafe(`
     SELECT 
       DATE(paidAt) as date,
       SUM(totalPrice) as totalSales
@@ -235,7 +271,6 @@ const calcualteTotalSalesByDate = asyncHandler(async (req, res) => {
 
   res.json(salesByDate);
 });
-
 
 const findOrderById = asyncHandler(async (req, res) => {
   const order = await prisma.order.findUnique({
@@ -249,7 +284,11 @@ const findOrderById = asyncHandler(async (req, res) => {
       },
       orderItems: {
         include: {
-          OrderItemProduct: true,
+          OrderItemProduct: {
+            include: {
+              ProductImages: true,
+            },
+          },
         },
       },
       OrderShippingAddress: true,

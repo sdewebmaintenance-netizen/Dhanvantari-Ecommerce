@@ -7,7 +7,7 @@ const GetUser = asyncHandler(async (req, res) => {
 
   let existingUser;
 
-  if (req.user.email ) {
+  if (req.user.email) {
     existingUser = await prisma.user.findUnique({
       where: { email: req.user.email },
     });
@@ -17,7 +17,7 @@ const GetUser = asyncHandler(async (req, res) => {
     });
   }
 
-  console.log("ssa", existingUser)
+  console.log("ssa", existingUser);
 
   if (!existingUser) {
     return res.status(401).json({ error: "Invalid email" });
@@ -29,19 +29,12 @@ const GetUser = asyncHandler(async (req, res) => {
     email: existingUser.email,
     phone: existingUser.phone,
     isAdmin: existingUser.isAdmin,
+    GSTIN: existingUser.GSTIN,
   });
 });
 
 const getAllUsers = asyncHandler(async (req, res) => {
-  const users = await prisma.user.findMany({
-    select: {
-      id: true,
-      username: true,
-      email: true,
-      isAdmin: true,
-      createdAt: true,
-    },
-  });
+  const users = await prisma.user.findMany();
   res.json(users);
 });
 
@@ -63,37 +56,31 @@ const getCurrentUserProfile = asyncHandler(async (req, res) => {
 });
 
 const updateCurrentUserProfile = asyncHandler(async (req, res) => {
-  const user = await prisma.user.findUnique({
-    where: { id: req.user.user_id },
-  });
 
-  if (!user) {
-    return res.status(404).json({ error: "User not found" });
+  console.log("asdjka", req.user)
+  const userId = Number(req.user.user_id);         
+
+  try {
+    const updatedUser = await prisma.User.update({
+      where: { id: userId },
+      data: {
+        username: req.body.username,
+        email:    req.body.email,
+        phone:    req.body.phone,
+        GSTIN:    req.body.GSTIN,
+      },
+    });
+
+    return res.status(200).json(updatedUser);
+  } catch (err) {
+    if (err) {                  
+      return res.status(404).json({ error: 'User not found' });
+    }
+    console.error(err);
+    return res.status(500).json({ error: 'Failed to update profile' });
   }
-
-  let hashedPassword;
-  if (req.body.password) {
-    const salt = await bcrypt.genSalt(10);
-    hashedPassword = await bcrypt.hash(req.body.password, salt);
-  }
-
-  const updatedUser = await prisma.user.update({
-    where: { id: req.user.user_id },
-    data: {
-      username: req.body.username || user.username,
-      email: req.body.email || user.email,
-      password: hashedPassword || user.password,
-    },
-    select: {
-      id: true,
-      username: true,
-      email: true,
-      isAdmin: true,
-    },
-  });
-
-  res.json(updatedUser);
 });
+
 
 const deleteUserById = asyncHandler(async (req, res) => {
   const user = await prisma.user.findUnique({

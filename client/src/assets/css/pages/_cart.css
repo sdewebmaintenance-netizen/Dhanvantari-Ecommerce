@@ -4,6 +4,11 @@
   padding: 0 var(--space-md);
 }
 
+.cart-header{
+  display: flex;
+  justify-content: space-between;
+}
+
 .cart-content {
   display: flex;
   flex-direction: column;

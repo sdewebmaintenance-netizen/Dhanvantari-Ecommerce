@@ -25,9 +25,11 @@ model User {
   display_picture String?
   phone           String?        @unique
   password        String?
+  GSTIN           String?
   reviews         Review[]
   orders          Order[]
   loginHistory    LoginHistory[]
+  Cart            Cart[]
 }
 
 enum LoginMethod {
@@ -43,30 +45,77 @@ model LoginHistory {
   user        User        @relation(fields: [userId], references: [id])
 }
 
+enum ProductType {
+  WHOLESALE
+  EXPORT
+}
+
 model Product {
   id              Int            @id @default(autoincrement())
   name            String
   brand           String
-  quantity        Int
+  weight          Int            @default(0)
   category_id     Int
   description     String
   rating          Float          @default(0)
   numReviews      Int            @default(0)
   price           Float          @default(0)
   countInStock    Int            @default(0)
+  inco_term_id    Int?
+  port_id         Int?
+  variant         String?
+  productType     ProductType?
+  CGST            Int?
+  SGST            Int?
+  hsnSac          Int?
+  isVisible       Boolean        @default(true)
   createdAt       DateTime       @default(now())
   updatedAt       DateTime       @updatedAt
+  ProductIncoTerm IncoTerm?      @relation(fields: [inco_term_id], references: [id])
+  ProductPort     Port?          @relation(fields: [port_id], references: [id])
   ProductCategory Category       @relation(fields: [category_id], references: [id])
   reviews         Review[]
   orderItems      OrderItem[]
   ProductImages   ProductImage[]
+  Cart            Cart[]
+}
+
+model Cart {
+  id                  Int      @id @default(autoincrement())
+  product_id          Int
+  shipping_address_id Int?
+  quantity            Int
+  user_id             Int
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  Products            Product?         @relation(fields: [product_id], references: [id])
+  CartUser            User             @relation(fields: [user_id], references: [id])
+  CartShippingAddress ShippingAddress? @relation(fields: [shipping_address_id], references: [id])
+}
+
+model IncoTerm {
+  id             Int       @id @default(autoincrement())
+  inco_term_name String
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  Products       Product[]
+}
+
+model Port {
+  id        Int       @id @default(autoincrement())
+  country   String
+  district  String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  Products  Product[]
 }
 
 model ProductImage {
   id         Int      @id @default(autoincrement())
   image_name String
   product_id Int
-  product    Product  @relation(fields: [product_id], references: [id] ,onDelete: Cascade)
+  product    Product  @relation(fields: [product_id], references: [id], onDelete: Cascade)
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 }
@@ -89,8 +138,6 @@ model OrderItem {
   id         Int      @id @default(autoincrement())
   name       String
   qty        Int
-  image      String
-  price      Float
   product_id Int
   order_id   Int
   createdAt  DateTime @default(now())
@@ -101,39 +148,60 @@ model OrderItem {
 }
 
 model Order {
-  id                 Int       @id @default(autoincrement())
-  user_id            Int
-  shippingAddress_id Int
-  paymentMethod      String
-  paymentResult_id   Int
-  itemsPrice         Float     @default(0)
-  taxPrice           Float     @default(0)
-  shippingPrice      Float     @default(0)
-  totalPrice         Float     @default(0)
-  isPaid             Boolean   @default(false)
-  paidAt             DateTime
-  isDelivered        Boolean   @default(false)
-  deliveredAt        DateTime?
-
+  id                   Int             @id @default(autoincrement())
+  user_id              Int
+  shippingAddress_id   Int
+  paymentMethod        String
+  paymentResult_id     Int
+  itemsUnitPrice       Float           @default(0)
+  SGST                 Float           @default(0)
+  CGST                 Float           @default(0)
+  totalPrice           Float           @default(0)
+  isPaid               Boolean         @default(false)
+  paidAt               DateTime
+  discount_id          Int?
+  isDelivered          Boolean         @default(false)
+  deliveredAt          DateTime?
   createdAt            DateTime        @default(now())
   updatedAt            DateTime        @updatedAt
   orderItems           OrderItem[]
   OrderPaymentResult   PaymentResult   @relation(fields: [paymentResult_id], references: [id])
   OrderShippingAddress ShippingAddress @relation(fields: [shippingAddress_id], references: [id])
   OrderUser            User            @relation(fields: [user_id], references: [id])
+  OrderDiscount        Discount?        @relation(fields: [discount_id], references: [id])
+}
+
+model Discount {
+  id               Int      @id @default(autoincrement())
+  qty              Int
+  pricetobereduced Float
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  
+  Order            Order[]
 }
 
 model ShippingAddress {
-  id         Int      @id @default(autoincrement())
-  address    String
-  city       String
-  state      String
-  postalCode String
-  country    String
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  id               Int      @id @default(autoincrement())
+  addressLine1     String?
+  addressLine2     String?
+  country          String
+  state            String
+  district         String?
+  pincode          String?
+  gstin            String?
+  contactNumber    String?
+  transportation   String?
+  vehicleNumber    String?
+  deliveryCountry  String?
+  deliveryState    String?
+  deliveryDistrict String?
+  deliveryPincode  String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 
-  OrderShippingAddss Order[]
+  Order Order[]
+  Cart  Cart[]
 }
 
 model PaymentResult {

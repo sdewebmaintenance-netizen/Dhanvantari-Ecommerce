@@ -2,13 +2,17 @@
 const path = require("path");
 const multer = require("multer");
 
-const storage = multer.diskStorage({ 
+const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, path.join(__dirname, '../../../client/src/assets/images/Product_Images'));
+    const destPath = path.join(__dirname, '../../../client/src/assets/images/Product_Images');
+    console.log("Saving file to:", destPath);
+    cb(null, destPath);
   },
   filename: (req, file, cb) => {
     const extname = path.extname(file.originalname);
-    cb(null, `${file.fieldname}-${Date.now()}${extname}`);
+    const filename = `${file.fieldname}-${Date.now()}${extname}`;
+    console.log("Generated filename:", filename);
+    cb(null, filename);
   },
 });
 

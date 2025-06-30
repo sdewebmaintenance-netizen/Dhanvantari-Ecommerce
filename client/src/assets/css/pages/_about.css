@@ -162,7 +162,6 @@
   padding: 1rem 2rem;
 }
 
-
 .slider {
   flex: 1;
   overflow: hidden;
@@ -208,7 +207,6 @@
 .cert-logo:hover img {
   opacity: 1;
 }
-
 
 .preview-overlay {
   position: fixed;
@@ -298,6 +296,11 @@
 }
 
 @media (max-width: 768px) {
+  .certifications-header {
+    flex-direction: column;
+    align-items: center;
+  }
+
   .cert-carousel-container {
     flex-direction: row;
     max-width: 90%;
@@ -320,7 +323,6 @@
   }
 }
 
-
 .retail-list {
   list-style-type: disc;
   margin-left: var(--space-2xl);
@@ -328,7 +330,7 @@
   color: var(--color-secondary-light);
 }
 
-.retail-list li{
+.retail-list li {
   margin-top: 1rem;
 }
 
@@ -339,7 +341,6 @@
   flex-direction: column;
   margin-bottom: var(--space-lg);
 }
-
 
 .feature-list {
   list-style-type: disc;
@@ -482,7 +483,7 @@
   color: var(--color-bg-light);
 }
 
-.product-table{
+.product-table {
   color: var(--color-secondary-light);
 }
 
@@ -499,9 +500,8 @@
 
 .product-table td:first-child,
 .product-table th:first-child {
-  width: 30%;
+  width: 10%;
 }
-
 
 .product-description {
   margin-top: var(--space-md);

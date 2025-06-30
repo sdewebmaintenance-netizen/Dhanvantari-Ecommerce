@@ -110,7 +110,7 @@ const UserList = () => {
     try {
       await updateUser({
         userId: id,
-        userRole: role === 'admin',
+        userRole: role === "admin",
       });
       refetch();
     } catch (err) {
@@ -175,8 +175,10 @@ const UserList = () => {
                 >
                   EMAIL {getSortIcon("username")}
                 </th>
-                <th className="table-header">ADMIN</th>
-                <th className="table-header"></th>
+                <th className="table-header">PHONE NUMBER</th>
+                <th className="table-header">GSTIN</th>
+                <th className="table-header">USER ROLE</th>
+                <th className="table-header">ACTIONS</th>
               </tr>
             </thead>
             <tbody>
@@ -191,6 +193,16 @@ const UserList = () => {
                   <td className="table-cell">
                     <div className="d-flex align-items-center">
                       <a href={`mailto:${user.email}`}>{user.email}</a>{" "}
+                    </div>
+                  </td>
+                  <td className="table-cell">
+                    <div className="d-flex align-items-center">
+                      {user.phone}{" "}
+                    </div>
+                  </td>
+                  <td className="table-cell">
+                    <div className="d-flex align-items-center">
+                      {user.GSTIN}{" "}
                     </div>
                   </td>
                   <td className="table-cell">

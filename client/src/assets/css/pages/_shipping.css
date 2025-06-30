@@ -29,3 +29,14 @@
   margin-left: var(--space-sm);
   color: var(--color-primary-dark);
 }
+
+
+.same-line{
+  display: flex;
+  flex-direction: row;
+  gap: var(--space-md);
+  color: var(--color-secondary);
+  font-weight: 600;
+  align-items: baseline;
+  margin-left: 0.5rem;
+}

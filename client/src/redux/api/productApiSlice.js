@@ -20,7 +20,7 @@ export const productApiSlice = apiSlice.injectEndpoints({
     }),
 
     allProducts: builder.query({
-      query: () => `${PRODUCT_URL}/allProducts`,
+      query: () => `/allProducts`,
     }),
 
     getProductDetails: builder.query({
@@ -44,14 +44,6 @@ export const productApiSlice = apiSlice.injectEndpoints({
         url: `${PRODUCT_URL}/${productId}`,
         method: "PUT",
         body: formData,
-      }),
-    }),
-
-    uploadProductImage: builder.mutation({
-      query: (data) => ({
-        url: `${UPLOAD_URL}`,
-        method: "POST",
-        body: data,
       }),
     }),
 
@@ -88,6 +80,22 @@ export const productApiSlice = apiSlice.injectEndpoints({
         body: { checked, radio },
       }),
     }),
+
+    requestQuota: builder.mutation({
+      query: (requestQuota) => ({
+        url: `/request-quota`,
+        method: "POST",
+        body: requestQuota,
+      }),
+    }),
+    
+     requestInvoice: builder.mutation({
+      query: (requestInvoice) => ({
+        url: `${PRODUCT_URL}/request-invoice`,
+        method: "POST",
+        body: requestInvoice,
+      }),
+    }),
   }),
 });
 
@@ -102,6 +110,7 @@ export const {
   useCreateReviewMutation,
   useGetTopProductsQuery,
   useGetNewProductsQuery,
-  useUploadProductImageMutation,
   useGetFilteredProductsQuery,
+  useRequestQuotaMutation,
+  useRequestInvoiceMutation,
 } = productApiSlice;

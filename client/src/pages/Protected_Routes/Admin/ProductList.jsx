@@ -1,12 +1,16 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useCreateProductMutation } from "../../../redux/api/productApiSlice";
 import {
-  useCreateProductMutation,
-  useUploadProductImageMutation,
-} from "../../../redux/api/productApiSlice";
-import { useFetchCategoriesQuery } from "../../../redux/api/categoryApiSlice";
+  useFetchCategoriesQuery,
+  useFetchExportCategoriesQuery,
+} from "../../../redux/api/categoryApiSlice";
+
+import { useFetchIncoTermsQuery } from "../../../redux/api/incoTermApiSlice";
+
+import { useFetchPortsQuery } from "../../../redux/api/portApiSlice";
 import { toast } from "react-toastify";
-import getImage from "../../../Utils/GetImage";
+import { Country } from "country-state-city";
 
 const ProductList = () => {
   const [image, setImage] = useState([]);
@@ -18,20 +22,41 @@ const ProductList = () => {
   const [quantity, setQuantity] = useState("");
   const [brand, setBrand] = useState("");
   const [stock, setStock] = useState("");
+  const [productType, setProductType] = useState("WHOLESALE");
+  const [incoTerm, setIncoTerm] = useState("");
+  const [port, setPort] = useState("");
+  const [country, setCountry] = useState("");
+  const [isVisible, setIsVisible] = useState(true);
+  const [hsnSac, setHsnSac] = useState("");
+  const [cgst, setCgst] = useState("");
+  const [sgst, setSgst] = useState("");
   const navigate = useNavigate();
 
-  const [uploadProductImage] = useUploadProductImageMutation();
   const [createProduct] = useCreateProductMutation();
   const { data: categories } = useFetchCategoriesQuery();
+  const { data: incoTerms } = useFetchIncoTermsQuery();
+  const { data: ports } = useFetchPortsQuery();
+  const { data: exportCategories } = useFetchExportCategoriesQuery();
 
   console.log("categories", categories);
+  const countryOptions = Country.getAllCountries();
 
   useEffect(() => {
     if (categories && categories.length > 0) {
       setCategory(categories[0].id);
     }
-  }, [categories]);
-  
+    if (incoTerms && incoTerms.length > 0) {
+      setIncoTerm(incoTerms[0].id);
+    }
+    if (ports && ports.length > 0) {
+      setPort(ports[0].id);
+    }
+
+    if (countryOptions.length > 0) {
+      const india = countryOptions.find((c) => c.name === "India");
+      setCountry(india ? india.name : countryOptions[0].name);
+    }
+  }, [categories, incoTerms, ports, exportCategories, countryOptions]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -45,13 +70,23 @@ const ProductList = () => {
       productData.append("quantity", quantity);
       productData.append("brand", brand);
       productData.append("countInStock", stock);
+      productData.append("productType", productType);
+      productData.append("isVisible", isVisible);
+      productData.append("hsnSac", hsnSac);
+      productData.append("cgst", cgst);
+      productData.append("sgst", sgst);
+
+      if (productType === "EXPORT") {
+        productData.append("incoTerm", incoTerm);
+        productData.append("port", port);
+        productData.append("variant", country);
+      }
 
       image.forEach((img) => {
       productData.append("images", img);
     });
 
-
-      const {data, error} = await createProduct(productData);
+      const { data, error } = await createProduct(productData);
 
       if (error) {
         toast.error("Product create failed. Try Again.");
@@ -137,6 +172,40 @@ const ProductList = () => {
 
         <div className="product-info" style={{ width: "100%" }}>
           <div className="form-group">
+            <label htmlFor="productType" className="form-label">
+              Product Type
+            </label>
+            <select
+              className="form-control"
+              value={productType}
+              onChange={(e) => setProductType(e.target.value)}
+            >
+              <option value="WHOLESALE">Wholesale</option>
+              <option value="EXPORT">Export</option>
+            </select>
+          </div>
+          <div className="form-group">
+            <label htmlFor="isVisible" className="form-label">
+              Visibility
+            </label>
+            <div className="visibility-toggle">
+              <button
+                type="button"
+                className={`toggle-btn ${isVisible ? "active" : ""}`}
+                onClick={() => setIsVisible(true)}
+              >
+                Visible
+              </button>
+              <button
+                type="button"
+                className={`toggle-btn ${!isVisible ? "active" : ""}`}
+                onClick={() => setIsVisible(false)}
+              >
+                Hidden
+              </button>
+            </div>
+          </div>
+          <div className="form-group">
             <label htmlFor="name" className="form-label">
               Name
             </label>
@@ -160,7 +229,7 @@ const ProductList = () => {
           </div>
           <div className="form-group">
             <label htmlFor="name" className="form-label">
-              Quantity
+              Weight
             </label>
             <input
               type="number"
@@ -201,6 +270,44 @@ const ProductList = () => {
           </div>
 
           <div className="form-group">
+            <label htmlFor="hsnSac" className="form-label">
+              HSN/SAC Code
+            </label>
+            <input
+              type="number"
+              className="form-control"
+              value={hsnSac}
+              onChange={(e) => setHsnSac(e.target.value)}
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="cgst" className="form-label">
+              CGST (%)
+            </label>
+            <input
+              type="number"
+              className="form-control"
+              value={cgst}
+              onChange={(e) => setCgst(e.target.value)}
+              step="0.01"
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="sgst" className="form-label">
+              SGST (%)
+            </label>
+            <input
+              type="number"
+              className="form-control"
+              value={sgst}
+              onChange={(e) => setSgst(e.target.value)}
+              step="0.01"
+            />
+          </div>
+
+          <div className="form-group">
             <label className="form-label">Category</label>
             <select
               className="form-control"
@@ -213,6 +320,55 @@ const ProductList = () => {
               ))}
             </select>
           </div>
+
+          {productType === "EXPORT" && (
+            <>
+              <div className="form-group">
+                <label className="form-label">Variant</label>
+                <select
+                  className="form-control"
+                  value={country}
+                  onChange={(e) => setCountry(e.target.value)}
+                >
+                  {countryOptions.map((country) => (
+                    <option key={country.isoCode} value={country.isoCode}>
+                      {country.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">Inco Term</label>
+                <select
+                  className="form-control"
+                  value={incoTerm}
+                  onChange={(e) => setIncoTerm(e.target.value)}
+                >
+                  {incoTerms?.map((term) => (
+                    <option key={term.id} value={term.id}>
+                      {term.inco_term_name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">Port</label>
+                <select
+                  className="form-control"
+                  value={port}
+                  onChange={(e) => setPort(e.target.value)}
+                >
+                  {ports?.map((port) => (
+                    <option key={port.id} value={port.id}>
+                      {port.district}- {port.country}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </>
+          )}
 
           <button
             onClick={handleSubmit}

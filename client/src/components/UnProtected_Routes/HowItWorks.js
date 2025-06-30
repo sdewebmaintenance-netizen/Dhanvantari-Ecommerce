@@ -5,34 +5,29 @@ const steps = [
     icon: "🛒",
     title: "Book an Order",
     points: [
-      "FOB, CFR rates available from verified Suppliers.",
-      "Port missing? Ask for Rate!",
-      "Large orders? Request a Quote",
+      "Product rates available for Customers below to book order online kindly mention preferred Shipping company and Delivery address with Pincode"
     ],
   },
   {
     icon: "💵",
-    title: "Confirm & Pay Advance",
+    title: "Pay advance and receive invoice",
     points: [
-      "Supplier confirms along with digitally signed Sales Contract.",
-      "Pay Advance",
+      "Once order confirmed and payment received at our end SDE share Sales Invoice to Customer",
     ],
   },
   {
     icon: "💬",
     title: "Monitor Progress",
     points: [
-      "Real time Production and Shipment status with photos & videos.",
-      "SDE managed Quality Control Reports.",
+      "Once Amount credited SDE ships Bags next day and Shares Transport Receipt to Customers in Wats app or Email for Tracking",
     ],
   },
   {
     icon: "📄",
-    title: "Pay Balance",
+    title: "Customers Get Delivery",
     points: [
-      "Receive Shipment Notifications.",
-      "Pay Balance as per agreed Terms.",
-      "Download Bill of Lading",
+      "Track the consignment in official website with LR number and once  Delivery call received or Status moved from Transit to 'Material reached final destination' Customer can produce identify proof and get the Product delivered in Nearest Warehouse.",
+      "For Door Delivery inform us While Booking order.",
     ],
   },
 ];

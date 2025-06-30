@@ -1,12 +1,8 @@
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useAllProductsQuery } from "../../../redux/api/productApiSlice";
-import getImage from "../../../Utils/GetImage";
 import Loader from "../../../components/Common/Loader";
 import Message from "../../../components/Common/Message";
-import formatDate from "../../../Utils/FormatDate";
-import formatTime from "../../../Utils/FormatTime";
-import formatCurrency from "../../../Utils/FormatCurrency";
 import ProductCard from "../../../components/Protected_Routes/Admin/ProductCard ";
 
 const AllProducts = () => {

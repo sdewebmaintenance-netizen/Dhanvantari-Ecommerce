@@ -1,15 +1,16 @@
 import { Link } from "react-router-dom";
-import getImage from "../../../../Utils/GetImage";
 import formatCurrency from "../../../../Utils/FormatCurrency";
+import ProductImageCarousel from "./ProductImageCarousel";
 
 const Product = ({ product }) => {
   return (
     <div className="small-product">
       <div className="small-product-image-container">
-        <img
-          src={getImage(product?.image, "ProductImage")}
-          alt={product.name}
-          className="small-product-image"
+         <ProductImageCarousel
+          images={product.ProductImages}
+          imageClassName="product-card-image"
+          indicatorClassName="product-indicator-dot"
+          activeIndicatorClassName="product-indicator-active"
         />
       </div>
 

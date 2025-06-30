@@ -55,7 +55,7 @@ const ProductCarousel = () => {
                 className={`carousel-slide ${
                   index === currentIndex ? "active" : ""
                 }`}
-                style={{ backgroundImage: `url(${getImage(product.image, "Web-Bg")})` }}
+                style={{ backgroundImage: `url(${getImage(product.ProductImages[0]?.image_name, "ProductImage")})` }}
               ></div>
             ))}
 

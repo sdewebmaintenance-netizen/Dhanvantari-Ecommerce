@@ -6,7 +6,6 @@ const {
   updateCategory,
   removeCategory,
   listCategory,
-  readCategory,
 } = require("../controllers/category.controller.js");
 
 
@@ -15,7 +14,7 @@ router.put("/:categoryId", updateCategory);
 router
   .delete("/:categoryId", removeCategory);
 router.get("/categories", listCategory);
-router.get("/:id", readCategory);
+
 
   
 module.exports = router;

@@ -9,7 +9,6 @@ import { useState, useEffect } from "react";
 import Loader from "../../../components/Common/Loader";
 
 const AdminDashboard = () => {
-  
   useEffect(() => {
     const hasRefreshed = sessionStorage.getItem("hasRefreshed");
 
@@ -23,8 +22,6 @@ const AdminDashboard = () => {
   const { data: customers, isLoading: loading } = useGetUsersQuery();
   const { data: orders, isLoading: loadingTwo } = useGetTotalOrdersQuery();
   const { data: salesDetail } = useGetTotalSalesByDateQuery();
-
-  console.log("sahflb", salesDetail, sales, customers, orders);
 
   const [state, setState] = useState({
     options: {
@@ -74,6 +71,11 @@ const AdminDashboard = () => {
           text: "Sales",
         },
         min: 0,
+        labels: {
+          formatter: function(value) {
+            return value.toFixed(0); // Removes decimal places
+          }
+        }
       },
       legend: {
         position: "top",
@@ -89,7 +91,7 @@ const AdminDashboard = () => {
   useEffect(() => {
     if (salesDetail && Array.isArray(salesDetail)) {
       const formattedSalesDate = salesDetail.map((item) => ({
-        x: new Date(item.date).toLocaleDateString(), // nicely formatted
+        x: new Date(item.date).toLocaleDateString(), 
         y: item.totalSales,
       }));
 

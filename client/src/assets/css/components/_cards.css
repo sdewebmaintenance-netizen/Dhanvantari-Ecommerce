@@ -224,10 +224,6 @@
   box-shadow: var(--shadow-md);
 }
 
-.product-card-image-section {
-  position: relative;
-}
-
 .product-card-link {
   text-decoration: none;
 }
@@ -243,12 +239,6 @@
   border-radius: var(--radius-full);
 }
 
-.product-card-image {
-  width: 100%;
-  height: 170px;
-  object-fit: cover;
-  cursor: pointer;
-}
 
 .product-card-body {
   padding: var(--space-md);
@@ -263,6 +253,7 @@
 .product-card-name {
   color: var(--color-primary);
   font-weight: 600;
+  text-align: left;
 }
 
 .product-card-price {
