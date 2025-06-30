@@ -21,7 +21,7 @@ export const userApiSlice = apiSlice.injectEndpoints({
       query: (data) => ({
         url: "/forgot-password",
         method: "POST",
-        body: data,
+        body: data,  
       }),
     }),
     getUserInfo: builder.query({

@@ -5,12 +5,9 @@ const Modal = ({ isOpen, onClose, children }) => {
         <div className="modal-overlay">
           <div className="modal-backdrop"></div>
           <div className="modal-content">
-            <button
-              className="modal-close-btn"
-              onClick={onClose}
-            >
-              X
-            </button>
+            <div className="modal-close">
+              <button onClick={onClose} className="modal-close-btn">X</button>
+            </div>
             {children}
           </div>
         </div>

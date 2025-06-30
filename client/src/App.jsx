@@ -21,7 +21,6 @@ import RetailInfo from "./components/UnProtected_Routes/RetailsInfo";
 import GoogleCallback from "./components/Auth/GoogleCallback";
 
 import Home from "./pages/Protected_Routes/User/Home";
-import Favorites from "./pages/Protected_Routes/User/Favorites";
 import ProductDetails from "./components/Protected_Routes/User/Product/ProductDetails";
 import Cart from "./pages/Protected_Routes/User/Cart";
 import Shop from "./pages/Protected_Routes/User/Shop";
@@ -45,6 +44,9 @@ import LoginOptions from "./components/Auth/LoginOptions";
 import Login from "./components/Auth/Phone/Login";
 import Signup from "./components/Auth/Phone/Signup";
 import ForgotPassword from "./components/Auth/Phone/ForgotPassword";
+import IncoTermList from "./pages/Protected_Routes/Admin/IncoTermList";
+import PortList from "./pages/Protected_Routes/Admin/PortList";
+import DiscountList from "./pages/Protected_Routes/Admin/DiscountList";
 
 const App = () => {
 
@@ -103,6 +105,9 @@ const App = () => {
           <Route path="/admin" element={<AdminRoute />}>
             <Route path="userlist" element={<UserList />} />
             <Route path="categorylist" element={<CategoryList />} />
+            <Route path="incotermlist" element={<IncoTermList />} />
+            <Route path="portlist" element={<PortList />} />
+            <Route path="discount" element={<DiscountList />} />
             <Route path="create-product" element={<ProductList />} />
             <Route path="allproductslist" element={<AllProducts />} />
             <Route path="product/update/:id" element={<ProductUpdate />} />

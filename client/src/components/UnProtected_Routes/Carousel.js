@@ -1,19 +1,18 @@
 import React, { useEffect } from "react";
 import Tapiacpo_Starch from "../../assets/images/Website-bg/Tapiaco_Starch.jpeg";
-import Tapiacpo_Thippu from "../../assets/images/Website-bg/Tapiaco_Thippu.jpg";
 import Sago_Starch from "../../assets/images/Website-bg/Sago_Starch_1.jpeg";
 import Corn_Starch from "../../assets/images/Website-bg/Corn_Starch.jpg";
 import Native_Potato_Starch from "../../assets/images/Website-bg/Potato_Starchs.jpeg";
 import Trade_Needs from "../../assets/images/Website-bg/Trade_Needs.jpg";
 
-const Carousel = () => { 
+const Carousel = () => {
   const slides = [
     {
       id: 1,
-      bgImage: `url(${Tapiacpo_Starch})`,
-      title: "Tapioca Starch - Top Selling Product",
+      bgImage: `url(${Trade_Needs})`,
+      title: "Reliable Food ingredients supplier ",
       subtitle:
-        "Refined tapioca starch ideal for food, textile, and paper industries",
+        "Bring absolute transparency and visibility to customers with quality and on time delivery.",
     },
     {
       id: 2,
@@ -29,13 +28,6 @@ const Carousel = () => {
       subtitle:
         "Crushed sago flour suitable for snacks, adhesives, and textiles",
     },
-    /* {
-      id: 4,
-      bgImage: `url(${Tapiacpo_Thippu})`,
-      title: "Tapioca Thippu Flour",
-      subtitle:
-        "Economical byproduct flour used in cattle feed and industrial purposes",
-    }, */
     {
       id: 5,
       bgImage: `url(${Native_Potato_Starch})`,
@@ -45,10 +37,10 @@ const Carousel = () => {
     },
     {
       id: 6,
-      bgImage: `url(${Trade_Needs})`,
-      title: "Trade Consultation Service",
+      bgImage: `url(${Tapiacpo_Starch})`,
+      title: "Tapioca Starch - Top Selling Product",
       subtitle:
-        "Specialized support for global starch trade and supply chain planning",
+        "Refined tapioca starch ideal for food, textile, and paper industries", 
     },
   ];
 

@@ -5,7 +5,7 @@ const BusinessInfo = () => {
   const highlights = [
     {
       title: "Delivered",
-      content: "5000+",
+      content: "5000 Orders",
     },
     {
       title: "Verified Suppliers",
@@ -28,15 +28,14 @@ const BusinessInfo = () => {
         Manufacturers.{" "}
       </h2>
       <p>
-        Digital Tech Platform for Buying Food Starch within India & Beyond.{" "}
+        Digital Tech Platform for Buying Food Starch within India & Abroad.{" "}
       </p>
       <br />
 
       <h2 className="title text-animation">Why SDE?</h2>
       <p>
         Native Food Ingredients Supply for Retail, Wholesale & Overseas
-        Manufacturers.Digital Tech Platform for Buying Food Starch within India
-        & Beyond.One stop starch sourcing solution from India. Power your
+        Manufacturers.One stop starch sourcing solution from India. Power your
         business with a modern sourcing backbone. Solving disparity in price
         difference between states — Get the same wholesale price as you pay from
         manufacturer.

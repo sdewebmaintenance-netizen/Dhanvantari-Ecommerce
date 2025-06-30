@@ -1,3 +1,5 @@
+import { useEffect } from "react";
+import { saveAs } from "file-saver";
 import { Link, useParams } from "react-router-dom";
 import Messsage from "../../components/Common/Message";
 import Loader from "../../components/Common/Loader";
@@ -6,6 +8,9 @@ import {
   useGetOrderDetailsQuery,
 } from "../../redux/api/orderApiSlice";
 import { useGetUserInfoQuery } from "../../redux/api/usersApiSlice";
+import {
+  useRequestInvoiceMutation,
+} from "../../redux/api/productApiSlice";
 import getImage from "../../Utils/GetImage";
 import formatDate from "../../Utils/FormatDate";
 import { useRef } from "react";
@@ -23,25 +28,92 @@ const Order = () => {
     isLoading,
     error,
   } = useGetOrderDetailsQuery(orderId);
+
+  console.log("sgiuasf", order)
+  const [requestInvoice] = useRequestInvoiceMutation();
   const invoiceRef = useRef();
 
-  const handleDownloadInvoice = () => {
+  const generateAndSaveInvoice = async () => {
     const invoiceElement = invoiceRef.current;
 
-    toPng(invoiceElement)
-      .then((dataUrl) => {
-        const pdf = new jsPDF("p", "mm", "a4");
-        const imgProps = pdf.getImageProperties(dataUrl);
-        const pdfWidth = pdf.internal.pageSize.getWidth();
-        const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+    try {
+      const dataUrl = await toPng(invoiceElement);
+      const pdf = new jsPDF("p", "mm", "a4");
+      const imgProps = pdf.getImageProperties(dataUrl);
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
 
-        pdf.addImage(dataUrl, "PNG", 0, 0, pdfWidth, pdfHeight);
-        pdf.save(`invoice_${orderId}.pdf`);
-      })
-      .catch((error) => {
-        console.error("Error generating PDF:", error);
-      });
+      pdf.addImage(dataUrl, "PNG", 0, 0, pdfWidth, pdfHeight);
+
+      // Generate filename
+      const fileName = `${formatDate(order.paidAt)}_${formatTime(
+        order.paidAt
+      )}_${order.OrderUser.email}.pdf`
+        .replace(/\s+/g, "_")
+        .replace(/:/g, "-");
+
+      // Save the PDF
+      const pdfBlob = pdf.output("blob");
+      saveAs(pdfBlob, fileName);
+
+      return pdf.output("datauristring");
+    } catch (error) {
+      console.error("Error generating PDF:", error);
+      throw error;
+    }
   };
+
+  const handleDownloadInvoice = async () => {
+    try {
+      await generateAndSaveInvoice();
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+
+  const sendInvoiceEmail = async () => {
+    try {
+      const pdfDataUrl = await generateAndSaveInvoice();
+
+      const orderDetails = {
+        orderId: order._id,
+        email: order.OrderUser.email,
+        userName: order.OrderUser.username,
+        pdfDataUrl: pdfDataUrl,
+        orderDetails: {
+          orderNumber: order._id,
+          items: order.orderItems.map((item) => ({
+            name: item.name,
+            quantity: item.qty,
+            unit: "unit",
+            price: formatCurrency(item.price),
+          })),
+          shippingCost: formatCurrency(order.shippingPrice),
+          totalAmount: formatCurrency(order.totalPrice),
+          paymentStatus: order.isPaid ? "Paid" : "Pending",
+          expectedShipment: "Within 5-7 business days",
+        },
+      };
+
+      const result = await requestInvoice(orderDetails).unwrap();
+
+      if (!result.ok) {
+        console.log("error")
+      };
+
+      console.log("Invoice email sent successfully");
+    } catch (error) {
+      console.error("Error sending invoice email:", error);
+    }
+  };
+
+  useEffect(() => {
+    const redirectUrl = localStorage.getItem("redirect_url");
+    if (redirectUrl === "Order_Placed" && order && order.isPaid) {
+      sendInvoiceEmail();
+      /* localStorage.removeItem("redirect_url"); */
+    }
+  }, [order]);
 
   console.log("1 order", order);
 
@@ -99,6 +171,9 @@ const Order = () => {
                         Quantity
                       </th>
                       <th className="order-table-header">Unit Price</th>
+                      <th className="order-table-header text-center">
+                        Weight
+                      </th>
                       <th className="order-table-header">Total</th>
                     </tr>
                   </thead>
@@ -108,7 +183,7 @@ const Order = () => {
                       <tr key={index} className="order-table-row">
                         <td className="order-table-cell">
                           <img
-                            src={getImage(item?.image, "ProductImage")}
+                            src={getImage(item?.OrderItemProduct?.ProductImages[0]?.image_name, "ProductImage")}
                             alt={item.name}
                             className="order-item-image"
                           />
@@ -127,10 +202,13 @@ const Order = () => {
                           {item.qty}
                         </td>
                         <td className="order-table-cell text-center">
-                          {formatCurrency(item?.price)}
+                          {formatCurrency(item?.OrderItemProduct.price)}
                         </td>
                         <td className="order-table-cell text-center">
-                          {formatCurrency(item.qty * item.price)}
+                          {item.OrderItemProduct.weight}
+                        </td>
+                        <td className="order-table-cell text-center">
+                          {formatCurrency(item.qty * item.OrderItemProduct.price)}
                         </td>
                       </tr>
                     ))}
@@ -189,20 +267,21 @@ const Order = () => {
             <h2 className="title text-animation">Order Summary</h2>
             <div className="price-summary-item">
               <span>Items</span>
-              <span>{formatCurrency(order?.itemsPrice)}</span>
+              <span>{formatCurrency(order?.itemsUnitPrice)}</span>
             </div>
             <div className="price-summary-item">
-              <span>Shipping</span>
+              <span>SGST</span>
               <span>
-                {formatCurrency(order?.itemsPrice)}
-
-                {order.shippingPrice}
+                {formatCurrency(order?.SGST)}
               </span>
             </div>
-            <div className="price-summary-item">
-              <span>Tax</span>
-              <span>{formatCurrency(order?.taxPrice)}</span>
+             <div className="price-summary-item">
+              <span>CGST</span>
+              <span>
+                {formatCurrency(order?.CGST)}
+              </span>
             </div>
+           
             <div className="price-summary-item">
               <span>Total</span>
               <span>{formatCurrency(order?.totalPrice)}</span>

@@ -9,7 +9,6 @@
 }
 
 .form-group label {
-  display: block;
   margin-bottom: var(--space-xs);
   font-weight: 600;
 }

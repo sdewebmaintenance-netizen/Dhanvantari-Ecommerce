@@ -62,6 +62,8 @@
   align-items: center;
   justify-content: center;
   z-index: var(--z-index-modal);
+ background-color: rgba(254, 253, 250, 0.8);
+  
 }
 
 .modal-backdrop {
@@ -70,7 +72,6 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
 }
 
 .modal-content {
@@ -80,8 +81,11 @@
   border-radius: var(--radius-lg);
   z-index: var(--z-index-modal);
   max-width: 90%;
-  max-height: 90vh;
+  max-height: 70vh;
   overflow-y: auto;
+}
+
+.modal-close {
   text-align: right;
 }
 
@@ -90,7 +94,6 @@
   background: none;
   border: none;
   cursor: pointer;
-  margin-right: var(--space-sm);
 }
 
 .modal-close-btn:hover {

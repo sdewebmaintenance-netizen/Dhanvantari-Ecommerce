@@ -1,4 +1,4 @@
-import handleGoogleSignIn from "../../../Utils/HandleGoogleSignIn";
+import { Link } from "react-router-dom";
 
 const GuestFooter = () => {
   return (
@@ -8,7 +8,13 @@ const GuestFooter = () => {
           <h3 className="footer-title">Quick Links</h3>
           <ul className="footer-links">
             <li>
-              <a href="#home">Home</a>
+              <Link to="/">Home</Link>
+            </li>
+            <li>
+              <Link to="/food-starch">Food Starch</Link>
+            </li>
+            <li>
+              <Link to="/retail">Retail</Link>
             </li>
             <li>
               <a href="#about">About Us</a>
@@ -23,7 +29,7 @@ const GuestFooter = () => {
           <h3 className="footer-title">Account</h3>
           <ul className="footer-links">
             <li>
-              <a onClick={handleGoogleSignIn}>Login</a>
+              <Link to="/login-options">Login</Link>
             </li>
           </ul>
         </div>
@@ -34,11 +40,16 @@ const GuestFooter = () => {
               <strong>Sri Dhanvantari Exports</strong>
             </div>
             <div>
-              Ganesh Nagar, Puzhuthivakkam, Madipakkam
-              Chennai-600091, Tamil Nadu, India.
+              Ganesh Nagar, Puzhuthivakkam, Madipakkam Chennai-600091, Tamil
+              Nadu, India.
             </div>
-            <div> <strong>Email: </strong>sales@sridhanvantariexports.com</div>
-            <div><strong>Mobile / Whatsapp </strong></div>
+            <div>
+              {" "}
+              <strong>Email: </strong>sales@sridhanvantariexports.com
+            </div>
+            <div>
+              <strong>Mobile / Whatsapp </strong>
+            </div>
             <div>+91 99437 60055</div>
           </div>
         </div>

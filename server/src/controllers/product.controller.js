@@ -1,24 +1,76 @@
 const { prisma } = require("../config/prismaClient.config.js");
 const asyncHandler = require("../middlewares/asyncHandler.js");
 
+const { EmailTransmitter } = require("../utils/nodemailer.js");
+const EmailTemplates = require("../utils/EmailTemplates.js");
+const { NODEMAILER_USERNAME } = require("../config/configuration.js");
+
 const addProduct = asyncHandler(async (req, res) => {
-  const { name, description, price, category, quantity, brand } = req.body;
+  const {
+    name,
+    description,
+    price,
+    category,
+    quantity,
+    brand,
+    countInStock,
+    productType,
+    incoTerm,
+    port,
+    variant,
+    isVisible,
+    hsnSac,
+    cgst,
+    sgst,
+  } = req.body;
   const images = req.files;
 
-  if (!name || !description || !price || !category || !quantity || !brand) {
+  console.log("req", req.file, req.body);
+
+  if (
+    !name ||
+    !description ||
+    !price ||
+    !category ||
+    !quantity ||
+    !brand ||
+    !countInStock ||
+    !productType
+  ) {
     return res.status(400).json({ error: "All fields are required" });
   }
 
+  const productData = {
+    name,
+    description,
+    price: parseFloat(price),
+    category_id: parseInt(category),
+    weight: parseInt(quantity),
+    brand,
+    countInStock: parseInt(countInStock),
+    productType,
+    isVisible: isVisible === "true" || isVisible === true,
+    hsnSac: hsnSac ? parseInt(hsnSac) : null,
+    CGST: cgst ? parseFloat(cgst) : null,
+    SGST: sgst ? parseFloat(sgst) : null,
+  };
+
+  if (productType === "EXPORT") {
+    if (!incoTerm || !port || !variant) {
+      return res
+        .status(400)
+        .json({ error: "Export fields are required for EXPORT productType" });
+    }
+
+    Object.assign(productData, {
+      inco_term_id: parseInt(incoTerm),
+      port_id: parseInt(port),
+      variant,
+    });
+  }
+
   const product = await prisma.product.create({
-    data: {
-      name,
-      description,
-      price: parseFloat(price),
-      category_id: parseInt(category),
-      quantity: parseInt(quantity),
-      brand,
-      countInStock: parseInt(quantity),
-    },
+    data: productData,
   });
 
   if (images && images.length > 0) {
@@ -42,27 +94,62 @@ const updateProductDetails = asyncHandler(async (req, res) => {
     brand,
     countInStock,
     existingImages,
+    productType,
+    incoTerm,
+    port,
+    variant,
+    hsnSac,
+    cgst,
+    sgst,
+    isVisible
   } = req.body;
-   const newImages = req.files || [];
 
-  if (!name || !description || !price || !category || !quantity || !brand) {
+  const newImages = req.files || [];
+
+  if (
+    !name ||
+    !description ||
+    !price ||
+    !category ||
+    !quantity ||
+    !brand ||
+    !productType
+  ) {
     return res.status(400).json({ error: "All fields are required" });
   }
 
   try {
     const updatedProduct = await prisma.$transaction(async (prisma) => {
-      
+      const updateData = {
+        name,
+        description,
+        price: parseFloat(price),
+        category_id: parseInt(category),
+        weight: parseInt(quantity),
+        brand,
+        countInStock: parseInt(countInStock),
+        productType,
+        hsnSac: hsnSac ? parseInt(hsnSac) : null,
+        CGST: cgst ? parseFloat(cgst) : null,
+        SGST: sgst ? parseFloat(sgst) : null,
+        isVisible: isVisible === 'true' || isVisible === true
+      };
+
+      if (productType === "EXPORT") {
+        if (!incoTerm || !port || !variant) {
+          throw new Error("Export fields are required for EXPORT productType");
+        }
+
+        Object.assign(updateData, {
+          inco_term_id: parseInt(incoTerm),
+          port_id: parseInt(port),
+          variant,
+        });
+      }
+
       const product = await prisma.product.update({
         where: { id: parseInt(req.params.id) },
-        data: {
-          name,
-          description,
-          price: parseFloat(price),
-          category_id: parseInt(category),
-          quantity: parseInt(quantity),
-          brand,
-          countInStock: parseInt(countInStock),
-        },
+        data: updateData,
         include: {
           ProductImages: true,
         },
@@ -102,6 +189,7 @@ const updateProductDetails = asyncHandler(async (req, res) => {
 
       return product;
     });
+
     res.json(updatedProduct);
   } catch (error) {
     console.error(error);
@@ -134,6 +222,7 @@ const fetchProducts = asyncHandler(async (req, res) => {
       take: pageSize,
       include: {
         ProductCategory: true,
+        ProductImages: true,
       },
     }),
   ]);
@@ -151,6 +240,8 @@ const fetchProductById = asyncHandler(async (req, res) => {
     where: { id: parseInt(req.params.id) },
     include: {
       ProductCategory: true,
+      ProductIncoTerm: true,
+      ProductPort: true,
       ProductImages: true,
       reviews: {
         include: {
@@ -176,6 +267,8 @@ const fetchAllProducts = asyncHandler(async (req, res) => {
     include: {
       ProductCategory: true,
       ProductImages: true,
+      ProductIncoTerm: true,
+      ProductPort: true,
     },
     take: 12,
     orderBy: {
@@ -254,7 +347,11 @@ const fetchTopProducts = asyncHandler(async (req, res) => {
       rating: "desc",
     },
     take: 4,
+    include: {
+      ProductImages: true,
+    },
   });
+
   res.json(products);
 });
 
@@ -283,10 +380,116 @@ const filterProducts = asyncHandler(async (req, res) => {
     where,
     include: {
       ProductCategory: true,
+      ProductImages: true,
     },
   });
 
   res.json(products);
+});
+
+const requestQuotaForExportProduct = asyncHandler(async (req, res) => {
+  try {
+    console.log("sikulasu", req.body);
+    const { name, email, phone, company, country, products, message } =
+      req.body;
+
+    if (!name || !email || !products || products.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Name, email, and at least one product are required",
+      });
+    }
+
+    const productDetails = products.map((product) => ({
+      name: product.name || "Unnamed Product",
+      quantity: product.quantity || "Not specified",
+      specifications: product.specifications || "Standard",
+    }));
+
+    const requesterDetails = {
+      name,
+      email,
+      phone: phone || "Not provided",
+      company: company || "Not provided",
+      country: country || "Not provided",
+      message: message || "No additional message",
+    };
+
+    const ownerEmail = NODEMAILER_USERNAME;
+
+    const ownerSubject = `New Quote Request from ${name}`;
+    const ownerHtml = EmailTemplates.requestQuoteTemplate.owner(
+      "Sri Dhanvantari Exports Team",
+      requesterDetails,
+      productDetails
+    );
+
+    await EmailTransmitter(ownerEmail, ownerSubject, ownerHtml);
+
+    const userSubject = "Your Quote Request Has Been Received";
+    const userHtml = EmailTemplates.requestQuoteTemplate.user(
+      name,
+      productDetails.map((p) => p.name)
+    );
+
+    await EmailTransmitter(email, userSubject, userHtml);
+
+    res.status(200).json({
+      success: true,
+      message:
+        "Quote request submitted successfully. You will receive a confirmation email shortly.",
+    });
+  } catch (error) {
+    console.error("Error processing quote request:", error);
+    res.status(500).json({
+      success: false,
+      message: "An error occurred while processing your request",
+      error: error.message,
+    });
+  }
+});
+
+const requestInvoiceForPlacedOrder = asyncHandler(async (req, res) => {
+  try {
+    console.log("sikulasu", req.body, req.user);
+
+    const { email, username } = req.user;
+    const { pdfDataUrl, orderDetails } = req.body;
+
+    const base64Data = pdfDataUrl.replace(/^data:application\/pdf;base64,/, "");
+    const pdfBuffer = Buffer.from(base64Data, "base64");
+
+    const fileName = `invoice.pdf`;
+
+    if (!pdfDataUrl || !email) {
+      return res.status(400).json({
+        success: false,
+        message: "PDF Url and email are required",
+      });
+    }
+
+    const ownerEmail = NODEMAILER_USERNAME;
+
+    const ownerSubject = `Invoice from Sri Dhanvantari`;
+    const ownerHtml = EmailTemplates.invoiceDownloadTemplate(
+      username,
+      orderDetails,
+      fileName
+    );
+
+    await EmailTransmitter(ownerEmail, ownerSubject, ownerHtml);
+
+    res.status(200).json({
+      success: true,
+    });
+  } catch (error) {
+    console.error("Error processing Invoice request:", error);
+    res.status(500).json({
+      success: false,
+      message: "An error occurred while processing your request",
+      error: error.message,
+    });
+  }
 });
 
 module.exports = {
@@ -300,4 +503,6 @@ module.exports = {
   fetchTopProducts,
   fetchNewProducts,
   filterProducts,
+  requestQuotaForExportProduct,
+  requestInvoiceForPlacedOrder,
 };

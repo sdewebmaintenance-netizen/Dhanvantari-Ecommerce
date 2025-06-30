@@ -2,16 +2,18 @@ import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import FavoritesCount from "../../Protected_Routes/User/Favorite/FavoritesCount";
 import { logout } from "../../../redux/features/auth/authSlice";
 import { apiSlice } from "../../../redux/api/apiSlice";
 import { FiMoreVertical, FiUser, FiLogOut } from "react-icons/fi";
 import { useGetUserInfoQuery } from "../../../redux/api/usersApiSlice";
+import { useFetchCartForUserQuery } from "../../../redux/api/cartApiSlice";
 import getImage from "../../../Utils/GetImage";
 
 const UserHeader = () => {
   const { data: userInfo } = useGetUserInfoQuery();
-  const { cartItems } = useSelector((state) => state.cart);
+  const { data: cart = [] } = useFetchCartForUserQuery();
+
+  console.log("cart", cart, cart.length);
   const [menuOpen, setMenuOpen] = useState(false);
   const [avatarMenuOpen, setAvatarMenuOpen] = useState(false);
   const avatarRef = useRef(null);
@@ -79,19 +81,12 @@ const UserHeader = () => {
 
           <Link to="/cart">
             CART
-            {cartItems.length > 0 && (
+            {cart.length > 0 && (
               <span className="cart-badge">
-                {cartItems.reduce((a, c) => a + c.qty, 0)}
+                {cart.length}
               </span>
             )}
           </Link>
-
-          {/* <Link to="/favorite">
-            FAVORITES
-            <div className="favorite-badge">
-              <FavoritesCount />
-            </div>
-          </Link> */}
 
           {isMobile ? (
             <>

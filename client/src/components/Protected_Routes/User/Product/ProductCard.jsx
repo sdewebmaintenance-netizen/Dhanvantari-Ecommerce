@@ -1,17 +1,38 @@
 import { Link } from "react-router-dom";
 import { AiOutlineShoppingCart } from "react-icons/ai";
-import { useDispatch } from "react-redux";
-import { addToCart } from "../../../../redux/features/cart/cartSlice";
 import { toast } from "react-toastify";
 import getImage from "../../../../Utils/GetImage";
 import formatCurrency from "../../../../Utils/FormatCurrency";
+import { useCreateCartMutation } from "../../../../redux/api/cartApiSlice";
+import ProductImageCarousel from "./ProductImageCarousel";
 
-const ProductCard = ({ p }) => {
-  const dispatch = useDispatch();
+const ProductCard = ({ p, setParentLoading, parentLoading }) => {
+  const qty = 1;
 
-  const addToCartHandler = (product, qty) => {
-    dispatch(addToCart({ ...product, qty }));
-    toast.success("Item added successfully")
+  const [createCart, { isLoading: isAdding }] = useCreateCartMutation();
+
+  const addToCartHandler = async (e) => {
+    e.preventDefault();
+    setParentLoading(true);
+    if (!qty) {
+      toast.error("Quantity is required");
+      setParentLoading(false);
+      return;
+    }
+
+    try {
+      await createCart({
+        product_id: p.id,
+        quantity: parseInt(qty),
+      }).unwrap();
+
+      toast.success("Item added to cart successfully");
+    } catch (error) {
+      console.error(error);
+      toast.error(error?.data?.error || "Adding to cart failed, try again.");
+    } finally {
+      setParentLoading(false);
+    }
   };
 
   return (
@@ -19,10 +40,11 @@ const ProductCard = ({ p }) => {
       <section className="product-card-image-section">
         <Link to={`/product/${p.id}`} className="product-card-link">
           <span className="product-brand-badge">{p?.brand}</span>
-          <img
-            className="product-card-image"
-            src={getImage(p.image, "ProductImage")}
-            alt={p.name}
+          <ProductImageCarousel
+            images={p.ProductImages}
+            imageClassName="product-card-image"
+            indicatorClassName="product-indicator-dot"
+            activeIndicatorClassName="product-indicator-active"
           />
         </Link>
       </section>
@@ -30,10 +52,7 @@ const ProductCard = ({ p }) => {
       <div className="product-card-body">
         <div className="product-card-header">
           <p className="product-card-name">{p?.name}</p>
-          <p className="product-card-price">
-            {formatCurrency(p?.price)}
-           
-          </p>
+          <p className="product-card-price">{formatCurrency(p?.price)}</p>
         </div>
 
         <p className="product-card-description">
@@ -41,7 +60,11 @@ const ProductCard = ({ p }) => {
         </p>
 
         <section className="product-card-actions">
-          <Link to={`/product/${p.id}`} className="btn-customized" style={{padding:"0.5rem"}}>
+          <Link
+            to={`/product/${p.id}`}
+            className="btn-customized"
+            style={{ padding: "0.5rem" }}
+          >
             Read More
             <svg
               className="read-more-icon"
@@ -60,10 +83,7 @@ const ProductCard = ({ p }) => {
             </svg>
           </Link>
 
-          <button
-            className="add-to-cart-btn"
-            onClick={() => addToCartHandler(p, 1)}
-          >
+          <button className="add-to-cart-btn" onClick={addToCartHandler}>
             <AiOutlineShoppingCart size={25} />
           </button>
         </section>

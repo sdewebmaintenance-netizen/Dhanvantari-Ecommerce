@@ -16,6 +16,7 @@ const Shop = () => {
   const { categories, products, checked, radio } = useSelector(
     (state) => state.shop
   );
+  const [isAddingToCart, setIsAddingToCart] = useState(false);
 
   const categoriesQuery = useFetchCategoriesQuery();
   const [priceFilter, setPriceFilter] = useState("");
@@ -81,6 +82,8 @@ const Shop = () => {
   const toggleFilters = () => {
     setShowFilters(!showFilters);
   };
+
+  console.log("sss", products)
 
   return (
     <div className="shop-container">
@@ -173,20 +176,28 @@ const Shop = () => {
           </div>
         </div>
 
-        <div className="shop-products">
-          <h2 className="products-count">{products?.length} Products</h2>
-          <div className="products-grid">
-            {products.length === 0 ? (
-              <Loader />
-            ) : (
-              products?.map((p) => (
-                <div className="product-item" key={p.id}>
-                  <ProductCard p={p} />
-                </div>
-              ))
-            )}
+        {isAddingToCart ? (
+          <Loader />
+        ) : (
+          <div className="shop-products">
+            <h2 className="products-count">{products?.length} Products</h2>
+            <div className="products-grid">
+              {products.length === 0 ? (
+                <Loader />
+              ) : (
+                products?.map((p) => (
+                  <div className="product-item" key={p.id}>
+                    <ProductCard
+                      p={p}
+                      setParentLoading={setIsAddingToCart}
+                      parentLoading={isAddingToCart}
+                    />
+                  </div>
+                ))
+              )}
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );

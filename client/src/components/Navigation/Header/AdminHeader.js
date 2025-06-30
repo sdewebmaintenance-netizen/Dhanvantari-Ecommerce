@@ -75,6 +75,9 @@ const AdminHeader = () => {
           <Link to="/admin/orderlist">Orders</Link>
           <Link to="/admin/allproductslist">Products</Link>
           <Link to="/admin/categorylist">Category</Link>
+          <Link to="/admin/incotermlist">Inco Term</Link>
+          <Link to="/admin/portlist">Port</Link>
+          <Link to="/admin/discount">Discount</Link>
           <Link to="/admin/userlist">Users</Link>
           {isMobile ? (
             <>

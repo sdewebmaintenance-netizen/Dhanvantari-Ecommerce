@@ -8,7 +8,7 @@
 }
 
 .product-list-main {
-  flex: 2;
+  flex: 4;
 }
 
 .products-grid {
@@ -17,6 +17,10 @@
   gap: var(--space-xs);
   margin-bottom: var(--space-xl);
   margin-top: var(--space-xl);
+}
+
+.product-image-wrapper {
+  min-width: 20rem;
 }
 
 .product-card {
@@ -36,7 +40,6 @@
   box-shadow: var(--shadow-lg);
   background-color: var(--color-bg-lighter);
 }
-
 
 .product-description {
   font-size: 0.9rem;
@@ -84,7 +87,6 @@
   }
 }
 
-
 .product-weight-badge {
   background-color: #f0f0f0;
   color: #444;
@@ -98,9 +100,7 @@
   border: 1px solid #ccc;
 }
 
-
 .shop-container {
-  max-width: 1200px;
   margin-top: var(--space-md);
 }
 
@@ -234,7 +234,6 @@
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   background-color: var(--color-bg-light);
-  
 }
 
 .filter-actions {
@@ -254,9 +253,8 @@
 }
 
 .reset-btn:hover {
-  background-color:transparent;
+  background-color: transparent;
   color: var(--color-bg-light);
-  
 }
 
 .shop-products {
@@ -292,7 +290,7 @@
 }
 
 .product-details-container {
-  padding: var(--space-md); 
+  padding: var(--space-md);
 }
 
 .product-details-content {
@@ -372,7 +370,8 @@
   transform: scale(1.1);
 }
 
-.upload-placeholder, .empty-state {
+.upload-placeholder,
+.empty-state {
   aspect-ratio: 1/1;
   display: flex;
   align-items: center;
@@ -384,7 +383,8 @@
   cursor: pointer;
 }
 
-.upload-placeholder:hover, .empty-state:hover {
+.upload-placeholder:hover,
+.empty-state:hover {
   border-color: #4a6b57;
   background-color: #f0f0f0;
 }
@@ -419,11 +419,11 @@
   .product-details-content {
     flex-direction: column;
   }
-  
+
   .product-images-section {
     min-width: 100%;
   }
-  
+
   .image-preview-grid {
     grid-template-columns: 1fr;
   }
@@ -528,7 +528,6 @@
   border-bottom: 2px solid var(--color-primary);
 }
 
-
 .sign-in-prompt {
   color: var(--color-text);
 }
@@ -589,7 +588,6 @@
   color: var(--color-primary-dark);
 }
 
-
 @media screen and (max-width: 768px) {
   .product-details-content {
     flex-direction: column;
@@ -603,7 +601,6 @@
   .stat-group {
     flex: 1;
   }
-
 }
 
 .product-card-image-section {
@@ -614,9 +611,24 @@
 
 .product-card-image {
   width: 100%;
-  height: 200px;
+  height: 170px;
   object-fit: cover;
   transition: opacity 0.5s ease;
+  cursor: pointer;
+}
+
+.detailImage {
+  width: 100%;
+  object-fit: cover;
+  transition: opacity 0.5s ease;
+  cursor: pointer;
+}
+.smallImage {
+  width: 100%;
+  height:300px;
+  object-fit: cover;
+  transition: opacity 0.5s ease;
+  cursor: pointer;
 }
 
 .image-indicator {
@@ -634,9 +646,90 @@
   height: 8px;
   border-radius: 50%;
   cursor: pointer;
+  background-color: var(--color-primary-light);
 }
 
 .indicator-dot.active {
-  background: white;
+  background: var(--color-secondary-lighter);
   transform: scale(1.2);
+}
+
+
+.visibility-toggle {
+  display: flex;
+  border-radius: var(--space-sm);
+  overflow: hidden;
+}
+
+.toggle-btn {
+  flex: 1;
+  padding: var(--space-sm) var(--space-md);
+  border: none;
+  background-color: var(--color-bg);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.toggle-btn.active {
+  background-color: var(--color-secondary-lighter);
+  color: white;
+}
+
+.toggle-btn:hover:not(.active) {
+  background-color: var(--color-primary-light);
+}
+
+.original-price {
+  text-decoration: line-through;
+  color: var(--color-text-muted);
+}
+
+.discounted-price {
+  color: var(--color-danger);
+  font-weight: bold;
+  margin-left: 8px;
+}
+
+.discount-badge {
+  display: inline-block;
+  background-color: #f8f9fa;
+  color: var(--color-success);
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  margin-left: 8px;
+  border: 1px solid var(--color-success);
+}
+
+
+.original-price, .original-subtotal, .original-total {
+  text-decoration: line-through;
+  color: #666;
+  margin-right: 8px;
+}
+
+.discounted-price, .discounted-subtotal, .discounted-total {
+  color: #e63946;
+  font-weight: bold;
+}
+
+.discount-badge {
+  display: inline-block;
+  background-color: #f8f9fa;
+  color: #28a745;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  margin-left: 8px;
+  border: 1px solid #28a745;
+}
+
+.savings {
+  color: #28a745;
+  font-weight: bold;
+}
+
+.cart-item-subtotal {
+  min-width: 120px;
+  text-align: right;
 }

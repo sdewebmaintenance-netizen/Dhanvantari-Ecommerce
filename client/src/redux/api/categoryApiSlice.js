@@ -29,6 +29,10 @@ export const categoryApiSlice = apiSlice.injectEndpoints({
     fetchCategories: builder.query({
       query: () => `${CATEGORY_URL}/categories`,
     }),
+
+    fetchExportCategories: builder.query({
+      query: () => `/exportCategories`,
+    }),
   }),
 });
 
@@ -37,4 +41,5 @@ export const {
   useUpdateCategoryMutation,
   useDeleteCategoryMutation,
   useFetchCategoriesQuery,
+  useFetchExportCategoriesQuery,
 } = categoryApiSlice;

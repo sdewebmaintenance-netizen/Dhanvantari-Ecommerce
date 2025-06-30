@@ -69,24 +69,16 @@ const listCategory = asyncHandler(async (req, res) => {
   res.json(categories);
 });
 
-const readCategory = asyncHandler(async (req, res) => {
-  const { id } = req.params;
-
-  const category = await prisma.category.findUnique({
-    where: { id: parseInt(id) }
-  });
-
-  if (!category) {
-    return res.status(404).json({ error: "Category not found" });
-  }
-
-  res.json(category);
+const exportCategories = asyncHandler(async (req, res) => {
+  const exportCategories = await prisma.ExportCategory.findMany();
+  res.json(exportCategories);
 });
+
 
 module.exports = {
   createCategory,
   updateCategory,
   removeCategory,
   listCategory,
-  readCategory,
+  exportCategories
 };

@@ -2,6 +2,7 @@
   padding: var(--space-md);
   border-radius: var(--radius-md);
   margin: var(--space-md) 0;
+  font-weight: 700;
 }
 
 .message-success {
