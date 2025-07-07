@@ -61,8 +61,15 @@ const updateCurrentUserProfile = asyncHandler(async (req, res) => {
   const userId = Number(req.user.user_id);         
 
   try {
+
+    const user = await prisma.User.findUnique({
+       where: { id: req.user.user_id },
+    })
+
+    console.log("Assai", user)
+
     const updatedUser = await prisma.User.update({
-      where: { id: userId },
+      where: { id: req.user.user_id },
       data: {
         username: req.body.username,
         email:    req.body.email,
@@ -73,9 +80,6 @@ const updateCurrentUserProfile = asyncHandler(async (req, res) => {
 
     return res.status(200).json(updatedUser);
   } catch (err) {
-    if (err) {                  
-      return res.status(404).json({ error: 'User not found' });
-    }
     console.error(err);
     return res.status(500).json({ error: 'Failed to update profile' });
   }

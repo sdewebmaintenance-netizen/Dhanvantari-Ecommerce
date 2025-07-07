@@ -14,15 +14,22 @@ const Carousel = () => {
       subtitle:
         "Bring absolute transparency and visibility to customers with quality and on time delivery.",
     },
-    {
+     {
       id: 2,
+      bgImage: `url(${Tapiacpo_Starch})`,
+      title: "Tapioca Starch - Top Selling Product",
+      subtitle:
+        "Refined tapioca starch ideal for food, textile, and paper industries", 
+    },
+    {
+      id: 3,
       bgImage: `url(${Corn_Starch})`,
       title: "Corn Starch Powder",
       subtitle:
         "Multi-purpose corn starch used in food processing and packaging",
     },
     {
-      id: 3,
+      id: 4,
       bgImage: `url(${Sago_Starch})`,
       title: "Sago Broken Flour",
       subtitle:
@@ -35,13 +42,7 @@ const Carousel = () => {
       subtitle:
         "Natural potato starch with high viscosity for food and pharma uses",
     },
-    {
-      id: 6,
-      bgImage: `url(${Tapiacpo_Starch})`,
-      title: "Tapioca Starch - Top Selling Product",
-      subtitle:
-        "Refined tapioca starch ideal for food, textile, and paper industries", 
-    },
+   
   ];
 
   const [currentSlide, setCurrentSlide] = React.useState(0);

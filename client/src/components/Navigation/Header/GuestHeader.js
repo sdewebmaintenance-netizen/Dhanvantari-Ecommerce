@@ -19,17 +19,19 @@ const GuestHeader = () => {
         </div>
 
         <div className="mobile-menu-icon" onClick={() => setMenuOpen(!menuOpen)}>
-          <FiMoreVertical size={24} />
+          <FiMoreVertical size={24} color="white" />
         </div>
 
         <nav className={`nav-links ${menuOpen ? "open" : ""}`}  onClick={() => {
             setMenuOpen(false);
           }}>
           <Link to="/">HOME</Link>
+          <Link to="/about-us">ABOUT US</Link>
           <Link to="/food-starch">FOOD STARCH</Link>
           <Link to="/retail">RETAIL</Link>
           <Link to="/wholesale">WHOLESALE</Link>
           <Link to="/exports">EXPORTS</Link>
+          <Link to="/contact-us">CONTACT US</Link>
           <Link to="/login-options">LOGIN</Link> 
         </nav>
       </div>  

@@ -58,6 +58,7 @@
 .transport-details p,
 .invoice-details p {
   margin: 3px 0;
+  text-align: left;
 }
 
 .items-table {
@@ -127,4 +128,28 @@
   padding: var(--space-sm);
   background-color: var(--color-secondary-lighter);
   color: var(--color-primary-light);
+}
+
+.invoice-conditions{
+  margin-left: var(--space-xl);
+}
+
+@media print {
+  .page-break {
+    page-break-after: always;
+    break-after: page;
+  }
+  
+  body {
+    margin: 0;
+    padding: 0;
+  }
+  
+  .invoice-page {
+    width: 210mm;
+    height: 297mm;
+    margin: 0 auto;
+    padding: 10mm;
+    box-sizing: border-box;
+  }
 }

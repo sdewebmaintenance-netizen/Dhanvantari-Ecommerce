@@ -38,21 +38,24 @@ const ProductDetails = () => {
   const { data: userInfo } = useGetUserInfoQuery();
 
   useEffect(() => {
-    if (discounts && discounts.length > 0) {
-      const selectedQty = parseInt(qty);
-      const applicableDiscount = discounts.find(
-        (discount) => selectedQty >= discount.qty
-      );
+  if (discounts && discounts.length > 0 && product?.price) {
+    const selectedQty = parseInt(qty);
+    
+    const sortedDiscounts = [...discounts].sort((a, b) => b.qty - a.qty);
+    
+    const applicableDiscount = sortedDiscounts.find(
+      (discount) => selectedQty >= discount.qty
+    );
 
-      if (applicableDiscount) {
-        setAppliedDiscount(applicableDiscount);
-        setDiscountedPrice(product.price - applicableDiscount.pricetobereduced);
-      } else {
-        setAppliedDiscount(null);
-        setDiscountedPrice(null);
-      }
+    if (applicableDiscount) {
+      setAppliedDiscount(applicableDiscount);
+      setDiscountedPrice(product.price - applicableDiscount.pricetobereduced);
+    } else {
+      setAppliedDiscount(null);
+      setDiscountedPrice(null);
     }
-  }, [qty, discounts, product?.price]);
+  }
+}, [qty, discounts, product?.price]);
 
   const [createReview, { isLoading: loadingProductReview }] =
     useCreateReviewMutation();
@@ -71,7 +74,7 @@ const ProductDetails = () => {
       refetch();
       toast.success("Review created successfully");
     } catch (error) {
-      toast.error(error?.data || error.message);
+      toast.error(error?.data.error || error.message);
     }
   };
 

@@ -17,10 +17,13 @@ const GuestFooter = () => {
               <Link to="/retail">Retail</Link>
             </li>
             <li>
-              <a href="#about">About Us</a>
+              <Link to="/about-us">About Us</Link>
+            </li>
+             <li>
+               <Link to="/terms-and-conditions">Terms and Conditions</Link>
             </li>
             <li>
-              <a href="#footer">Contact</a>
+              <Link to="/contact-us">Contact Us</Link>
             </li>
           </ul>
         </div>
@@ -53,6 +56,7 @@ const GuestFooter = () => {
             <div>+91 99437 60055</div>
           </div>
         </div>
+        
       </div>
 
       <div className="footer-bottom">

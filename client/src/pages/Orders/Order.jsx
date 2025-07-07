@@ -8,9 +8,7 @@ import {
   useGetOrderDetailsQuery,
 } from "../../redux/api/orderApiSlice";
 import { useGetUserInfoQuery } from "../../redux/api/usersApiSlice";
-import {
-  useRequestInvoiceMutation,
-} from "../../redux/api/productApiSlice";
+import { useRequestInvoiceMutation } from "../../redux/api/productApiSlice";
 import getImage from "../../Utils/GetImage";
 import formatDate from "../../Utils/FormatDate";
 import { useRef } from "react";
@@ -19,6 +17,7 @@ import jsPDF from "jspdf";
 import InvoiceTemplate from "../../components/Template/InvoiceTemplate";
 import formatCurrency from "../../Utils/FormatCurrency";
 import formatTime from "../../Utils/FormatTime";
+import { FaTag } from "react-icons/fa";
 
 const Order = () => {
   const { id: orderId } = useParams();
@@ -29,9 +28,17 @@ const Order = () => {
     error,
   } = useGetOrderDetailsQuery(orderId);
 
-  console.log("sgiuasf", order)
   const [requestInvoice] = useRequestInvoiceMutation();
   const invoiceRef = useRef();
+
+  const isWithinTamilNadu = () => {
+    const shippingAddress = order.OrderShippingAddress;
+    const stateToCheck = shippingAddress.deliveryState 
+      ? shippingAddress.deliveryState 
+      : shippingAddress.state;
+    
+    return stateToCheck === "TN"; 
+  };
 
   const generateAndSaveInvoice = async () => {
     const invoiceElement = invoiceRef.current;
@@ -43,16 +50,29 @@ const Order = () => {
       const pdfWidth = pdf.internal.pageSize.getWidth();
       const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
 
-      pdf.addImage(dataUrl, "PNG", 0, 0, pdfWidth, pdfHeight);
+      const pageHeight = pdf.internal.pageSize.getHeight();
+      
+      let heightLeft = pdfHeight;
+      let position = 0;
+      const imgWidth = pdfWidth;
+      const imgHeight = (imgProps.height * imgWidth) / imgProps.width;
 
-      // Generate filename
+      pdf.addImage(dataUrl, "PNG", 0, position, imgWidth, imgHeight);
+      heightLeft -= pageHeight;
+
+      while (heightLeft >= 0) {
+        position = heightLeft - imgHeight;
+        pdf.addPage();
+        pdf.addImage(dataUrl, "PNG", 0, position, imgWidth, imgHeight);
+        heightLeft -= pageHeight;
+      }
+
       const fileName = `${formatDate(order.paidAt)}_${formatTime(
         order.paidAt
       )}_${order.OrderUser.email}.pdf`
         .replace(/\s+/g, "_")
         .replace(/:/g, "-");
 
-      // Save the PDF
       const pdfBlob = pdf.output("blob");
       saveAs(pdfBlob, fileName);
 
@@ -98,8 +118,8 @@ const Order = () => {
       const result = await requestInvoice(orderDetails).unwrap();
 
       if (!result.ok) {
-        console.log("error")
-      };
+        console.log("error");
+      }
 
       console.log("Invoice email sent successfully");
     } catch (error) {
@@ -115,22 +135,39 @@ const Order = () => {
     }
   }, [order]);
 
-  console.log("1 order", order);
-
   const [deliverOrder, { isLoading: loadingDeliver }] =
     useDeliverOrderMutation();
 
-  console.log("3 order", deliverOrder);
-
   const { data: userInfo } = useGetUserInfoQuery();
-
-  console.log("4 order", userInfo);
 
   const deliverHandler = async () => {
     await deliverOrder(orderId);
     refetch();
   };
-  console.log("orrooror", order);
+
+  const calculateItemTotal = (item) => {
+    const price = item.OrderItemProduct.price;
+    const quantity = item.qty;
+    const discount = item.OrderDiscount?.pricetobereduced || 0;
+    
+    const discountedPrice = price - discount;
+    const itemPrice = discountedPrice * quantity;
+    
+    const isTamilNadu = isWithinTamilNadu();
+    const itemSGST = isTamilNadu ? (itemPrice * item.OrderItemProduct.SGST) / 100 : 0;
+    const itemCGST = isTamilNadu ? (itemPrice * item.OrderItemProduct.CGST) / 100 : 0;
+    const itemIGST = !isTamilNadu ? (itemPrice * item.OrderItemProduct.IGST) / 100 : 0;
+    
+    return {
+      originalPrice: price * quantity,
+      discountedPrice: itemPrice,
+      sgst: itemSGST,
+      cgst: itemCGST,
+      igst: itemIGST,
+      total: itemPrice + itemSGST + itemCGST + itemIGST,
+      discountAmount: discount * quantity
+    };
+  };
 
   return isLoading ? (
     <Loader />
@@ -144,7 +181,13 @@ const Order = () => {
         </div>
       </div>
       <div className="pdf-Container">
-        <div className="pdf">
+        <div>
+          <Link to="/user-orders" className="btn-customized">
+            Go Back
+          </Link>
+        </div>
+
+        <div>
           <button
             onClick={handleDownloadInvoice}
             className="btn-customized"
@@ -171,47 +214,96 @@ const Order = () => {
                         Quantity
                       </th>
                       <th className="order-table-header">Unit Price</th>
-                      <th className="order-table-header text-center">
-                        Weight
-                      </th>
+                      <th className="order-table-header">Discount</th>
+                      {isWithinTamilNadu() ? (
+                        <>
+                          <th className="order-table-header">CGST</th>
+                          <th className="order-table-header">SGST</th>
+                        </>
+                      ) : (
+                        <th className="order-table-header">IGST</th>
+                      )}
+                      <th className="order-table-header text-center">Weight</th>
                       <th className="order-table-header">Total</th>
                     </tr>
                   </thead>
 
                   <tbody>
-                    {order.orderItems.map((item, index) => (
-                      <tr key={index} className="order-table-row">
-                        <td className="order-table-cell">
-                          <img
-                            src={getImage(item?.OrderItemProduct?.ProductImages[0]?.image_name, "ProductImage")}
-                            alt={item.name}
-                            className="order-item-image"
-                          />
-                        </td>
+                    {order.orderItems.map((item, index) => {
+                      const itemTotal = calculateItemTotal(item);
+                      return (
+                        <tr key={index} className="order-table-row">
+                          <td className="order-table-cell">
+                            <img
+                              src={getImage(
+                                item?.OrderItemProduct?.ProductImages[0]
+                                  ?.image_name,
+                                "ProductImage"
+                              )}
+                              alt={item.name}
+                              className="order-item-image"
+                            />
+                          </td>
 
-                        <td className="order-table-cell">
-                          <Link
-                            to={`/product/${item.product_id}`}
-                            className="order-item-link"
-                          >
-                            {item.name}
-                          </Link>
-                        </td>
+                          <td className="order-table-cell">
+                            <Link
+                              to={`/product/${item.product_id}`}
+                              className="order-item-link"
+                            >
+                              {item.name}
+                              {item.OrderDiscount && (
+                                <div className="discount-badge">
+                                  <FaTag style={{ marginRight: "5px", color: "green" }} />
+                                  Buy {item.OrderDiscount.qty}+, Save {formatCurrency(item.OrderDiscount.pricetobereduced)} per unit
+                                </div>
+                              )}
+                            </Link>
+                          </td>
 
-                        <td className="order-table-cell text-center">
-                          {item.qty}
-                        </td>
-                        <td className="order-table-cell text-center">
-                          {formatCurrency(item?.OrderItemProduct.price)}
-                        </td>
-                        <td className="order-table-cell text-center">
-                          {item.OrderItemProduct.weight}
-                        </td>
-                        <td className="order-table-cell text-center">
-                          {formatCurrency(item.qty * item.OrderItemProduct.price)}
-                        </td>
-                      </tr>
-                    ))}
+                          <td className="order-table-cell text-center">
+                            {item.qty}
+                          </td>
+                          <td className="order-table-cell text-center">
+                            {formatCurrency(item.OrderItemProduct.price)}
+                          </td>
+                          <td className="order-table-cell text-center">
+                            {item.OrderDiscount ? (
+                              <>
+                                <span style={{ textDecoration: "line-through" }}>
+                                  {formatCurrency(itemTotal.originalPrice)}
+                                </span>
+                                <br />
+                                <span style={{ color: "green" }}>
+                                  -{formatCurrency(itemTotal.discountAmount)}
+                                </span>
+                              </>
+                            ) : (
+                              "-"
+                            )}
+                          </td>
+                          {isWithinTamilNadu() ? (
+                            <>
+                              <td className="order-table-cell text-center">
+                                {formatCurrency(itemTotal.cgst)} ({item.OrderItemProduct.CGST}%)
+                              </td>
+                              <td className="order-table-cell text-center">
+                                {formatCurrency(itemTotal.sgst)} ({item.OrderItemProduct.SGST}%)
+                              </td>
+                            </>
+                          ) : (
+                            <td className="order-table-cell text-center">
+                              {formatCurrency(itemTotal.igst)} ({item.OrderItemProduct.IGST}%)
+                            </td>
+                          )}
+                          <td className="order-table-cell text-center">
+                            {item.OrderItemProduct.weight}
+                          </td>
+                          <td className="order-table-cell text-center">
+                            {formatCurrency(itemTotal.total)}
+                          </td>
+                        </tr>
+                      );
+                    })}
                   </tbody>
                 </table>
               </div>
@@ -242,10 +334,41 @@ const Order = () => {
               Address:{" "}
               <strong className="highlight-text">
                 {" "}
-                {order.OrderShippingAddress.address},{" "}
-                {order.OrderShippingAddress.city}{" "}
-                {order.OrderShippingAddress.postalCode},{" "}
-                {order.OrderShippingAddress.country}
+                {order.OrderShippingAddress.addressLine1},{" "}
+                {order.OrderShippingAddress.district} -{" "}
+                {order.OrderShippingAddress.pincode},{" "}
+                {order.OrderShippingAddress.country},{" "}
+                {order.OrderShippingAddress.state}
+              </strong>
+            </p>
+            <p className="order-info-item">
+              Contact Number :{" "}
+              <strong className="highlight-text">
+                {order.OrderShippingAddress.contactNumber}
+              </strong>
+            </p>
+
+            {order.OrderShippingAddress.deliveryDistrict ? (
+              <p className="order-info-item">
+                Delivery:{" "}
+                <strong className="highlight-text">
+                  {order.OrderShippingAddress.deliveryDistrict} -{" "}
+                  {order.OrderShippingAddress.deliveryPincode},{" "}
+                  {order.OrderShippingAddress.deliveryCountry},{" "}
+                  {order.OrderShippingAddress.deliveryState},
+                </strong>
+              </p>
+            ) : (
+              <></>
+            )}
+
+            <p className="order-info-item">
+              Tranportation:{" "}
+              <strong className="highlight-text">
+                {order.OrderShippingAddress.transportation},{" "}
+                {order.OrderShippingAddress.vehicleNumber
+                  ? order.OrderShippingAddress.vehicleNumber
+                  : ""}
               </strong>
             </p>
 
@@ -269,24 +392,47 @@ const Order = () => {
               <span>Items</span>
               <span>{formatCurrency(order?.itemsUnitPrice)}</span>
             </div>
-            <div className="price-summary-item">
-              <span>SGST</span>
-              <span>
-                {formatCurrency(order?.SGST)}
-              </span>
-            </div>
-             <div className="price-summary-item">
-              <span>CGST</span>
-              <span>
-                {formatCurrency(order?.CGST)}
-              </span>
-            </div>
-           
+            
+            {order.orderItems.some(item => item.OrderDiscount) && (
+              <div className="price-summary-item discount-item">
+                <span>
+                  <FaTag style={{ marginRight: "5px", color: "green" }} />
+                  Total Discounts
+                </span>
+                <span style={{ color: "green" }}>
+                  -{formatCurrency(
+                    order.orderItems.reduce((total, item) => {
+                      return total + (item.OrderDiscount?.pricetobereduced || 0) * item.qty;
+                    }, 0)
+                  )}
+                </span>
+              </div>
+            )}
+            
+            {isWithinTamilNadu() ? (
+              <>
+                <div className="price-summary-item">
+                  <span>SGST</span>
+                  <span>{formatCurrency(order?.SGST)}</span>
+                </div>
+                <div className="price-summary-item">
+                  <span>CGST</span>
+                  <span>{formatCurrency(order?.CGST)}</span>
+                </div>
+              </>
+            ) : (
+              <div className="price-summary-item">
+                <span>IGST</span>
+                <span>{formatCurrency(order?.IGST)}</span>
+              </div>
+            )}
+
             <div className="price-summary-item">
               <span>Total</span>
               <span>{formatCurrency(order?.totalPrice)}</span>
             </div>
           </div>
+          
           {loadingDeliver && <Loader />}
           {userInfo &&
             userInfo.isAdmin &&

@@ -13,11 +13,12 @@
 }
 
 .logo {
+ font-family: "Bona Nova SC", serif;
   display: flex;
-  font-size: var(--font-size-xl);
-  font-weight: 600;
+  font-size: var(--font-size-md);
   color: var(--color-text);
   flex-direction: column;
+  justify-content: center;
 }
 
 .logo-left{

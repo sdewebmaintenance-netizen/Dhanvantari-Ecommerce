@@ -1,12 +1,12 @@
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
-import { useAllProductsQuery } from "../../../redux/api/productApiSlice";
+import {  useAllProductsAdminQuery } from "../../../redux/api/productApiSlice";
 import Loader from "../../../components/Common/Loader";
 import Message from "../../../components/Common/Message";
 import ProductCard from "../../../components/Protected_Routes/Admin/ProductCard ";
 
 const AllProducts = () => {
-  const { data: products, isLoading, error, refetch } = useAllProductsQuery();
+  const { data: products, isLoading, error, refetch } = useAllProductsAdminQuery();
 
    useEffect(() => {
     refetch();

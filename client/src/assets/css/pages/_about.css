@@ -9,12 +9,6 @@
   line-height: 1.6;
 }
 
-.all-info-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: var(--space-lg);
-  margin-top: var(--space-3xl);
-}
 
 .info-item {
   background-color: var(--color-bg-light);
@@ -334,13 +328,6 @@
   margin-top: 1rem;
 }
 
-.hero-section {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  margin-bottom: var(--space-lg);
-}
 
 .feature-list {
   list-style-type: disc;
@@ -441,13 +428,6 @@
 }
 
 @media (max-width: 768px) {
-  .hero-section {
-    height: 200px;
-  }
-
-  .hero-title {
-    font-size: var(--font-size-3xl);
-  }
 
   .packaging-info {
     grid-template-columns: 1fr;
@@ -542,3 +522,5 @@
   font-size: var(--font-size-xs);
   color: var(--color-secondary-light);
 }
+
+

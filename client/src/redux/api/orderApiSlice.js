@@ -15,6 +15,21 @@ export const orderApiSlice = apiSlice.injectEndpoints({
       }),
     }),
 
+    requestOrderConfirmation: builder.mutation({
+      query: (orderConfirmation) => ({
+        url: `${ORDERS_URL}/orderConfirmation`,
+        method: "POST",
+        body: orderConfirmation,
+      }),
+    }),
+    
+    deleteOrder: builder.mutation({
+      query: (orderId) => ({
+        url: `${ORDERS_URL}/${orderId}`,
+        method: "DELETE",
+      }),
+    }),
+
     getOrderDetails: builder.query({
       query: (id) => ({
         url: `${ORDERS_URL}/${id}`,
@@ -65,4 +80,6 @@ export const {
   useGetMyOrdersQuery,
   useDeliverOrderMutation,
   useGetOrdersQuery,
+  useRequestOrderConfirmationMutation,
+  useDeleteOrderMutation
 } = orderApiSlice;

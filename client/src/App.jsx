@@ -47,6 +47,9 @@ import ForgotPassword from "./components/Auth/Phone/ForgotPassword";
 import IncoTermList from "./pages/Protected_Routes/Admin/IncoTermList";
 import PortList from "./pages/Protected_Routes/Admin/PortList";
 import DiscountList from "./pages/Protected_Routes/Admin/DiscountList";
+import AboutUs from "./components/UnProtected_Routes/AboutUs";
+import TermsAndConditions from "./components/UnProtected_Routes/TermsConditions";
+import ContactUs from "./components/UnProtected_Routes/ContactUs";
 
 const App = () => {
 
@@ -83,6 +86,9 @@ const App = () => {
           <Route path="/wholesale" element={<Product />} />
           <Route path="/retail" element={<RetailInfo />} />
           <Route path="/exports" element={<ProductQuoteTable />} />
+          <Route path="/about-us" element={<AboutUs />} />
+          <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
+          <Route path="/contact-us" element={<ContactUs />} />
 
           <Route path="/login-options" element={<LoginOptions />} />
           <Route path="/login" element={<Login />} />

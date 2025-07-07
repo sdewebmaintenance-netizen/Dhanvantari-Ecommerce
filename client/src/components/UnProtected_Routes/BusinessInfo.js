@@ -34,8 +34,7 @@ const BusinessInfo = () => {
 
       <h2 className="title text-animation">Why SDE?</h2>
       <p>
-        Native Food Ingredients Supply for Retail, Wholesale & Overseas
-        Manufacturers.One stop starch sourcing solution from India. Power your
+        One stop starch sourcing solution from India. Power your
         business with a modern sourcing backbone. Solving disparity in price
         difference between states — Get the same wholesale price as you pay from
         manufacturer.

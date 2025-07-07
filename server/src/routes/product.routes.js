@@ -13,7 +13,8 @@ const {
   fetchTopProducts,
   fetchNewProducts,
   filterProducts,
-  requestInvoiceForPlacedOrder
+  requestInvoiceForPlacedOrder,
+  fetchAllProductsAdmin
 } = require("../controllers/product.controller.js");
 
 const checkId =require("../middlewares/checkId.js");
@@ -24,9 +25,8 @@ router
   .get(fetchProducts)
   .post(uploadMultipleImages, addProduct);
 
-
 router.route("/:id/reviews").post(checkId, addProductReview);
-
+router.get("/allproductsadmin", fetchAllProductsAdmin);
 router.get("/top", fetchTopProducts);
 router.get("/new", fetchNewProducts);
 
@@ -39,6 +39,7 @@ router
 router.route("/filtered-products").post(filterProducts);
 
 router.post("/request-invoice",requestInvoiceForPlacedOrder);
+
 
   
 module.exports = router;

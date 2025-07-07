@@ -14,7 +14,7 @@ const { listIncoTerm } = require("../controllers/incoterm.controller.js");
 
 const { listPort } = require("../controllers/port.controller.js");
 
-const { fetchAllProducts, requestQuotaForExportProduct } = require("../controllers/product.controller.js");
+const { fetchAllProducts, requestQuotaForExportProduct, requestMessage } = require("../controllers/product.controller.js");
 
 const router = express.Router();
 
@@ -37,6 +37,7 @@ router.get("/incoterm", listIncoTerm);
 router.get("/ports", listPort);
 router.get("/allproducts", fetchAllProducts);
 router.post("/request-quota", requestQuotaForExportProduct);
+router.post("/request-message", requestMessage);
 
 
 module.exports = router;

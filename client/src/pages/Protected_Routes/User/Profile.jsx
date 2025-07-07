@@ -59,12 +59,17 @@ const Profile = () => {
         id: userInfo.id,
         ...formData,
       }).unwrap();
+
+      console.log("asgf", res)
+      if(res.error){
+        toast(res.error)
+      }
       dispatch(setCredentials({ ...res }));
       dispatch(logout());
       dispatch(apiSlice.util.resetApiState());
       toast.success("Profile updated successfully");
     } catch (err) {
-      toast.error(err?.data?.message || err.error);
+      toast.error(err?.data?.error);
     }
   };
 

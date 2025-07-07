@@ -101,7 +101,7 @@ const UserList = () => {
         await deleteUser(id);
         refetch();
       } catch (err) {
-        toast.error(err?.data?.message || err.error);
+        toast.error(err?.data?.error || err.error);
       }
     }
   };
@@ -114,7 +114,7 @@ const UserList = () => {
       });
       refetch();
     } catch (err) {
-      toast.error(err?.data?.message || err.error);
+      toast.error(err?.data?.error || err.error);
     }
   };
 

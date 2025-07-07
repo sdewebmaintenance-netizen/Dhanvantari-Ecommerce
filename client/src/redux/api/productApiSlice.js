@@ -23,6 +23,10 @@ export const productApiSlice = apiSlice.injectEndpoints({
       query: () => `/allProducts`,
     }),
 
+    allProductsAdmin: builder.query({
+      query: () => `${PRODUCT_URL}/allproductsadmin`,
+    }),
+
     getProductDetails: builder.query({
       query: (productId) => ({
         url: `${PRODUCT_URL}/${productId}`,
@@ -48,7 +52,7 @@ export const productApiSlice = apiSlice.injectEndpoints({
     }),
 
     deleteProduct: builder.mutation({
-      query: (productId) => ({
+      query: (productId) => ({  
         url: `${PRODUCT_URL}/${productId}`,
         method: "DELETE",
       }),
@@ -88,6 +92,14 @@ export const productApiSlice = apiSlice.injectEndpoints({
         body: requestQuota,
       }),
     }),
+
+     requestMessage: builder.mutation({
+      query: (requestMessage) => ({
+        url: `/request-message`,
+        method: "POST",
+        body: requestMessage,
+      }),
+    }),
     
      requestInvoice: builder.mutation({
       query: (requestInvoice) => ({
@@ -112,5 +124,7 @@ export const {
   useGetNewProductsQuery,
   useGetFilteredProductsQuery,
   useRequestQuotaMutation,
+  useRequestMessageMutation,
   useRequestInvoiceMutation,
+  useAllProductsAdminQuery,
 } = productApiSlice;
