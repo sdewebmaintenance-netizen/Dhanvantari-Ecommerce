@@ -34,7 +34,6 @@ const ProductQuoteTable = () => {
   const [requestQuota] = useRequestQuotaMutation();
   const { data: productsData, isLoading } = useAllProductsQuery();
 
-  // Filter products to only show EXPORT type
   const exportProducts =
     productsData?.filter((product) => product.productType === "EXPORT") || [];
 

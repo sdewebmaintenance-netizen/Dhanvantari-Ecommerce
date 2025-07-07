@@ -47,26 +47,6 @@ const Shipping = () => {
   const [useSameAddress, setUseSameAddress] = useState(true);
 
   useEffect(() => {
-    if (shippingAddress) {
-      setAddressLine1(shippingAddress.addressLine1 || "");
-      setAddressLine2(shippingAddress.addressLine2 || "");
-      setPincode(shippingAddress.pincode || "");
-      setGstin(shippingAddress.gstin || "");
-      setContactNumber(shippingAddress.contactNumber || "");
-      setTransportation(shippingAddress.transportation || "");
-      setVehicleNumber(shippingAddress.vehicleNumber || "");
-      setCountry(shippingAddress.country || "India");
-      setState(shippingAddress.state || "");
-      setDistrict(shippingAddress.district || "");
-      setDeliveryCountry(shippingAddress.deliveryCountry || "India");
-      setDeliveryState(shippingAddress.deliveryState || "");
-      setDeliveryDistrict(shippingAddress.deliveryDistrict || "");
-      setDeliveryPincode(shippingAddress.deliveryPincode || "");
-      setIsEditMode(false);
-    }
-  }, [shippingAddress]);
-
-  useEffect(() => {
     const india = Country.getAllCountries().find((c) => c.name === "India");
     if (india) {
       const states = State.getStatesOfCountry(india.isoCode);
@@ -89,7 +69,6 @@ const Shipping = () => {
     } else {
       setDistrictOptions([]);
     }
-    setDistrict("");
   }, [state]);
 
   useEffect(() => {
@@ -102,8 +81,33 @@ const Shipping = () => {
     } else {
       setDeliveryDistrictOptions([]);
     }
-    setDeliveryDistrict("");
   }, [deliveryState]);
+
+  useEffect(() => {
+    if (shippingAddress) {
+      setAddressLine1(shippingAddress.addressLine1 || "");
+      setAddressLine2(shippingAddress.addressLine2 || "");
+      setPincode(shippingAddress.pincode || "");
+      setGstin(shippingAddress.gstin || "");
+      setContactNumber(shippingAddress.contactNumber || "");
+      setTransportation(shippingAddress.transportation || "");
+      setVehicleNumber(shippingAddress.vehicleNumber || "");
+      setCountry(shippingAddress.country || "India");
+      setState(shippingAddress.state || "");
+      setDistrict(shippingAddress.district || "");
+      setDeliveryCountry(shippingAddress.deliveryCountry || "India");
+      setDeliveryState(shippingAddress.deliveryState || "");
+      setDeliveryDistrict(shippingAddress.deliveryDistrict || "");
+      setDeliveryPincode(shippingAddress.deliveryPincode || "");
+      setUseSameAddress(
+        shippingAddress.deliveryCountry === shippingAddress.country &&
+          shippingAddress.deliveryState === shippingAddress.state &&
+          shippingAddress.deliveryDistrict === shippingAddress.district &&
+          shippingAddress.deliveryPincode === shippingAddress.pincode
+      );
+      setIsEditMode(false);
+    }
+  }, [shippingAddress]);
 
   const submitHandler = async (e) => {
     e.preventDefault();
@@ -144,7 +148,7 @@ const Shipping = () => {
       setIsEditMode(false);
     } catch (error) {
       console.error(error);
-      toast.error(error?.data?.message || "Operation failed, try again.");
+      toast.error(error?.data?.error || "Operation failed, try again.");
     }
   };
 
@@ -158,7 +162,7 @@ const Shipping = () => {
         navigate("/cart");
       } catch (error) {
         console.error(error);
-        toast.error(error?.data?.message || "Delete failed, try again.");
+        toast.error(error?.data?.error || "Delete failed, try again.");
       }
     }
   };
@@ -309,10 +313,8 @@ const Shipping = () => {
                 />
               </div>
             </div>
-
-            {/* Shipping Address */}
             <div className="form-section">
-              <h2 className="section-title">Shipping Address</h2>
+              <h2 className="section-title">Customer Address</h2>
 
               <div className="form-group">
                 <label className="form-label">Address Line 1</label>
@@ -408,8 +410,8 @@ const Shipping = () => {
                     onChange={() => setUseSameAddress(!useSameAddress)}
                     className="form-control"
                   />
+                  Same as shipping address
                 </label>
-                Same as shipping address
               </div>
 
               {!useSameAddress && (
@@ -484,14 +486,13 @@ const Shipping = () => {
               <h2 className="section-title">Transportation Details</h2>
 
               <div className="form-group">
-                <label className="form-label">
-                  Transportation Name (Optional)
-                </label>
+                <label className="form-label">Transportation Name</label>
                 <input
                   type="text"
                   className="form-control"
                   placeholder="Enter transportation name"
                   value={transportation}
+                  required
                   onChange={(e) => setTransportation(e.target.value)}
                 />
               </div>

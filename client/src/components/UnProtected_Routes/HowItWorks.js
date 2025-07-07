@@ -26,7 +26,7 @@ const steps = [
     icon: "📄",
     title: "Customers Get Delivery",
     points: [
-      "Track the consignment in official website with LR number and once  Delivery call received or Status moved from Transit to 'Material reached final destination' Customer can produce identify proof and get the Product delivered in Nearest Warehouse.",
+      "Track the consignment in official website with LR number and get the Product delivered in Nearest Warehouse.",
       "For Door Delivery inform us While Booking order.",
     ],
   },

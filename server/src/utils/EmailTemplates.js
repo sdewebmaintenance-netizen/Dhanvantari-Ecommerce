@@ -1,7 +1,5 @@
-
-
 const EmailTemplates = {
-  requestQuoteTemplate:  {
+  requestQuoteTemplate: {
     owner: (name, requesterDetails, productDetails) => `
       <!DOCTYPE html>
       <html>
@@ -75,20 +73,36 @@ const EmailTemplates = {
                       <h3>Requester Information</h3>
                       <p><strong>Name:</strong> ${requesterDetails.name}</p>
                       <p><strong>Email:</strong> ${requesterDetails.email}</p>
-                      <p><strong>Phone:</strong> ${requesterDetails.phone || 'Not provided'}</p>
-                      <p><strong>Company:</strong> ${requesterDetails.company || 'Not provided'}</p>
-                      <p><strong>Country:</strong> ${requesterDetails.country || 'Not provided'}</p>
+                      <p><strong>Phone:</strong> ${
+                        requesterDetails.phone || "Not provided"
+                      }</p>
+                      <p><strong>Company:</strong> ${
+                        requesterDetails.company || "Not provided"
+                      }</p>
+                      <p><strong>Country:</strong> ${
+                        requesterDetails.country || "Not provided"
+                      }</p>
                   </div>
                   
                   <div class="details-box">
                       <h3>Requested Products</h3>
-                      ${productDetails.map(product => `
+                      ${productDetails
+                        .map(
+                          (product) => `
                           <div class="product-item">
                               <p><strong>Product:</strong> ${product.name}</p>
-                              <p><strong>Quantity:</strong> ${product.quantity}</p>
-                              ${product.specifications ? `<p><strong>Specifications:</strong> ${product.specifications}</p>` : ''}
+                              <p><strong>Quantity:</strong> ${
+                                product.quantity
+                              }</p>
+                              ${
+                                product.specifications
+                                  ? `<p><strong>Specifications:</strong> ${product.specifications}</p>`
+                                  : ""
+                              }
                           </div>
-                      `).join('')}
+                      `
+                        )
+                        .join("")}
                   </div>
                   
                   <p>Please respond to this inquiry within 24 - 72 hours to maintain our service standards.</p>
@@ -158,7 +172,9 @@ const EmailTemplates = {
                   
                   <div class="product-list">
                       <ul>
-                          ${productNames.map(product => `<li>${product}</li>`).join('')}
+                          ${productNames
+                            .map((product) => `<li>${product}</li>`)
+                            .join("")}
                       </ul>
                   </div>
                   
@@ -176,7 +192,7 @@ const EmailTemplates = {
           </div>
       </body>
       </html>
-    `
+    `,
   },
 
   // 2. Invoice Download - Sent to user
@@ -260,12 +276,16 @@ const EmailTemplates = {
                 
                 <div class="order-summary">
                     <h3>Order Summary</h3>
-                    ${orderDetails.items.map(item => `
+                    ${orderDetails.items
+                      .map(
+                        (item) => `
                         <div class="order-item">
                             <span>${item.name} (${item.quantity} ${item.unit})</span>
                             <span>${item.price}</span>
                         </div>
-                    `).join('')}
+                    `
+                      )
+                      .join("")}
                     
                     <div class="order-item">
                         <span>Shipping</span>
@@ -278,8 +298,12 @@ const EmailTemplates = {
                     </div>
                 </div>
                 
-                <p>Payment Status: <strong>${orderDetails.paymentStatus}</strong></p>
-                <p>Expected Shipment Date: <strong>${orderDetails.expectedShipment}</strong></p>
+                <p>Payment Status: <strong>${
+                  orderDetails.paymentStatus
+                }</strong></p>
+                <p>Expected Shipment Date: <strong>${
+                  orderDetails.expectedShipment
+                }</strong></p>
                 
                 <center>
                     <a href="${invoiceUrl}" class="btn">Download Invoice</a>
@@ -301,249 +325,350 @@ const EmailTemplates = {
     </html>
   `,
 
-  // 3. Order Placed - Sent to owner
-  orderPlacedTemplate: (orderDetails) => `
-    <!DOCTYPE html>
-    <html>
+  orderPlacedTemplate: (order) => `
+  <!DOCTYPE html>
+  <html>
     <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>New Order Received - Sridhanvantari Exports</title>
-        <style>
-            body {
-                line-height: 1.6;
-            }
-            .container {
-                max-width: 600px;
-                margin: 0 auto;
-                background: #fdf5e1;
-                border-radius: 8px;
-                overflow: hidden;
-                box-shadow: 0 0 20px rgba(0,0,0,0.1);
-            }
-            .header {
-                background-color: #4e474a;
-                color: #fdf5e1;
-                padding: 30px 20px;
-                text-align: center;
-            }
-            .content {
-                padding: 30px;
-            }
-            .order-details {
-                margin: 20px 0;
-            }
-            .section {
-                margin-bottom: 20px;
-            }
-            table {
-                width: 100%;
-                border-collapse: collapse;
-                margin: 15px 0;
-            }
-            th, td {
-                padding: 12px;
-                text-align: left;
-                border-bottom: 1px solid #4e474a;
-            }
-            th {
-                background-color: #fdf5e1;
-            }
-            .footer {
-                text-align: center;
-                padding: 20px;
-                font-size: 12px;
-                color: #777;
-                background: #f5f5f5;
-            }
-        </style>
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width,initial-scale=1" />
+      <title>New Order – Sri Dhanvantari Exports</title>
+      <style>
+        body  { font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif; background:#fdf5e1; line-height:1.6; color:#4e474a; }
+        .container { max-width:600px; margin:0 auto; background:#fdf5e1; border-radius:8px; overflow:hidden; box-shadow:0 0 20px rgba(0,0,0,0.1); }
+        .header    { background:#4e474a; color:#fdf5e1; padding:30px 20px; text-align:center; }
+        .content   { padding:30px; }
+        table      { width:100%; border-collapse:collapse; margin:20px 0; }
+        th,td      { padding:12px; text-align:left; border-bottom:1px solid #4e474a; }
+        th         { background:#fff; }
+        .discount  { color:#28a745; }
+        .total     { font-weight:700; }
+        .footer    { text-align:center; padding:20px; font-size:12px; color:#777; background:#f5f5f5; }
+      </style>
     </head>
     <body>
-        <div class="container">
-            <div class="header">
-                <h1>New Order Received</h1>
-                <p>Order #${orderDetails.orderNumber}</p>
-            </div>
-            <div class="content">
-                <p>Dear Sridhanvantari Exports Team,</p>
-                <p>A new order has been placed on the website. Please find the details below:</p>
-                
-                <div class="order-details">
-                    <div class="section">
-                        <h3>Customer Information</h3>
-                        <p><strong>Name:</strong> ${orderDetails.customer.name}</p>
-                        <p><strong>Email:</strong> ${orderDetails.customer.email}</p>
-                        <p><strong>Phone:</strong> ${orderDetails.customer.phone}</p>
-                        <p><strong>Shipping Address:</strong> ${orderDetails.shippingAddress}</p>
-                    </div>
-                    
-                    <div class="section">
-                        <h3>Order Summary</h3>
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Product</th>
-                                    <th>Quantity</th>
-                                    <th>Unit Price</th>
-                                    <th>Total</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                ${orderDetails.items.map(item => `
-                                    <tr>
-                                        <td>${item.name}</td>
-                                        <td>${item.quantity} ${item.unit}</td>
-                                        <td>${item.unitPrice}</td>
-                                        <td>${item.totalPrice}</td>
-                                    </tr>
-                                `).join('')}
-                            </tbody>
-                            <tfoot>
-                                <tr>
-                                    <td colspan="3" style="text-align: right;"><strong>Subtotal:</strong></td>
-                                    <td>${orderDetails.subtotal}</td>
-                                </tr>
-                                <tr>
-                                    <td colspan="3" style="text-align: right;"><strong>Tax:</strong></td>
-                                    <td>${orderDetails.taxAmount}</td>
-                                </tr>
-                                <tr>
-                                    <td colspan="3" style="text-align: right;"><strong>Total:</strong></td>
-                                    <td>${orderDetails.totalAmount}</td>
-                                </tr>
-                            </tfoot>
-                        </table>
-                    </div>
-                    
-                    <div class="section">
-                        <h3>Payment Information</h3>
-                        <p><strong>Payment Method:</strong> ${orderDetails.paymentMethod}</p>
-                        <p><strong>Payment Status:</strong> ${orderDetails.paymentStatus}</p>
-                        ${orderDetails.transactionId ? `<p><strong>Transaction ID:</strong> ${orderDetails.transactionId}</p>` : ''}
-                    </div>
-                    
-                    <div class="section">
-                        <h3>Next Steps</h3>
-                        <p>Please process this order as soon as possible. The customer expects shipment by <strong>${orderDetails.expectedShipment}</strong>.</p>
-                        <p>Order Source: Website</p>
-                    </div>
-                </div>
-                
-                <p>Best regards,<br>Sri Dhanvantari Exports System</p>
-            </div>
-            <div class="footer">
-                <p>© ${new Date().getFullYear()} Sri Dhanvantari Exports. All rights reserved.</p>
-            </div>
+      <div class="container">
+        <div class="header">
+          <h1>New Order #${order.orderNumber}</h1>
         </div>
+
+        <div class="content">
+          <h3>Customer Information</h3>
+          <p><strong>Name:</strong> ${order.customer.name}</p>
+          <p><strong>Email:</strong> ${order.customer.email}</p>
+          <p><strong>Phone:</strong> ${order.customer.phone || "N/A"}</p>
+
+          <h3>Shipping Address</h3>
+          <p>${order.shippingAddress}</p>
+          ${
+            order.withinTN
+              ? "<p><em>This order is within Tamil Nadu (SGST/CGST applied)</em></p>"
+              : "<p><em>This order is outside Tamil Nadu (IGST applied)</em></p>"
+          }
+
+          <h3>Order Items</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Product</th><th>Qty</th><th>Original</th><th>Discount</th>
+                ${
+                  order.withinTN
+                    ? "<th>SGST</th><th>CGST</th>"
+                    : "<th>IGST</th>"
+                }
+                <th>Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${order.items
+                .map(
+                  (i) => `
+                <tr>
+                  <td>${i.name}</td>
+                  <td>${i.quantity} ${i.unit}</td>
+                  <td>${i.originalPrice}</td>
+                  <td class="discount">${i.discountAmount || "-"}</td>
+                  ${
+                    order.withinTN
+                      ? `<td>${i.sgst}</td><td>${i.cgst}</td>`
+                      : `<td>${i.igst}</td>`
+                  }
+                  <td>${i.totalPrice}</td>
+                </tr>
+              `
+                )
+                .join("")}
+            </tbody>
+          </table>
+
+          <p><strong>Subtotal:</strong> ${order.subtotal}</p>
+          ${
+            order.totalDiscount !== "₹0.00"
+              ? `<p class="discount"><strong>Total Discount:</strong> ${order.totalDiscount}</p>`
+              : ""
+          }
+          ${
+            order.withinTN
+              ? `<p><strong>SGST Total:</strong> ${order.sgstTotal}</p>
+               <p><strong>CGST Total:</strong> ${order.cgstTotal}</p>`
+              : `<p><strong>IGST Total:</strong> ${order.igstTotal}</p>`
+          }
+          <p class="total"><strong>Total Amount:</strong> ${
+            order.totalAmount
+          }</p>
+
+          <h3>Payment</h3>
+          <p><strong>Method:</strong> ${order.paymentMethod}</p>
+          <p><strong>Status:</strong> ${order.paymentStatus}</p>
+          <p><strong>Transaction ID:</strong> ${order.transactionId || "—"}</p>
+
+          <h3>Next Steps</h3>
+          <p>Ship the order by <strong>${order.expectedShipment}</strong>.</p>
+        </div>
+
+        <div class="footer">
+          © ${new Date().getFullYear()} Sri Dhanvantari Exports. All rights reserved.
+        </div>
+      </div>
     </body>
+  </html>
+`,
+
+  orderConfirmationTemplate: (customerName, order) => `
+  <!DOCTYPE html>
+  <html>
+    <head>
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width,initial-scale=1" />
+      <title>Your Order – Sri Dhanvantari Exports</title>
+      <style>
+        body  { font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif; background:#fdf5e1; line-height:1.6; color:#4e474a; }
+        .container { max-width:600px; margin:0 auto; background:#fdf5e1; border-radius:8px; overflow:hidden; box-shadow:0 0 20px rgba(0,0,0,0.1); }
+        .header    { background:#4e474a; color:#fdf5e1; padding:30px 20px; text-align:center; }
+        .content   { padding:30px; }
+        table      { width:100%; border-collapse:collapse; margin:20px 0; }
+        th,td      { padding:12px; text-align:left; border-bottom:1px solid #4e474a; }
+        th         { background:#fff; }
+        .discount  { color:#28a745; }
+        .total     { font-weight:700; }
+        .footer    { text-align:center; padding:20px; font-size:12px; color:#777; background:#f5f5f5; }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <h1>Order Confirmation #${order.orderNumber}</h1>
+          <p>Thank you, ${customerName}!</p>
+        </div>
+
+        <div class="content">
+          <h3>Order Summary</h3>
+          <p><strong>Order Date:</strong> ${order.orderDate}</p>
+          <p><strong>Estimated Delivery:</strong> ${order.estimatedDelivery}</p>
+          ${
+            order.withinTN
+              ? "<p><em>This order is within Tamil Nadu (SGST/CGST applied)</em></p>"
+              : "<p><em>This order is outside Tamil Nadu (IGST applied)</em></p>"
+          }
+
+          <table>
+            <thead>
+              <tr><th>Product</th><th>Qty</th><th>Price</th><th>Discount</th></tr>
+            </thead>
+            <tbody>
+              ${order.items
+                .map(
+                  (i) => `
+                <tr>
+                  <td>${i.name}</td>
+                  <td>${i.quantity} ${i.unit}</td>
+                  <td>${i.price}</td>
+                  <td class="discount">${i.discount || "-"}</td>
+                </tr>
+              `
+                )
+                .join("")}
+            </tbody>
+          </table>
+
+          <p><strong>Subtotal:</strong> ${order.subtotal}</p>
+          <p><strong>Tax (${
+            order.withinTN ? "SGST + CGST" : "IGST"
+          }):</strong> ${order.tax}</p>
+          <p class="total"><strong>Total Amount:</strong> ${
+            order.totalAmount
+          }</p>
+
+          <h3>Shipping</h3>
+          <p><strong>Method:</strong> ${order.shippingMethod}</p>
+          <p><strong>Address:</strong> ${order.shippingAddress}</p>
+
+          <p>We'll notify you once your order ships. For assistance, reply to this email.</p>
+
+          <p>Best regards,<br/>Sri Dhanvantari Exports Team</p>
+        </div>
+
+        <div class="footer">
+          © ${new Date().getFullYear()} Sri Dhanvantari Exports. All rights reserved.
+        </div>
+      </div>
+    </body>
+  </html>`,
+
+  contactUsTemplate: {
+    owner: (contact) => `
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>New Enquiry – Sri Dhanvantari Exports</title>
+        <style>
+          body  { line-height:1.6; font-family:Arial,Helvetica,sans-serif; }
+          .container {
+            max-width:600px; margin:0 auto; background:#fdf5e1; border-radius:8px;
+            overflow:hidden; box-shadow:0 0 20px rgba(0,0,0,0.1);
+          }
+          .header {
+            background:#4e474a; color:#fdf5e1; padding:30px 20px; text-align:center;
+          }
+          .content { padding:30px; }
+          .section  { margin-bottom:20px; }
+          table      { width:100%; border-collapse:collapse; }
+          th, td     { padding:12px; text-align:left; border-bottom:1px solid #4e474a; }
+          th         { background:#fdf5e1; }
+          blockquote { margin:0; padding:15px 20px; background:#fff; border-left:4px solid #4e474a; }
+          .footer    {
+            text-align:center; padding:20px; font-size:12px; color:#777; background:#f5f5f5;
+          }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="header">
+            <h1>New Website Enquiry</h1>
+          </div>
+
+          <div class="content">
+            <p>Dear Sri Dhanvantari Exports Team,</p>
+            <p>
+              A visitor has submitted the contact form. The details are below:
+            </p>
+
+            <div class="section">
+              <h3>Contact Information</h3>
+              <table>
+                <tbody>
+                  <tr>
+                    <th style="width:40%">Name</th>
+                    <td>${contact.name}</td>
+                  </tr>
+                  <tr>
+                    <th>Email</th>
+                    <td>${contact.email}</td>
+                  </tr>
+                  ${
+                    contact.phone
+                      ? `<tr><th>Phone</th><td>${contact.phone}</td></tr>`
+                      : ""
+                  }
+                  <tr>
+                    <th>Submitted At</th>
+                    <td>${new Date().toLocaleString("en-IN", {
+                      day: "2-digit",
+                      month: "short",
+                      year: "numeric",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="section">
+              <h3>Message</h3>
+              <blockquote>${contact.message.replace(
+                /\n/g,
+                "<br/>"
+              )}</blockquote>
+            </div>
+
+            <p>Kindly respond to the visitor at your earliest convenience.</p>
+
+            <p>Best regards,<br />Sri Dhanvantari Exports Website</p>
+          </div>
+
+          <div class="footer">
+            © ${new Date().getFullYear()} Sri Dhanvantari Exports. All rights reserved.
+          </div>
+        </div>
+      </body>
     </html>
   `,
-
-  // 4. Order Confirmation - Sent to user
-  orderConfirmationTemplate: (userName, orderDetails) => `
-    <!DOCTYPE html>
-    <html>
+    user: (contact) => `
+  <!DOCTYPE html>
+  <html>
     <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>Order Confirmation - Sridhanvantari Exports</title>
-        <style>
-            body {
-                line-height: 1.6;
-            }
-            .container {
-                max-width: 600px;
-                margin: 0 auto;
-                background: #fdf5e1;
-                border-radius: 8px;
-                overflow: hidden;
-                box-shadow: 0 0 20px rgba(0,0,0,0.1);
-            }
-            .header {
-                background-color: #4e474a;
-                color: #fdf5e1;
-                padding: 30px 20px;
-                text-align: center;
-            }
-            .content {
-                padding: 30px;
-            }
-            .order-summary {
-                border: 1px solid #4e474a;
-                border-radius: 5px;
-                padding: 15px;
-                margin: 20px 0;
-            }
-            .order-item {
-                display: flex;
-                justify-content: space-between;
-                padding: 8px 0;
-            }
-            .total {
-                font-weight: bold;
-                margin-top: 10px;
-                border-top: 2px solid #4e474a;
-                padding-top: 10px;
-            }
-            .footer {
-                text-align: center;
-                padding: 20px;
-                font-size: 12px;
-                color: #777;
-                background: #f5f5f5;
-            }
-            
-        </style>
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1" />
+      <title>Thank You – Sri Dhanvantari Exports</title>
+      <style>
+        body  { line-height:1.6; font-family:Arial,Helvetica,sans-serif; background:#f9f9f9; }
+        .container {
+          max-width:600px; margin:0 auto; background:#fdf5e1; border-radius:8px;
+          overflow:hidden; box-shadow:0 0 20px rgba(0,0,0,0.1);
+        }
+        .header {
+          background:#4e474a; color:#fdf5e1; padding:30px 20px; text-align:center;
+        }
+        .content { padding:30px; }
+        .section  { margin-bottom:20px; }
+        .footer   {
+          text-align:center; padding:20px; font-size:12px; color:#777; background:#f5f5f5;
+        }
+      </style>
     </head>
     <body>
-        <div class="container">
-            <div class="header">
-                <h1>Order Confirmation</h1>
-                <p>Thank you for your order with Sridhanvantari Exports</p>
-            </div>
-            <div class="content">
-                <p>Dear ${userName},</p>
-                <p>Thank you for your order! We've received it and are preparing it for shipment. Below are the details of your purchase:</p>
-                
-                <div class="order-summary">
-                    <h3>Order #${orderDetails.orderNumber}</h3>
-                    <p><strong>Order Date:</strong> ${orderDetails.orderDate}</p>
-                    <p><strong>Estimated Delivery:</strong> ${orderDetails.estimatedDelivery}</p>
-                    
-                    <h4>Items Ordered</h4>
-                    ${orderDetails.items.map(item => `
-                        <div class="order-item">
-                            <span>${item.name} (${item.quantity} ${item.unit})</span>
-                            <span> ${item.price}</span>
-                        </div>
-                    `).join('')}
-                    
-                    
-                    <div class="order-item total">
-                        <span>Total Amount </span>
-                        <span>${orderDetails.totalAmount}</span>
-                    </div>
-                </div>
-                
-                <div class="tracking">
-                    <h3>Shipping Information</h3>
-                    <p><strong>Shipping Method:</strong> ${orderDetails.shippingMethod}</p>
-                    <p><strong>Shipping Address:</strong> ${orderDetails.shippingAddress}</p>
-                </div>
-                
-                <p>If you have any questions about your order, please reply to this email or contact our customer service team at <a href="mailto:sales@sridhanvantariexports.com">sales@sridhanvantariexports.com</a>.</p>
-                
-                <p>Thank you for choosing Sri Dhanvantari Exports!</p>
-                
-                <p>Best regards,<br>Sri Dhanvantari Exports Team</p>
-            </div>
-            <div class="footer">
-                <p>© ${new Date().getFullYear()} Sri Dhanvantari Exports. All rights reserved.</p>
-            </div>
+      <div class="container">
+        <div class="header">
+          <h1>Thank You for Contacting Us</h1>
         </div>
+
+        <div class="content">
+          <p>Dear ${contact.name},</p>
+
+          <p>
+            We have received your message and appreciate you reaching out to us.
+            A member of the Sri Dhanvantari Exports team will review your enquiry and get back to you shortly.
+          </p>
+
+          <div class="section">
+            <h3>Your Submitted Details</h3>
+            <p><strong>Email:</strong> ${contact.email}</p>
+            ${
+              contact.phone
+                ? `<p><strong>Phone:</strong> ${contact.phone}</p>`
+                : ""
+            }
+            <p><strong>Message:</strong></p>
+            <p style="background:#fff;padding:12px;border-left:4px solid #4e474a;">
+              ${contact.message.replace(/\n/g, "<br/>")}
+            </p>
+          </div>
+
+          <p>Thank you once again. We look forward to assisting you.</p>
+
+          <p>Warm regards,<br/>Team Sri Dhanvantari Exports</p>
+        </div>
+
+        <div class="footer">
+          © ${new Date().getFullYear()} Sri Dhanvantari Exports. All rights reserved.
+        </div>
+      </div>
     </body>
-    </html>
-  `
+  </html>
+`,
+  },
 };
 
 module.exports = EmailTemplates;

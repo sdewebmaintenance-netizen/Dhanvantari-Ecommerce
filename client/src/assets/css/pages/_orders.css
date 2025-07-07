@@ -67,6 +67,7 @@
 
 .price-item {
   margin-bottom: var(--space-md);
+  font-weight: 700;
 }
 
 .price-label {
@@ -280,13 +281,18 @@
   }
 }
 
-.pdf{
-  width: 100%;  
-  max-width: 30%;
-}
 
 .pdf-Container{
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
   margin-bottom: var(--space-lg);
+  align-items: baseline;
+}
+
+@media (max-width: 768px) {
+ 
+.pdf-Container{
+  display: flex;
+  flex-direction: column;
+}
 }

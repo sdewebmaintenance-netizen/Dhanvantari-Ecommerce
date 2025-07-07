@@ -8,6 +8,7 @@ import { FiMoreVertical, FiUser, FiLogOut } from "react-icons/fi";
 import { useGetUserInfoQuery } from "../../../redux/api/usersApiSlice";
 import { useFetchCartForUserQuery } from "../../../redux/api/cartApiSlice";
 import getImage from "../../../Utils/GetImage";
+import { FaUser } from "react-icons/fa";
 
 const UserHeader = () => {
   const { data: userInfo } = useGetUserInfoQuery();
@@ -66,7 +67,7 @@ const UserHeader = () => {
           className="mobile-menu-icon"
           onClick={() => setMenuOpen(!menuOpen)}
         >
-          <FiMoreVertical size={24} />
+          <FiMoreVertical size={24} color="white" />
         </div>
 
         <nav
@@ -82,9 +83,7 @@ const UserHeader = () => {
           <Link to="/cart">
             CART
             {cart.length > 0 && (
-              <span className="cart-badge">
-                {cart.length}
-              </span>
+              <span className="cart-badge">{cart.length}</span>
             )}
           </Link>
 
@@ -106,7 +105,13 @@ const UserHeader = () => {
                 onClick={() => setAvatarMenuOpen(!avatarMenuOpen)}
               >
                 <div className="avatar-initial">
-                  {userInfo?.username?.charAt(0).toUpperCase()}
+                  {userInfo?.username ? (
+                    <div className="avatar-initial">
+                      {userInfo.username.charAt(0).toUpperCase()}
+                    </div>
+                  ) : (
+                    <FaUser size={20} />
+                  )}
                 </div>
               </div>
 
@@ -117,7 +122,7 @@ const UserHeader = () => {
                     className="dropdown-item"
                     onClick={() => setAvatarMenuOpen(false)}
                   >
-                    <FiUser className="dropdown-icon" />
+                    <FiUser  className="dropdown-icon" />
                     Profile
                   </Link>
                   <div

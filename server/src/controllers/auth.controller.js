@@ -104,7 +104,7 @@ const forgotPassword = async (req, res) => {
       return res.status(404).json({ error: "Phone number not found" });
     }
     const hashedPassword = await hashPassword(password);
-    await prisma.user.update({
+    await prisma.User.update({
       where: { phone },
       data: { password: hashedPassword },
     });

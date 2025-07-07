@@ -12,6 +12,7 @@
 @import url("./components/_progress.css");
 @import url("./components/_template.css");
 @import url("./components/_auth.css");
+@import url("./components//_foodStarch.css");
 
 @import url("./layout/_header.css");
 @import url("./layout/_footer.css");
@@ -154,3 +155,4 @@ h1, h2, h3, h4, h5, h6, p, section, article {
     transform: translateY(0);
   }
 }
+

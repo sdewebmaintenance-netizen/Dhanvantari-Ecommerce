@@ -30,6 +30,7 @@ const AdminProductUpdate = () => {
   const [hsnSac, setHsnSac] = useState("");
   const [cgst, setCgst] = useState("");
   const [sgst, setSgst] = useState("");
+   const [igst, setIgst] = useState("");
   const [isVisible, setIsVisible] = useState(true);
 
   const [productType, setProductType] = useState("WHOLESALE");
@@ -67,6 +68,7 @@ const AdminProductUpdate = () => {
       setHsnSac(productData.hsnSac || "");
       setCgst(productData.CGST || "");
       setSgst(productData.SGST || "");
+      setIgst(productData.IGST || "");
       setIsVisible(productData.isVisible);
 
       setProductType(productData.productType);
@@ -134,6 +136,7 @@ const AdminProductUpdate = () => {
       formData.append("hsnSac", hsnSac);
       formData.append("cgst", cgst);
       formData.append("sgst", sgst);
+      formData.append("igst", igst);
       formData.append("isVisible", isVisible);
 
       if (productType === "EXPORT") {
@@ -159,7 +162,7 @@ const AdminProductUpdate = () => {
       });
 
       if (error) {
-        toast.error(error.data?.message || "Update failed");
+        toast.error(error.data?.error || "Update failed");
       } else {
         toast.success("Product updated successfully");
         navigate("/admin/allproductslist");
@@ -333,6 +336,17 @@ const AdminProductUpdate = () => {
               className="form-control"
               value={sgst}
               onChange={(e) => setSgst(e.target.value)}
+            />
+          </div>
+
+           <div className="form-group">
+            <label className="form-label">IGST (%)</label>
+            <input
+              type="number"
+              step="0.01"
+              className="form-control"
+              value={igst}
+              onChange={(e) => setIgst(e.target.value)}
             />
           </div>
 

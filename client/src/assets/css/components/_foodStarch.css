@@ -1,0 +1,184 @@
+.food-starch-container {
+  color: var(--color-text);
+  margin: 0 auto;
+}
+
+.hero-section {
+  background-image: url('../../images//Website-bg/Tapiaco_Thippu.jpg');
+  background-size: cover;
+  background-position: center;
+  height: 500px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  margin-bottom: var(--space-xl);
+}
+
+.hero-overlay {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  padding: var(--space-xl);
+  color: var(--color-text);
+  background-color: rgba(0, 0, 0, 0.5);
+  border-radius: var(--radius-lg);
+  max-width: 80%;
+}
+
+.hero-title {
+  font-size: var(--font-size-4xl);
+  font-weight: 700;
+  margin-bottom: var(--space-md);
+  color: var(--color-text);
+}
+
+.heroo-subtitle {
+  font-size: var(--font-size-xl);
+  color: var(--color-bg-light);
+}
+
+.content-section {
+  padding: var(--space-xl) var(--space-md);
+  margin-bottom: var(--space-xl);
+}
+
+.with-image {
+  display: flex;
+  gap: var(--space-xl);
+  align-items: center;
+}
+
+.text-content {
+  flex: 1;
+}
+
+.image-content {
+  flex: 1;
+}
+
+.section-image {
+  width: 100%;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+}
+
+.section-title {
+  font-size: var(--font-size-3xl);
+  color: var(--color-primary);
+  margin-bottom: var(--space-lg);
+  border-bottom: 2px solid var(--color-primary);
+  padding-bottom: var(--space-sm);
+}
+
+.section-content {
+  font-size: var(--font-size-md);
+  line-height: 1.7;
+}
+
+.highlight-text {
+  font-weight: var(--font-weight-bold);
+  color: var(--color-primary-dark);
+}
+
+.feature-list {
+  list-style-type: disc;
+  padding-left: var(--space-xl);
+  margin: var(--space-md) 0;
+}
+
+.feature-list li {
+  margin-bottom: var(--space-sm);
+}
+
+.image-gallery {
+  display: flex;
+  gap: var(--space-md);
+  margin-bottom: var(--space-xl);
+}
+
+.gallery-image {
+  width: 50%;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+}
+
+
+.all-info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: var(--space-lg);
+  margin-top: var(--space-xl);
+}
+
+
+
+.applications-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: var(--space-lg);
+  margin-top: var(--space-xl);
+}
+
+.applications-card {
+  background-color: var(--color-bg-light);
+  padding: var(--space-lg);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--transition-normal);
+}
+
+.application-card:hover {
+  transform: translateY(-5px);
+}
+
+.app-icon-container {
+  text-align: center;
+  margin-bottom: var(--space-md);
+}
+
+.app-icon {
+  width: 60px;
+  height: 60px;
+}
+
+.application-title {
+  font-size: var(--font-size-lg);
+  color: var(--color-primary-dark);
+  margin-bottom: var(--space-sm);
+  text-align: center;
+}
+
+.product-image-container {
+  text-align: center;
+  margin-bottom: var(--space-md);
+}
+
+.product-image {
+  width: 100%;
+  max-height: 200px;
+  object-fit: cover;
+  border-radius: var(--radius-md);
+}
+
+@media (max-width: 768px) {
+  .hero-section {
+    height: 300px;
+  }
+  
+  .hero-title {
+    font-size: var(--font-size-2xl);
+  }
+  
+  .with-image {
+    flex-direction: column;
+  }
+  
+  .image-gallery {
+    flex-direction: column;
+  }
+  
+  .gallery-image {
+    width: 100%;
+  }
+}

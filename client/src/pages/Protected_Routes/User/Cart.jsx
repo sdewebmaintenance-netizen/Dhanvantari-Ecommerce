@@ -33,28 +33,28 @@ const Cart = () => {
     refetch();
   }, []);
 
-  // Function to calculate discounted price for a product
   const calculateDiscountedPrice = (price, quantity) => {
     if (!discounts || discounts.length === 0) return null;
-    
-    // Sort discounts by quantity descending to get the best applicable discount
+
     const sortedDiscounts = [...discounts].sort((a, b) => b.qty - a.qty);
-    const applicableDiscount = sortedDiscounts.find(d => quantity >= d.qty);
-    
-    return applicableDiscount ? price - applicableDiscount.pricetobereduced : null;
+    const applicableDiscount = sortedDiscounts.find((d) => quantity >= d.qty);
+
+    return applicableDiscount
+      ? price - applicableDiscount.pricetobereduced
+      : null;
   };
 
-  // Calculate total price with discounts applied
   const calculateTotals = () => {
     let totalItems = 0;
     let totalOriginalPrice = 0;
     let totalDiscountedPrice = 0;
     let totalSavings = 0;
 
-    cart.forEach(item => {
+    cart.forEach((item) => {
       const quantity = item.quantity;
       const price = item.Products?.price || 0;
-      const discountedPrice = calculateDiscountedPrice(price, quantity) || price;
+      const discountedPrice =
+        calculateDiscountedPrice(price, quantity) || price;
 
       totalItems += quantity;
       totalOriginalPrice += price * quantity;
@@ -71,7 +71,8 @@ const Cart = () => {
     };
   };
 
-  const { totalItems, totalOriginalPrice, totalDiscountedPrice, totalSavings } = calculateTotals();
+  const { totalItems, totalOriginalPrice, totalDiscountedPrice, totalSavings } =
+    calculateTotals();
 
   const updateCartHandler = async (cartItemId, newQuantity) => {
     setIsProcessing(true);
@@ -122,8 +123,11 @@ const Cart = () => {
     navigate("/shipping");
   };
 
-  if (isCartLoading || isClearing || isDeleting || isProcessing || isUpdating) return <Loader />;
+  if (isCartLoading || isClearing || isDeleting || isProcessing || isUpdating)
+    return <Loader />;
   if (error) return <div>Error loading cart</div>;
+
+  console.log("Sfskaua", discounts);
 
   return (
     <div className="cart-container">
@@ -152,14 +156,20 @@ const Cart = () => {
 
           {cart.map((item) => {
             const price = item.Products?.price || 0;
-            const discountedPrice = calculateDiscountedPrice(price, item.quantity);
+            const discountedPrice = calculateDiscountedPrice(
+              price,
+              item.quantity
+            );
             const hasDiscount = discountedPrice !== null;
 
             return (
               <div key={item.id} className="cart-item">
                 <div className="cart-item-image">
                   <img
-                    src={getImage(item.Products?.ProductImages[0]?.image_name, "ProductImage")}
+                    src={getImage(
+                      item.Products?.ProductImages[0]?.image_name,
+                      "ProductImage"
+                    )}
                     alt={item.Products?.name}
                     className="product-image"
                   />
@@ -183,7 +193,13 @@ const Cart = () => {
                           {formatCurrency(discountedPrice)}
                         </span>
                         <div className="discount-badge">
-                          Save {formatCurrency(price - discountedPrice)} (Buy {discounts.find(d => d.qty <= item.quantity)?.qty}+)
+                          Save {formatCurrency(price - discountedPrice)} (Buy{" "}
+                          {
+                            [...discounts]
+                              .sort((a, b) => b.qty - a.qty)
+                              .find((d) => item.quantity >= d.qty)?.qty
+                          }
+                          +)
                         </div>
                       </>
                     ) : (
@@ -227,7 +243,7 @@ const Cart = () => {
           <div className="cart-summary">
             <div className="summary-content">
               <h4 className="summary-title">Items ({totalItems})</h4>
-              
+
               {totalDiscountedPrice < totalOriginalPrice ? (
                 <>
                   <div className="original-total">
@@ -247,9 +263,10 @@ const Cart = () => {
               )}
 
               <button
-                className="checkout-btn btn-customized"
+                className="btn-customized"
                 disabled={cart.length === 0 || isProcessing}
                 onClick={checkoutHandler}
+                style={{marginTop:"1rem"}}
               >
                 Checkout
               </button>

@@ -1,28 +1,36 @@
-
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { useDispatch } from "react-redux";
 import Message from "../../components/Common/Message";
 import ProgressSteps from "../../components/Protected_Routes/User/Cart/ProgressSteps";
 import Loader from "../../components/Common/Loader";
 import {
   useCreateOrderMutation,
+  useDeleteOrderMutation,
   useGetRazorPayKeyIdQuery,
+  useRequestOrderConfirmationMutation,
 } from "../../redux/api/orderApiSlice";
-import { clearCartItems } from "../../redux/features/cart/cartSlice";
 import getImage from "../../Utils/GetImage";
 import formatCurrency from "../../Utils/FormatCurrency";
 import { useFetchCartForUserQuery } from "../../redux/api/cartApiSlice";
+import { useFetchDiscountsQuery } from "../../redux/api/discountApiSlice";
+import { useEffect, useState } from "react";
 
 const PlaceOrder = () => {
   const navigate = useNavigate();
 
-  const { data: cart = [] } = useFetchCartForUserQuery();
+  const { data: cart = [], refetch } = useFetchCartForUserQuery();
+  const { data: discounts = [] } = useFetchDiscountsQuery();
 
+  const [loading, setLoading] = useState(false);
   console.log("Sss", cart);
 
+  useEffect(() => {
+    refetch();
+  }, []);
+
   const [createOrder, { isLoading, error }] = useCreateOrderMutation();
-  const dispatch = useDispatch();
+  const [requestOrderConfirmation] = useRequestOrderConfirmationMutation();
+  const [deleteOrder] = useDeleteOrderMutation();
 
   const { data: razorpayKey } = useGetRazorPayKeyIdQuery();
 
@@ -32,256 +40,408 @@ const PlaceOrder = () => {
     let itemsPrice = 0;
     let sgstTotal = 0;
     let cgstTotal = 0;
+    let igstTotal = 0;
     let taxPrice = 0;
     let totalPrice = 0;
+    let totalDiscount = 0;
+    let originalItemsPrice = 0;
+
+    // Check if delivery is within Tamil Nadu or outside
+    const isSameState = cart[0]?.CartShippingAddress?.deliveryState === "TN";
 
     cart.forEach((item) => {
-      const itemPrice = item.Products.price * item.quantity;
+      const originalItemPrice = item.Products.price * item.quantity;
+      originalItemsPrice += originalItemPrice;
+
+      const sortedDiscounts = [...discounts].sort((a, b) => b.qty - a.qty);
+      const applicableDiscount = sortedDiscounts.find(
+        (d) => item.quantity >= d.qty
+      );
+
+      const itemPrice = applicableDiscount
+        ? (item.Products.price - applicableDiscount.pricetobereduced) *
+          item.quantity
+        : originalItemPrice;
+
+      let itemSGST = 0;
+      let itemCGST = 0;
+      let itemIGST = 0;
+
+      if (isSameState) {
+        itemCGST = (itemPrice * item.Products.CGST) / 100;
+        itemSGST = (itemPrice * item.Products.SGST) / 100;
+      } else {
+        itemIGST = (itemPrice * item.Products.IGST) / 100;
+      }
+
       itemsPrice += itemPrice;
-
-      const itemSGST = (itemPrice * item.Products.SGST) / 100;
-      const itemCGST = (itemPrice * item.Products.CGST) / 100;
-
       sgstTotal += itemSGST;
       cgstTotal += itemCGST;
+      igstTotal += itemIGST;
+
+      if (applicableDiscount) {
+        totalDiscount += applicableDiscount.pricetobereduced * item.quantity;
+      }
     });
 
-    taxPrice = sgstTotal + cgstTotal;
+    taxPrice = isSameState ? sgstTotal + cgstTotal : igstTotal;
+
     totalPrice = itemsPrice + taxPrice;
 
     return {
       itemsPrice,
       sgstTotal,
       cgstTotal,
+      igstTotal,
       taxPrice,
       totalPrice,
+      totalDiscount,
+      originalItemsPrice,
+      isSameState,
     };
   };
-
   const orderSummary = calculateOrderSummary();
 
   const placeOrderHandler = async () => {
-  try {
-    const orderItems = cart.map(item => ({
-      product_id: item.product_id,
-      quantity: item.quantity,
-      price: item.Products.price,
-      CGST: item.Products.CGST,
-      SGST: item.Products.SGST,
-      name: item.Products.name,
-      image: item.Products.ProductImages[0]?.image_name
-    }));
+    try {
+      const orderItems = cart.map((item) => ({
+        product_id: item.product_id,
+        quantity: item.quantity,
+        price: item.Products.price,
+        CGST: item.Products.CGST,
+        SGST: item.Products.SGST,
+        IGST: item.Products.IGST,
+        name: item.Products.name,
+        image: item.Products.ProductImages[0]?.image_name,
+      }));
 
-    const shippingAddress = {
-      id: cart[0]?.CartShippingAddress.id,
-      addressLine1: cart[0]?.CartShippingAddress.addressLine1,
-      addressLine2: cart[0]?.CartShippingAddress.addressLine2,
-      district: cart[0]?.CartShippingAddress.district,
-      state: cart[0]?.CartShippingAddress.state,
-      country: cart[0]?.CartShippingAddress.country,
-      pincode: cart[0]?.CartShippingAddress.pincode,
-      contactNumber: cart[0]?.CartShippingAddress.contactNumber,
-      gstin: cart[0]?.CartShippingAddress.gstin,
-      deliveryDistrict: cart[0]?.CartShippingAddress.deliveryDistrict,
-      deliveryState: cart[0]?.CartShippingAddress.deliveryState,
-      deliveryCountry: cart[0]?.CartShippingAddress.deliveryCountry,
-      deliveryPincode: cart[0]?.CartShippingAddress.deliveryPincode,
-    };
+      const appliedDiscounts = cart
+        .map((item) => {
+          const sortedDiscounts = [...discounts].sort((a, b) => b.qty - a.qty);
+          const applicableDiscount = sortedDiscounts.find(
+            (d) => item.quantity >= d.qty
+          );
 
-    const res = await createOrder({
-      orderItems,
-      shippingAddress,
-      paymentMethod: "RazorPay",
-      itemsPrice: orderSummary.itemsPrice,
-      SGST: orderSummary.sgstTotal,
-      CGST: orderSummary.cgstTotal,
-      totalPrice: orderSummary.totalPrice
-    }).unwrap();
+          return applicableDiscount
+            ? {
+                product_id: item.product_id,
+                discount_id: applicableDiscount.id,
+                discount_amount: applicableDiscount.pricetobereduced,
+                quantity_required: applicableDiscount.qty,
+              }
+            : null;
+        })
+        .filter(Boolean);
 
-    const options = {
-      key: razorpayKey,
-      amount: orderSummary.totalPrice * 100, 
-      currency: "INR",
-      name: "Shri Dhanvantari Exports",
-      description: "Product Buying Payment Transaction",
-      order_id: res.RazorPay_Order.id,
-      handler: async (response) => {
-        try {
-          alert("Payment successful!");
-          dispatch(clearCartItems());
-          navigate(`/order/${res.order.id}`);
-        } catch (err) {
-          console.error("Error updating payment status:", err);
-          alert("Payment success but failed to update status.");
-        }
-      },
-      prefill: {
-        name: "John Doe",
-        email: "johndoe@example.com",
-        contact: "9999999999",
-      },
-      theme: {
-        color: "#4E474A",
-      },
-    };
-    const razorpay = new window.Razorpay(options);
-    razorpay.open();
-  } catch (error) {
-    toast.error(error);
-  }
-};
+      const shippingAddress = {
+        id: cart[0]?.CartShippingAddress.id,
+        addressLine1: cart[0]?.CartShippingAddress.addressLine1,
+        addressLine2: cart[0]?.CartShippingAddress.addressLine2,
+        district: cart[0]?.CartShippingAddress.district,
+        state: cart[0]?.CartShippingAddress.state,
+        country: cart[0]?.CartShippingAddress.country,
+        pincode: cart[0]?.CartShippingAddress.pincode,
+        contactNumber: cart[0]?.CartShippingAddress.contactNumber,
+        gstin: cart[0]?.CartShippingAddress.gstin,
+        deliveryDistrict: cart[0]?.CartShippingAddress.deliveryDistrict,
+        deliveryState: cart[0]?.CartShippingAddress.deliveryState,
+        deliveryCountry: cart[0]?.CartShippingAddress.deliveryCountry,
+        deliveryPincode: cart[0]?.CartShippingAddress.deliveryPincode,
+      };
+
+      const res = await createOrder({
+        totalPrice: orderSummary.totalPrice,
+      }).unwrap();
+
+      const options = {
+        key: razorpayKey,
+        amount: orderSummary.totalPrice * 100,
+        currency: "INR",
+        name: "Shri Dhanvantari Exports",
+        description: "Product Buying Payment Transaction",
+        order_id: res.RazorPay_Order.id,
+        handler: async (response) => {
+          try {
+            setLoading(true);
+            const order = await requestOrderConfirmation({
+              orderItems,
+              shippingAddress,
+              paymentMethod: "RazorPay",
+              itemsPrice: orderSummary.itemsPrice,
+              SGST: orderSummary.sgstTotal,
+              CGST: orderSummary.cgstTotal,
+              IGST:orderSummary.igstTotal,
+              totalPrice: orderSummary.totalPrice,
+              appliedDiscounts,
+              paymentId: res.payment.id,
+            }).unwrap();
+            setLoading(false);
+            alert("Payment successful!");
+            navigate(`/order/${order.order.id}`);
+          } catch (err) {
+            console.error("Error updating payment status:", err);
+            alert("Payment success but failed to update status.");
+          }
+        },
+        prefill: {
+          name: "John Doe",
+          email: "johndoe@example.com",
+          contact: "9999999999",
+        },
+        theme: {
+          color: "#4E474A",
+        },
+      };
+      const razorpay = new window.Razorpay(options);
+      razorpay.open();
+    } catch (error) {
+      toast.error(error);
+    }
+  };
+
+  const renderCartItems = () => {
+    const isSameState = cart[0]?.CartShippingAddress?.deliveryState === "TN";
+
+    return cart.map((item, index) => {
+      const sortedDiscounts = [...discounts].sort((a, b) => b.qty - a.qty);
+      const applicableDiscount = sortedDiscounts.find(
+        (d) => item.quantity >= d.qty
+      );
+
+      const originalItemPrice = item.Products.price * item.quantity;
+      const itemPrice = applicableDiscount
+        ? (item.Products.price - applicableDiscount.pricetobereduced) *
+          item.quantity
+        : originalItemPrice;
+
+      let itemSGST = 0;
+      let itemCGST = 0;
+      let itemIGST = 0;
+      let itemTotal = 0;
+
+      if (isSameState) {
+        itemCGST = (itemPrice * item.Products.CGST) / 100;
+        itemSGST = (itemPrice * item.Products.SGST) / 100;
+        itemTotal = itemPrice + itemCGST + itemSGST;
+      } else {
+        itemIGST = (itemPrice * item.Products.IGST) / 100;
+        itemTotal = itemPrice + itemIGST;
+      }
+
+      return (
+        <tr key={index} className="table-row">
+          <td className="table-cell">
+            <img
+              src={getImage(
+                item?.Products?.ProductImages[0]?.image_name,
+                "ProductImage"
+              )}
+              alt={item.name}
+              className="product-thumbnail"
+            />
+          </td>
+          <td className="table-cell">
+            <Link to={`/product/${item.product_id}`} className="product-link">
+              {item.Products?.name}
+              <br />{" "}
+              {applicableDiscount && (
+                <div className="discount-badge">
+                  Discount: Buy {applicableDiscount.qty}+, Save{" "}
+                  {formatCurrency(applicableDiscount.pricetobereduced)} per unit
+                </div>
+              )}
+            </Link>
+          </td>
+          <td className="table-cell">{item.quantity}</td>
+          <td className="table-cell">
+            {applicableDiscount ? (
+              <>
+                <span
+                  className="original-price"
+                  style={{ textDecoration: "line-through" }}
+                >
+                  {formatCurrency(item.Products.price)}
+                </span>
+                <span className="discounted-price">
+                  {formatCurrency(
+                    item.Products.price - applicableDiscount.pricetobereduced
+                  )}
+                </span>
+              </>
+            ) : (
+              formatCurrency(item.Products.price)
+            )}
+          </td>
+          {isSameState ? (
+            <>
+              <td className="table-cell">
+                {formatCurrency(itemCGST)} ({item.Products?.CGST}%)
+              </td>
+              <td className="table-cell">
+                {formatCurrency(itemSGST)} ({item.Products?.SGST}%)
+              </td>
+            </>
+          ) : (
+            <td className="table-cell" colSpan="2">
+              {formatCurrency(itemIGST)} (IGST {item.Products?.IGST}%)
+            </td>
+          )}
+          <td className="table-cell">{formatCurrency(itemTotal)}</td>
+        </tr>
+      );
+    });
+  };
 
   return (
     <div className="order-container">
       <ProgressSteps step1 step2 step3 />
 
-      <div className="order-container">
-        {cart.length === 0 ? (
-          <Message>Your cart is empty</Message>
-        ) : (
-          <div className="order-table-container">
-            <table className="order-table">
-              <thead>
-                <tr>
-                  <th className="table-header">Image</th>
-                  <th className="table-header">Product</th>
-                  <th className="table-header">Quantity</th>
-                  <th className="table-header">Price</th>
-                  <th className="table-header">CGST</th>
-                  <th className="table-header">SGST</th>
-                  <th className="table-header">Total</th>
-                </tr>
-              </thead>
+      {isLoading || loading ? (
+        <Loader />
+      ) : (
+        <div className="order-container">
+          {cart.length === 0 ? (
+            <Message>Your cart is empty</Message>
+          ) : (
+            <div className="order-table-container">
+              <table className="order-table">
+                <thead>
+                  <tr>
+                    <th className="table-header">Image</th>
+                    <th className="table-header">Product</th>
+                    <th className="table-header">Quantity</th>
+                    <th className="table-header">Price</th>
+                    {orderSummary.isSameState ? (
+                      <>
+                        <th className="table-header">CGST</th>
+                        <th className="table-header">SGST</th>
+                      </>
+                    ) : (
+                      <th className="table-header" colSpan="2">
+                        IGST
+                      </th>
+                    )}
+                    <th className="table-header">Total</th>
+                  </tr>
+                </thead>
 
-              <tbody>
-                {cart.map((item, index) => {
-                  const itemPrice = item.Products.price * item.quantity;
-                  const itemSGST = (itemPrice * item.Products.SGST) / 100;
-                  const itemCGST = (itemPrice * item.Products.CGST) / 100;
-                  const itemTotal = itemPrice + itemSGST + itemCGST;
+                <tbody>{renderCartItems()}</tbody>
+              </table>
+            </div>
+          )}
 
-                  return (
-                    <tr key={index} className="table-row">
-                      <td className="table-cell">
-                        <img
-                          src={getImage(
-                            item?.Products?.ProductImages[0]?.image_name,
-                            "ProductImage"
-                          )}
-                          alt={item.name}
-                          className="product-thumbnail"
-                        />
-                      </td>
-                      <td className="table-cell">
-                        <Link
-                          to={`/product/${item.product_id}`}
-                          className="product-link"
-                        >
-                          {item.Products?.name}
-                        </Link>
-                      </td>
-                      <td className="table-cell">{item.quantity}</td>
-                      <td className="table-cell">
-                        {formatCurrency(item.Products?.price)}
-                      </td>
-                      <td className="table-cell">
-                        {formatCurrency(itemCGST)} ({item.Products?.CGST}%)
-                      </td>
-                      <td className="table-cell">
-                        {formatCurrency(itemSGST)} ({item.Products?.SGST}%)
-                      </td>
-                      <td className="table-cell">
-                        {formatCurrency(itemTotal)}
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        )}
+          <div className="order-summary">
+            <h2
+              className="title text-animation"
+              style={{ marginBottom: "2rem" }}
+            >
+              Order Summary
+            </h2>
+            <div className="summary-details">
+              <ul className="price-list">
+                <li className="price-item">
+                  <span className="price-label">Original Items Price: </span>
+                  <span className="info-text">
+                    {formatCurrency(orderSummary.originalItemsPrice)}
+                  </span>
+                </li>
+                {orderSummary.totalDiscount > 0 && (
+                  <li className="price-item">
+                    <span className="price-label">Discount: </span>
+                    <span className="info-text discount-text">
+                      -{formatCurrency(orderSummary.totalDiscount)}
+                    </span>
+                  </li>
+                )}
+                <li className="price-item">
+                  <span className="price-label">
+                    Items Price After Discount:{" "}
+                  </span>
+                  <span className="info-text">
+                    {formatCurrency(orderSummary.itemsPrice)}
+                  </span>
+                </li>
+                {orderSummary.isSameState ? (
+                  <>
+                    <li className="price-item">
+                      <span className="price-label">SGST: </span>
+                      <span className="info-text">
+                        {formatCurrency(orderSummary.sgstTotal)}
+                      </span>
+                    </li>
+                    <li className="price-item">
+                      <span className="price-label">CGST: </span>
+                      <span className="info-text">
+                        {formatCurrency(orderSummary.cgstTotal)}
+                      </span>
+                    </li>
+                  </>
+                ) : (
+                  <li className="price-item">
+                    <span className="price-label">IGST: </span>
+                    <span className="info-text">
+                      {formatCurrency(orderSummary.igstTotal)}
+                    </span>
+                  </li>
+                )}
+                <li className="price-item total-price">
+                  <span className="price-label">Total: </span>
+                  <span className="info-text">
+                    {formatCurrency(orderSummary.totalPrice)}
+                  </span>
+                </li>
+              </ul>
 
-        <div className="order-summary">
-          <h2 className="title text-animation" style={{ marginBottom: "2rem" }}>
-            Order Summary
-          </h2>
-          <div className="summary-details">
-            <ul className="price-list">
-              <li className="price-item">
-                <span className="price-label">Items Price: </span>
-                <span className="info-text">
-                  {formatCurrency(orderSummary.itemsPrice)}
-                </span>
-              </li>
-              <li className="price-item">
-                <span className="price-label">SGST: </span>
-                <span className="info-text">
-                  {formatCurrency(orderSummary.sgstTotal)}
-                </span>
-              </li>
-              <li className="price-item">
-                <span className="price-label">CGST: </span>
-                <span className="info-text">
-                  {formatCurrency(orderSummary.cgstTotal)}
-                </span>
-              </li>
-              <li className="price-item">
-                <span className="price-label">Total: </span>
-                <span className="info-text">
-                  {formatCurrency(orderSummary.totalPrice)}
-                </span>
-              </li>
-            </ul>
+              {error && (
+                <Message variant="danger">{error.data.message}</Message>
+              )}
 
-            {error && <Message variant="danger">{error.data.message}</Message>}
+              <div className="shipping-info">
+                <h4 className="title text-animation">Customer Address</h4>
+                <p className="info-text">
+                  <strong>Address:</strong>{" "}
+                  {cart[0]?.CartShippingAddress?.addressLine1},
+                  {cart[0]?.CartShippingAddress?.addressLine2},{" "}
+                  {cart[0]?.CartShippingAddress?.district},
+                  {cart[0]?.CartShippingAddress?.country}-{" "}
+                  {cart[0]?.CartShippingAddress?.pincode},{" "}
+                  {cart[0]?.CartShippingAddress?.state}
+                </p>
+                <p className="info-text">
+                  <strong>Contact Number:</strong>{" "}
+                  {cart[0]?.CartShippingAddress?.contactNumber}
+                </p>
 
-            <div className="shipping-info">
-              <h4 className="title text-animation">Shipping</h4>
-              <p className="info-text">
-                <strong>Address:</strong>{" "}
-                {cart[0]?.CartShippingAddress.addressLine1},
-                {cart[0]?.CartShippingAddress.addressLine2},{" "}
-                {cart[0]?.CartShippingAddress.district},
-                {cart[0]?.CartShippingAddress.country}-{" "}
-                {cart[0]?.CartShippingAddress.pincode},{" "}
-                {cart[0]?.CartShippingAddress.state}
-              </p>
-              <p className="info-text">
-                <strong>Contact Number:</strong>{" "}
-                {cart[0]?.CartShippingAddress.contactNumber}
-              </p>
+                <h4 className="title text-animation">Shipping Details</h4>
+                <p className="info-text">
+                  <strong>Address:</strong>{" "}
+                  {cart[0]?.CartShippingAddress?.deliveryDistrict},
+                  {cart[0]?.CartShippingAddress?.deliveryCountry}-,
+                  {cart[0]?.CartShippingAddress?.deliveryPincode},{" "}
+                  {cart[0]?.CartShippingAddress?.deliveryState}
+                </p>
+              </div>
 
-              <h4 className="title text-animation">Delivery Details</h4>
-              <p className="info-text">
-                <strong>Address:</strong>{" "}
-                {cart[0]?.CartShippingAddress.deliveryDistrict},
-                {cart[0]?.CartShippingAddress.deliveryCountry}-,
-                {cart[0]?.CartShippingAddress.deliveryPincode},{" "}
-                {cart[0]?.CartShippingAddress.deliveryState}
-              </p>
+              <div className="payment-info">
+                <h4 className="title text-animation">Payment Method</h4>
+                <p className="info-text">
+                  <strong>Method:</strong> RazorPay
+                </p>
+              </div>
             </div>
 
-            <div className="payment-info">
-              <h4 className="title text-animation">Payment Method</h4>
-              <p className="info-text">
-                <strong>Method:</strong> RazorPay
-              </p>
-            </div>
+            <button
+              type="button"
+              className="btn-customized"
+              disabled={cart.cartItems === 0}
+              onClick={placeOrderHandler}
+              style={{ marginTop: "2rem", width: "100%" }}
+            >
+              Place Order
+            </button>
           </div>
-
-          <button
-            type="button"
-            className="btn-customized"
-            disabled={cart.cartItems === 0}
-            onClick={placeOrderHandler}
-            style={{ marginTop: "2rem", width: "100%" }}
-          >
-            Place Order
-          </button>
-
-          {isLoading && <Loader />}
         </div>
-      </div>
+      )}
     </div>
   );
 };

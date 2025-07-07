@@ -194,3 +194,34 @@
     align-self: stretch;
   }
 }
+
+.discount-badge {
+  display: inline-block;
+  color: var(--color-success);
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--space-sm);
+  border: 1px solid var(--color-success);
+  font-size: 1rem;
+}
+
+
+.original-price, .original-subtotal, .original-total {
+  text-decoration: line-through;
+  color: var(--color-text-muted);
+  margin-right: 8px;
+}
+
+.discounted-price, .discounted-subtotal, .discounted-total {
+  color: var(--color-danger);
+  font-weight: bold;
+  margin-right: var(--space-sm);
+}
+
+.savings {
+  color: var(--color-success);
+  font-weight: bold;
+}
+
+.cart-item-subtotal {
+  text-align: right;
+}

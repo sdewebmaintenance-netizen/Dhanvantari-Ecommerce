@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCreateProductMutation } from "../../../redux/api/productApiSlice";
-import {
+import {   
   useFetchCategoriesQuery,
   useFetchExportCategoriesQuery,
 } from "../../../redux/api/categoryApiSlice";
@@ -30,6 +30,7 @@ const ProductList = () => {
   const [hsnSac, setHsnSac] = useState("");
   const [cgst, setCgst] = useState("");
   const [sgst, setSgst] = useState("");
+  const [igst, setIgst] = useState("");
   const navigate = useNavigate();
 
   const [createProduct] = useCreateProductMutation();
@@ -75,6 +76,7 @@ const ProductList = () => {
       productData.append("hsnSac", hsnSac);
       productData.append("cgst", cgst);
       productData.append("sgst", sgst);
+      productData.append("igst", igst);
 
       if (productType === "EXPORT") {
         productData.append("incoTerm", incoTerm);
@@ -303,6 +305,20 @@ const ProductList = () => {
               className="form-control"
               value={sgst}
               onChange={(e) => setSgst(e.target.value)}
+              step="0.01"
+            />
+          </div>
+
+
+          <div className="form-group">
+            <label htmlFor="igst" className="form-label">
+              IGST (%)
+            </label>
+            <input
+              type="number"
+              className="form-control"
+              value={igst}
+              onChange={(e) => setIgst(e.target.value)}
               step="0.01"
             />
           </div>

@@ -22,6 +22,7 @@ const addProduct = asyncHandler(async (req, res) => {
     hsnSac,
     cgst,
     sgst,
+    igst,
   } = req.body;
   const images = req.files;
 
@@ -53,6 +54,7 @@ const addProduct = asyncHandler(async (req, res) => {
     hsnSac: hsnSac ? parseInt(hsnSac) : null,
     CGST: cgst ? parseFloat(cgst) : null,
     SGST: sgst ? parseFloat(sgst) : null,
+    IGST: sgst ? parseFloat(igst) : null,
   };
 
   if (productType === "EXPORT") {
@@ -101,7 +103,8 @@ const updateProductDetails = asyncHandler(async (req, res) => {
     hsnSac,
     cgst,
     sgst,
-    isVisible
+    igst,
+    isVisible,
   } = req.body;
 
   const newImages = req.files || [];
@@ -132,7 +135,8 @@ const updateProductDetails = asyncHandler(async (req, res) => {
         hsnSac: hsnSac ? parseInt(hsnSac) : null,
         CGST: cgst ? parseFloat(cgst) : null,
         SGST: sgst ? parseFloat(sgst) : null,
-        isVisible: isVisible === 'true' || isVisible === true
+        IGST: igst ? parseFloat(igst) : null,
+        isVisible: isVisible === "true" || isVisible === true,
       };
 
       if (productType === "EXPORT") {
@@ -205,6 +209,7 @@ const removeProduct = asyncHandler(async (req, res) => {
 });
 
 const fetchProducts = asyncHandler(async (req, res) => {
+  console.log("keyyyyyyyyyyyyyy", req.query.keyword);
   const pageSize = 6;
   const keyword = req.query.keyword
     ? {
@@ -215,10 +220,15 @@ const fetchProducts = asyncHandler(async (req, res) => {
       }
     : {};
 
+  const baseWhere = {
+    ...keyword,
+    isVisible: true,
+  };
+
   const [count, products] = await Promise.all([
-    prisma.product.count({ where: keyword }),
+    prisma.product.count({ where: baseWhere }),
     prisma.product.findMany({
-      where: keyword,
+      where: baseWhere,
       take: pageSize,
       include: {
         ProductCategory: true,
@@ -237,7 +247,10 @@ const fetchProducts = asyncHandler(async (req, res) => {
 
 const fetchProductById = asyncHandler(async (req, res) => {
   const product = await prisma.product.findUnique({
-    where: { id: parseInt(req.params.id) },
+    where: {
+      id: parseInt(req.params.id),
+      isVisible: true,
+    },
     include: {
       ProductCategory: true,
       ProductIncoTerm: true,
@@ -264,6 +277,24 @@ const fetchProductById = asyncHandler(async (req, res) => {
 
 const fetchAllProducts = asyncHandler(async (req, res) => {
   const products = await prisma.product.findMany({
+    where: { isVisible: true },
+    include: {
+      ProductCategory: true,
+      ProductImages: true,
+      ProductIncoTerm: true,
+      ProductPort: true,
+    },
+    take: 12,
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+  res.json(products);
+});
+
+
+const fetchAllProductsAdmin = asyncHandler(async (req, res) => {
+  const products = await prisma.product.findMany({
     include: {
       ProductCategory: true,
       ProductImages: true,
@@ -283,7 +314,7 @@ const addProductReview = asyncHandler(async (req, res) => {
   const productId = parseInt(req.params.id);
 
   const product = await prisma.product.findUnique({
-    where: { id: productId },
+    where: { id: productId, },
     include: {
       reviews: true,
     },
@@ -343,6 +374,7 @@ const addProductReview = asyncHandler(async (req, res) => {
 
 const fetchTopProducts = asyncHandler(async (req, res) => {
   const products = await prisma.product.findMany({
+    where: { isVisible: true },
     orderBy: {
       rating: "desc",
     },
@@ -357,6 +389,7 @@ const fetchTopProducts = asyncHandler(async (req, res) => {
 
 const fetchNewProducts = asyncHandler(async (req, res) => {
   const products = await prisma.product.findMany({
+    where: { isVisible: true },
     orderBy: {
       id: "desc",
     },
@@ -368,7 +401,7 @@ const fetchNewProducts = asyncHandler(async (req, res) => {
 const filterProducts = asyncHandler(async (req, res) => {
   const { checked, radio } = req.body;
 
-  let where = {};
+  let where = { isVisible: true};
   if (checked && checked.length > 0) {
     where.category_id = { in: checked.map((id) => parseInt(id)) };
   }
@@ -492,6 +525,52 @@ const requestInvoiceForPlacedOrder = asyncHandler(async (req, res) => {
   }
 });
 
+const requestMessage = asyncHandler(async (req, res) => {
+  try {
+    console.log("sikulasu", req.body);
+    const { name, email, phone, message } = req.body;
+
+    if (!name || !email || !phone || !message) {
+      return res.status(400).json({
+        success: false,
+        message: "Name, email, phone and message are required",
+      });
+    }
+
+    const requesterDetails = {
+      name,
+      email,
+      phone: phone || "Not provided",
+      message: message || "No additional message",
+    };
+
+    const ownerEmail = NODEMAILER_USERNAME;
+
+    const ownerSubject = `New Message from Contact Us Form Submitted`;
+    const ownerHtml = EmailTemplates.contactUsTemplate.owner(requesterDetails);
+
+    await EmailTransmitter(ownerEmail, ownerSubject, ownerHtml);
+
+    const userSubject = "Your Website Enquiry Has Been Received";
+    const userHtml = EmailTemplates.contactUsTemplate.user(requesterDetails);
+
+    await EmailTransmitter(email, userSubject, userHtml);
+
+    res.status(200).json({
+      success: true,
+      message:
+        "Message submitted successfully. You will receive a email response shortly.",
+    });
+  } catch (error) {
+    console.error("Error processing message request:", error);
+    res.status(500).json({
+      success: false,
+      message: "An error occurred while processing your message",
+      error: error.message,
+    });
+  }
+});
+
 module.exports = {
   addProduct,
   updateProductDetails,
@@ -505,4 +584,6 @@ module.exports = {
   filterProducts,
   requestQuotaForExportProduct,
   requestInvoiceForPlacedOrder,
+  requestMessage,
+  fetchAllProductsAdmin
 };

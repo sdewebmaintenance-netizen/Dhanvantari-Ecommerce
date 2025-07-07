@@ -13,6 +13,8 @@ const {
   findOrderById,
   markOrderAsPaid,
   markOrderAsDelivered,
+  getOrderDetailsAndSendEmails,
+  deleteOrderWithItems
 } = require("../controllers/order.controller.js");
 
 router.get("/getKey", getKey);
@@ -29,5 +31,11 @@ router.get("/total-sales-by-date", calcualteTotalSalesByDate);
 router.get("/:id", findOrderById);
 router.put("/:id/pay", markOrderAsPaid);
 router.put("/:id/deliver", markOrderAsDelivered);
+
+router
+  .route("/:order_id")
+  .delete(deleteOrderWithItems);
+
+  router.post("/orderConfirmation", getOrderDetailsAndSendEmails);
 
 module.exports = router;

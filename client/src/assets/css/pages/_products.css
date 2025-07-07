@@ -544,7 +544,7 @@
 }
 
 .reviews-container {
-  margin-top: var(--space-md);
+  margin-top: var(--space-lg);
 }
 
 .no-reviews {
@@ -688,48 +688,4 @@
   color: var(--color-danger);
   font-weight: bold;
   margin-left: 8px;
-}
-
-.discount-badge {
-  display: inline-block;
-  background-color: #f8f9fa;
-  color: var(--color-success);
-  padding: 2px 8px;
-  border-radius: 4px;
-  font-size: 0.8rem;
-  margin-left: 8px;
-  border: 1px solid var(--color-success);
-}
-
-
-.original-price, .original-subtotal, .original-total {
-  text-decoration: line-through;
-  color: #666;
-  margin-right: 8px;
-}
-
-.discounted-price, .discounted-subtotal, .discounted-total {
-  color: #e63946;
-  font-weight: bold;
-}
-
-.discount-badge {
-  display: inline-block;
-  background-color: #f8f9fa;
-  color: #28a745;
-  padding: 2px 8px;
-  border-radius: 4px;
-  font-size: 0.8rem;
-  margin-left: 8px;
-  border: 1px solid #28a745;
-}
-
-.savings {
-  color: #28a745;
-  font-weight: bold;
-}
-
-.cart-item-subtotal {
-  min-width: 120px;
-  text-align: right;
 }

@@ -67,6 +67,7 @@ model Product {
   productType     ProductType?
   CGST            Int?
   SGST            Int?
+  IGST            Int?
   hsnSac          Int?
   isVisible       Boolean        @default(true)
   createdAt       DateTime       @default(now())
@@ -135,31 +136,34 @@ model Review {
 }
 
 model OrderItem {
-  id         Int      @id @default(autoincrement())
-  name       String
-  qty        Int
-  product_id Int
-  order_id   Int
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  id          Int      @id @default(autoincrement())
+  name        String
+  qty         Int
+  product_id  Int
+  order_id    Int
+  discount_id Int?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
-  OrderItemProduct Product @relation(fields: [product_id], references: [id])
-  OrdersRecord     Order   @relation(fields: [order_id], references: [id])
+  OrderItemProduct Product   @relation(fields: [product_id], references: [id])
+  OrdersRecord     Order     @relation(fields: [order_id], references: [id])
+  OrderDiscount    Discount? @relation(fields: [discount_id], references: [id])
 }
 
 model Order {
-  id                   Int             @id @default(autoincrement())
-  user_id              Int
-  shippingAddress_id   Int
-  paymentMethod        String
-  paymentResult_id     Int
-  itemsUnitPrice       Float           @default(0)
-  SGST                 Float           @default(0)
-  CGST                 Float           @default(0)
-  totalPrice           Float           @default(0)
-  isPaid               Boolean         @default(false)
-  paidAt               DateTime
-  discount_id          Int?
+  id                 Int      @id @default(autoincrement())
+  user_id            Int
+  shippingAddress_id Int
+  paymentMethod      String
+  paymentResult_id   Int
+  itemsUnitPrice     Float    @default(0)
+  SGST               Float    @default(0)
+  CGST               Float    @default(0)
+  IGST               Float    @default(0)
+  totalPrice         Float    @default(0)
+  isPaid             Boolean  @default(false)
+  paidAt             DateTime
+
   isDelivered          Boolean         @default(false)
   deliveredAt          DateTime?
   createdAt            DateTime        @default(now())
@@ -168,7 +172,6 @@ model Order {
   OrderPaymentResult   PaymentResult   @relation(fields: [paymentResult_id], references: [id])
   OrderShippingAddress ShippingAddress @relation(fields: [shippingAddress_id], references: [id])
   OrderUser            User            @relation(fields: [user_id], references: [id])
-  OrderDiscount        Discount?        @relation(fields: [discount_id], references: [id])
 }
 
 model Discount {
@@ -177,8 +180,8 @@ model Discount {
   pricetobereduced Float
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
-  
-  Order            Order[]
+
+  OrderItem OrderItem[]
 }
 
 model ShippingAddress {
