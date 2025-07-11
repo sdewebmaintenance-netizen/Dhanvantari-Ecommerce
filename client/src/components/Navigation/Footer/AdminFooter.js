@@ -8,7 +8,6 @@ const AdminFooter = () => {
         <div className="footer-section">
           <h3 className="footer-title">Admin Links</h3>
           <ul  className="footer-links">
-            <li><Link to="/admin/dashboard">Dashboard</Link></li>
             <li><Link to="/admin/allproductslist">Products</Link></li>
             <li><Link to="/admin/userlist">Users</Link></li>
           </ul>
@@ -17,8 +16,8 @@ const AdminFooter = () => {
         <div className="footer-section">
           <h3 className="footer-title">Quick Links</h3>
           <ul  className="footer-links">
-            <li><Link to="/">Home</Link></li>
-            <li><Link to="/shop">Shop</Link></li>
+            <li><Link to="/admin/dashboard">Dashboard</Link></li>
+            <li><Link to="/admin/orderlist">Orders</Link></li>
           </ul>
         </div>
       </div>

@@ -22,6 +22,9 @@ const TermsAndConditions = () => (
           </a>
           ).
         </li>
+
+         <li>Our responsibility ceases once goods leave our factory and return of products and money refund not applicable.</li>
+          <li>Privacy policy to safeguard customer information.</li>
       </ul>
     </div>
   </div>

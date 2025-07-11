@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE `Product` ADD COLUMN `moq` DOUBLE NOT NULL DEFAULT 1;

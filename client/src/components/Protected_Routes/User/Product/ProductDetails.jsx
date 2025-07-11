@@ -14,7 +14,6 @@ import { useGetUserInfoQuery } from "../../../../redux/api/usersApiSlice";
 import formatCurrency from "../../../../Utils/FormatCurrency";
 import { useCreateCartMutation } from "../../../../redux/api/cartApiSlice";
 import ProductImageCarousel from "./ProductImageCarousel";
-import { useFetchDiscountsQuery } from "../../../../redux/api/discountApiSlice";
 
 const ProductDetails = () => {
   const { id: productId } = useParams();
@@ -32,30 +31,23 @@ const ProductDetails = () => {
     error,
   } = useGetProductDetailsQuery(productId);
 
-  const { data: discounts } = useFetchDiscountsQuery();
-  console.log("discounts", discounts);
-
   const { data: userInfo } = useGetUserInfoQuery();
 
   useEffect(() => {
-  if (discounts && discounts.length > 0 && product?.price) {
-    const selectedQty = parseInt(qty);
-    
-    const sortedDiscounts = [...discounts].sort((a, b) => b.qty - a.qty);
-    
-    const applicableDiscount = sortedDiscounts.find(
-      (discount) => selectedQty >= discount.qty
-    );
+    if (product?.ProductDiscount && product?.price) {
+      const selectedQty = parseInt(qty);
 
-    if (applicableDiscount) {
-      setAppliedDiscount(applicableDiscount);
-      setDiscountedPrice(product.price - applicableDiscount.pricetobereduced);
-    } else {
-      setAppliedDiscount(null);
-      setDiscountedPrice(null);
+      if (selectedQty >= product.ProductDiscount.qty) {
+        setAppliedDiscount(product.ProductDiscount);
+        setDiscountedPrice(
+          product.price - product.ProductDiscount.pricetobereduced
+        );
+      } else {
+        setAppliedDiscount(null);
+        setDiscountedPrice(null);
+      }
     }
-  }
-}, [qty, discounts, product?.price]);
+  }, [qty, product?.ProductDiscount, product?.price]);
 
   const [createReview, { isLoading: loadingProductReview }] =
     useCreateReviewMutation();
@@ -129,28 +121,33 @@ const ProductDetails = () => {
               <p className="product-description">{product.description}</p>
 
               <p className="product-details-price">
-                {discountedPrice ? (
-                  <>
-                    <span
-                      className="original-price"
-                      style={{ textDecoration: "line-through" }}
-                    >
-                      {formatCurrency(product?.price)}
-                    </span>
-                    <span
-                      className="discounted-price"
-                      style={{ color: "red", marginLeft: "10px" }}
-                    >
-                      {formatCurrency(discountedPrice)}
-                    </span>
-                    <div className="discount-badge">
-                      Save {formatCurrency(appliedDiscount.pricetobereduced)}{" "}
-                      (Buy {appliedDiscount.qty}+)
-                    </div>
-                  </>
-                ) : (
-                  formatCurrency(product?.price)
-                )}
+                <p className="product-details-price">
+                  {discountedPrice ? (
+                    <>
+                      <span
+                        className="original-price"
+                        style={{ textDecoration: "line-through" }}
+                      >
+                        {formatCurrency(product?.price)}
+                      </span>
+                      <span
+                        className="discounted-price"
+                        style={{ color: "red", marginLeft: "10px" }}
+                      >
+                        {formatCurrency(discountedPrice)}
+                      </span>
+                      <div className="discount-badge">
+                        Save{" "}
+                        {formatCurrency(
+                          product.ProductDiscount.pricetobereduced
+                        )}
+                        (Buy {product.ProductDiscount.qty}+)
+                      </div>
+                    </>
+                  ) : (
+                    formatCurrency(product?.price)
+                  )}
+                </p>
               </p>
 
               <div className="product-stats">

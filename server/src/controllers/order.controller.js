@@ -14,7 +14,7 @@ const getKey = async (req, res) => {
   res.status(200).json(RAZORPAY_KEY_ID);
 };
 
-const createOrder = asyncHandler(async (req, res) => {
+const createRazorPayOrder = asyncHandler(async (req, res) => {
   console.log("Request body:", req.body);
   const { totalPrice } = req.body;
 
@@ -44,7 +44,7 @@ const createOrder = asyncHandler(async (req, res) => {
   res.status(201).json({ payment, RazorPay_Order });
 });
 
-const getOrderDetailsAndSendEmails = asyncHandler(async (req, res) => {
+const createOrder = asyncHandler(async (req, res) => {
   const {
     orderItems,
     shippingAddress,
@@ -109,7 +109,7 @@ const getOrderDetailsAndSendEmails = asyncHandler(async (req, res) => {
           },
         },
         OrderShippingAddress: true,
-        OrderPaymentResult: true
+        OrderPaymentResult: true,
       },
     });
 
@@ -126,17 +126,50 @@ const getOrderDetailsAndSendEmails = asyncHandler(async (req, res) => {
       })
     );
 
-    if (!order) {
+    await prisma.cart.deleteMany({
+      where: { user_id: parseInt(user_id) },
+    });
+
+    res.status(200).json({
+      message: "Order Created successfully",
+      order,
+    });
+  } catch (error) {
+    console.error("Error fetching order details:", error);
+    res.status(500).json({ error: "Failed to process request" });
+  }
+});
+
+const orderConfirmationViaEmails = asyncHandler(async (req, res) => {
+  try {
+    const { order, invoicePath } = req.body;
+
+    const Order = await prisma.order.findUnique({
+      where: { id: parseInt(order.id) },
+      include: {
+        OrderUser: true,
+        orderItems: {
+          include: {
+            OrderItemProduct: true,
+            OrderDiscount: true,
+          },
+        },
+        OrderShippingAddress: true,
+        OrderPaymentResult: true,
+      },
+    });
+
+    if (!Order) {
       return res.status(404).json({ error: "Order not found" });
     }
 
     const isWithinTamilNadu = () => {
       const shippingAddress = order.OrderShippingAddress;
-      const stateToCheck = shippingAddress.deliveryState 
-        ? shippingAddress.deliveryState 
+      const stateToCheck = shippingAddress.deliveryState
+        ? shippingAddress.deliveryState
         : shippingAddress.state;
-      
-      return stateToCheck === "TN"; 
+
+      return stateToCheck === "TN";
     };
 
     const withinTN = isWithinTamilNadu();
@@ -171,9 +204,15 @@ const getOrderDetailsAndSendEmails = asyncHandler(async (req, res) => {
             item.qty
           : originalPrice;
 
-        const itemSGST = withinTN ? (discountedPrice * item.OrderItemProduct.SGST) / 100 : 0;
-        const itemCGST = withinTN ? (discountedPrice * item.OrderItemProduct.CGST) / 100 : 0;
-        const itemIGST = !withinTN ? (discountedPrice * item.OrderItemProduct.IGST) / 100 : 0;
+        const itemSGST = withinTN
+          ? (discountedPrice * item.OrderItemProduct.SGST) / 100
+          : 0;
+        const itemCGST = withinTN
+          ? (discountedPrice * item.OrderItemProduct.CGST) / 100
+          : 0;
+        const itemIGST = !withinTN
+          ? (discountedPrice * item.OrderItemProduct.IGST) / 100
+          : 0;
         const itemTotal = discountedPrice + itemSGST + itemCGST + itemIGST;
 
         return {
@@ -187,9 +226,15 @@ const getOrderDetailsAndSendEmails = asyncHandler(async (req, res) => {
           discountAmount: item.OrderDiscount
             ? `₹${(item.OrderDiscount.pricetobereduced * item.qty).toFixed(2)}`
             : null,
-          sgst: withinTN ? `₹${itemSGST.toFixed(2)} (${item.OrderItemProduct.SGST}%)` : null,
-          cgst: withinTN ? `₹${itemCGST.toFixed(2)} (${item.OrderItemProduct.CGST}%)` : null,
-          igst: !withinTN ? `₹${itemIGST.toFixed(2)} (${item.OrderItemProduct.IGST}%)` : null,
+          sgst: withinTN
+            ? `₹${itemSGST.toFixed(2)} (${item.OrderItemProduct.SGST}%)`
+            : null,
+          cgst: withinTN
+            ? `₹${itemCGST.toFixed(2)} (${item.OrderItemProduct.CGST}%)`
+            : null,
+          igst: !withinTN
+            ? `₹${itemIGST.toFixed(2)} (${item.OrderItemProduct.IGST}%)`
+            : null,
           totalPrice: `₹${itemTotal.toFixed(2)}`,
         };
       }),
@@ -226,9 +271,15 @@ const getOrderDetailsAndSendEmails = asyncHandler(async (req, res) => {
             item.qty
           : item.OrderItemProduct.price * item.qty;
 
-        const itemSGST = withinTN ? (discountedPrice * item.OrderItemProduct.SGST) / 100 : 0;
-        const itemCGST = withinTN ? (discountedPrice * item.OrderItemProduct.CGST) / 100 : 0;
-        const itemIGST = !withinTN ? (discountedPrice * item.OrderItemProduct.IGST) / 100 : 0;
+        const itemSGST = withinTN
+          ? (discountedPrice * item.OrderItemProduct.SGST) / 100
+          : 0;
+        const itemCGST = withinTN
+          ? (discountedPrice * item.OrderItemProduct.CGST) / 100
+          : 0;
+        const itemIGST = !withinTN
+          ? (discountedPrice * item.OrderItemProduct.IGST) / 100
+          : 0;
         const itemTotal = discountedPrice + itemSGST + itemCGST + itemIGST;
 
         return {
@@ -242,8 +293,8 @@ const getOrderDetailsAndSendEmails = asyncHandler(async (req, res) => {
         };
       }),
       subtotal: `₹${order.itemsUnitPrice.toFixed(2)}`,
-      tax: withinTN 
-        ? `₹${(order.SGST + order.CGST).toFixed(2)}` 
+      tax: withinTN
+        ? `₹${(order.SGST + order.CGST).toFixed(2)}`
         : `₹${order.IGST.toFixed(2)}`,
       totalAmount: `₹${order.totalPrice.toFixed(2)}`,
       shippingMethod: "Standard Shipping",
@@ -251,35 +302,38 @@ const getOrderDetailsAndSendEmails = asyncHandler(async (req, res) => {
       withinTN: withinTN,
     };
 
-    const ownerHtml = EmailTemplates.orderPlacedTemplate(orderPlacedData);
+    const adminHtml = EmailTemplates.orderPlacedTemplate(orderPlacedData);
     const customerHtml = EmailTemplates.orderConfirmationTemplate(
       order.OrderUser.username,
       orderConfirmationData
     );
 
+    const attachments = [];
+    if (invoicePath) {
+      attachments.push({
+        path: invoicePath,
+        filename: `Invoice-${Order.id}.pdf`,
+      });
+    }
+
+    await EmailTransmitter(
+      Order.OrderUser.email,
+      `Your Order #${Order.id} Confirmation`,
+      customerHtml,
+      attachments
+    );
+
     await EmailTransmitter(
       NODEMAILER_USERNAME,
-      `Order Details - #${order.id}`,
-      ownerHtml
+      `New Order #${Order.id}`,
+      adminHtml,
+      attachments
     );
 
-    await EmailTransmitter(
-      order.OrderUser.email,
-      `Your Order Details - #${order.id}`,
-      customerHtml
-    );
-
-    await prisma.cart.deleteMany({
-      where: { user_id: parseInt(user_id) },
-    });
-
-    res.status(200).json({
-      message: "Emails sent successfully",
-      order,
-    });
+    res.json({ success: true, message: "Emails sent successfully" });
   } catch (error) {
-    console.error("Error fetching order details or sending emails:", error);
-    res.status(500).json({ error: "Failed to process request" });
+    console.error("Email confirmation error:", error);
+    res.status(500).json({ error: "Failed to send confirmation emails" });
   }
 });
 
@@ -504,9 +558,35 @@ const markOrderAsDelivered = asyncHandler(async (req, res) => {
   res.json(updatedOrder);
 });
 
+const invoiceUpload = asyncHandler(async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: "No invoice file uploaded" });
+    }
+
+    const filePath = `/invoices/${req.file.filename}`;
+
+    if (req.body.orderId) {
+      await prisma.order.update({
+        where: { id: parseInt(req.body.orderId) },
+        data: { invoicePath: filePath },
+      });
+    }
+
+    res.json({
+      success: true,
+      filePath: filePath,
+      filename: req.file.filename,
+    });
+  } catch (error) {
+    console.error("Invoice upload error:", error);
+    res.status(500).json({ error: "Failed to process invoice upload" });
+  }
+});
+
 module.exports = {
   getKey,
-  createOrder,
+  createRazorPayOrder,
   updatePaymentStatus,
   getAllOrders,
   getUserOrders,
@@ -516,6 +596,8 @@ module.exports = {
   findOrderById,
   markOrderAsPaid,
   markOrderAsDelivered,
-  getOrderDetailsAndSendEmails,
+  createOrder,
   deleteOrderWithItems,
+  orderConfirmationViaEmails,
+  invoiceUpload,
 };

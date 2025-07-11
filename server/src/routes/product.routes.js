@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 
-const uploadMultipleImages = require("./upload.routes"); 
+const {uploadMultipleImages} = require("./upload.routes"); 
 
 const {
   addProduct,
@@ -41,5 +41,4 @@ router.route("/filtered-products").post(filterProducts);
 router.post("/request-invoice",requestInvoiceForPlacedOrder);
 
 
-  
 module.exports = router;

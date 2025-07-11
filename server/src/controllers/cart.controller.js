@@ -119,7 +119,8 @@ const listCart = asyncHandler(async (req, res) => {
     include: {
       Products:{
         include:{
-          ProductImages:true
+          ProductImages:true,
+          ProductDiscount:true
         }
       },
       CartShippingAddress: true,

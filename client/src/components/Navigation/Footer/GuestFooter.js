@@ -11,7 +11,7 @@ const GuestFooter = () => {
               <Link to="/">Home</Link>
             </li>
             <li>
-              <Link to="/food-starch">Food Starch</Link>
+              <Link to="/wholesale">Wholesale</Link>
             </li>
             <li>
               <Link to="/retail">Retail</Link>

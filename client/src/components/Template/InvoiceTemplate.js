@@ -7,6 +7,7 @@ import Dhanvantari from "../../assets/images/Logo/Dhanvantari-God.png";
 const converter = require("number-to-words");
 
 const InvoiceTemplate = ({ order }) => {
+  console.log("invoi", order)
   const isWithinTamilNadu = () => {
     const shippingAddress = order.OrderShippingAddress;
     const stateToCheck = shippingAddress.deliveryState

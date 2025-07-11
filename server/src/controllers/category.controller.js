@@ -69,16 +69,10 @@ const listCategory = asyncHandler(async (req, res) => {
   res.json(categories);
 });
 
-const exportCategories = asyncHandler(async (req, res) => {
-  const exportCategories = await prisma.ExportCategory.findMany();
-  res.json(exportCategories);
-});
-
 
 module.exports = {
   createCategory,
   updateCategory,
   removeCategory,
   listCategory,
-  exportCategories
 };

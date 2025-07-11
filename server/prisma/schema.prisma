@@ -60,8 +60,10 @@ model Product {
   rating          Float          @default(0)
   numReviews      Int            @default(0)
   price           Float          @default(0)
+  moq             Float          @default(1)
   countInStock    Int            @default(0)
   inco_term_id    Int?
+  discount_id     Int?
   port_id         Int?
   variant         String?
   productType     ProductType?
@@ -73,6 +75,7 @@ model Product {
   createdAt       DateTime       @default(now())
   updatedAt       DateTime       @updatedAt
   ProductIncoTerm IncoTerm?      @relation(fields: [inco_term_id], references: [id])
+  ProductDiscount Discount?      @relation(fields: [discount_id], references: [id])
   ProductPort     Port?          @relation(fields: [port_id], references: [id])
   ProductCategory Category       @relation(fields: [category_id], references: [id])
   reviews         Review[]
@@ -151,19 +154,19 @@ model OrderItem {
 }
 
 model Order {
-  id                 Int      @id @default(autoincrement())
-  user_id            Int
-  shippingAddress_id Int
-  paymentMethod      String
-  paymentResult_id   Int
-  itemsUnitPrice     Float    @default(0)
-  SGST               Float    @default(0)
-  CGST               Float    @default(0)
-  IGST               Float    @default(0)
-  totalPrice         Float    @default(0)
-  isPaid             Boolean  @default(false)
-  paidAt             DateTime
-
+  id                   Int             @id @default(autoincrement())
+  user_id              Int
+  shippingAddress_id   Int
+  paymentMethod        String
+  paymentResult_id     Int
+  invoicePath          String?
+  itemsUnitPrice       Float           @default(0)
+  SGST                 Float           @default(0)
+  CGST                 Float           @default(0)
+  IGST                 Float           @default(0)
+  totalPrice           Float           @default(0)
+  isPaid               Boolean         @default(false)
+  paidAt               DateTime
   isDelivered          Boolean         @default(false)
   deliveredAt          DateTime?
   createdAt            DateTime        @default(now())
@@ -182,6 +185,7 @@ model Discount {
   updatedAt        DateTime @updatedAt
 
   OrderItem OrderItem[]
+  Products  Product[]
 }
 
 model ShippingAddress {

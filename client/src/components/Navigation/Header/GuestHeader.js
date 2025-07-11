@@ -12,8 +12,7 @@ const GuestHeader = () => {
         <div className="logo-left">
           <img src={getImage("Logo.jpeg","Logo")} className="logo-img" />
           <div className="logo">
-            <span className="green">Sri</span>
-            <span className="brown">Dhanvantari Exports</span>
+            <span className="brown">Sri Dhanvantari Exports</span>
             <div className="tagline">Food Samudra for World</div>
           </div>
         </div>

@@ -3,23 +3,30 @@ import { toast } from "react-toastify";
 import Message from "../../components/Common/Message";
 import ProgressSteps from "../../components/Protected_Routes/User/Cart/ProgressSteps";
 import Loader from "../../components/Common/Loader";
+import ReactDOM from "react-dom/client";
+import { createRoot } from "react-dom/client";
+
 import {
-  useCreateOrderMutation,
+  useCreateRazorPayOrderMutation,
   useDeleteOrderMutation,
   useGetRazorPayKeyIdQuery,
-  useRequestOrderConfirmationMutation,
+  useCreateOrderMutation,
+  useOrderConfirmationViaEmailsMutation,
+  useUploadInvoiceMutation,
 } from "../../redux/api/orderApiSlice";
+import { toPng } from "html-to-image";
+import jsPDF from "jspdf";
 import getImage from "../../Utils/GetImage";
 import formatCurrency from "../../Utils/FormatCurrency";
 import { useFetchCartForUserQuery } from "../../redux/api/cartApiSlice";
-import { useFetchDiscountsQuery } from "../../redux/api/discountApiSlice";
 import { useEffect, useState } from "react";
+import InvoiceTemplate from "../../components/Template/InvoiceTemplate";
 
 const PlaceOrder = () => {
   const navigate = useNavigate();
 
   const { data: cart = [], refetch } = useFetchCartForUserQuery();
-  const { data: discounts = [] } = useFetchDiscountsQuery();
+  const [order, setOrder] = useState();
 
   const [loading, setLoading] = useState(false);
   console.log("Sss", cart);
@@ -28,11 +35,51 @@ const PlaceOrder = () => {
     refetch();
   }, []);
 
-  const [createOrder, { isLoading, error }] = useCreateOrderMutation();
-  const [requestOrderConfirmation] = useRequestOrderConfirmationMutation();
+  const [createRazorPayOrder, { isLoading, error }] =
+    useCreateRazorPayOrderMutation();
+  const [orderConfirmationViaEmails] = useOrderConfirmationViaEmailsMutation();
+  const [createOrder] = useCreateOrderMutation();
+  const [uploadInvoice] = useUploadInvoiceMutation();
   const [deleteOrder] = useDeleteOrderMutation();
 
   const { data: razorpayKey } = useGetRazorPayKeyIdQuery();
+
+  const generateInvoicePDF = async (orderData) => {
+    try {
+      const tempDiv = document.createElement("div");
+      document.body.appendChild(tempDiv);
+
+      const root = createRoot(tempDiv);
+      root.render(<InvoiceTemplate order={orderData} />);
+
+      await new Promise((resolve) => setTimeout(resolve, 500));
+
+      const dataUrl = await toPng(tempDiv, {
+        quality: 1,
+        pixelRatio: 2,
+        backgroundColor: "#ffffff",
+      });
+
+      root.unmount();
+      document.body.removeChild(tempDiv);
+
+      const pdf = new jsPDF({
+        orientation: "portrait",
+        unit: "mm",
+      });
+
+      const imgProps = pdf.getImageProperties(dataUrl);
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
+      pdf.addImage(dataUrl, "PNG", 0, 0, pdfWidth, pdfHeight);
+
+      return pdf.output("blob");
+    } catch (error) {
+      console.error("Error generating invoice:", error);
+      throw error;
+    }
+  };
 
   const calculateOrderSummary = () => {
     if (!cart || cart.length === 0) return {};
@@ -46,20 +93,19 @@ const PlaceOrder = () => {
     let totalDiscount = 0;
     let originalItemsPrice = 0;
 
-    // Check if delivery is within Tamil Nadu or outside
     const isSameState = cart[0]?.CartShippingAddress?.deliveryState === "TN";
 
     cart.forEach((item) => {
       const originalItemPrice = item.Products.price * item.quantity;
       originalItemsPrice += originalItemPrice;
 
-      const sortedDiscounts = [...discounts].sort((a, b) => b.qty - a.qty);
-      const applicableDiscount = sortedDiscounts.find(
-        (d) => item.quantity >= d.qty
-      );
+      // Use the product's specific discount
+      const productDiscount = item.Products?.ProductDiscount;
+      const hasDiscount =
+        productDiscount && item.quantity >= productDiscount.qty;
 
-      const itemPrice = applicableDiscount
-        ? (item.Products.price - applicableDiscount.pricetobereduced) *
+      const itemPrice = hasDiscount
+        ? (item.Products.price - productDiscount.pricetobereduced) *
           item.quantity
         : originalItemPrice;
 
@@ -79,13 +125,12 @@ const PlaceOrder = () => {
       cgstTotal += itemCGST;
       igstTotal += itemIGST;
 
-      if (applicableDiscount) {
-        totalDiscount += applicableDiscount.pricetobereduced * item.quantity;
+      if (hasDiscount) {
+        totalDiscount += productDiscount.pricetobereduced * item.quantity;
       }
     });
 
     taxPrice = isSameState ? sgstTotal + cgstTotal : igstTotal;
-
     totalPrice = itemsPrice + taxPrice;
 
     return {
@@ -114,20 +159,18 @@ const PlaceOrder = () => {
         name: item.Products.name,
         image: item.Products.ProductImages[0]?.image_name,
       }));
-
       const appliedDiscounts = cart
         .map((item) => {
-          const sortedDiscounts = [...discounts].sort((a, b) => b.qty - a.qty);
-          const applicableDiscount = sortedDiscounts.find(
-            (d) => item.quantity >= d.qty
-          );
+          const productDiscount = item.Products?.ProductDiscount;
+          const hasDiscount =
+            productDiscount && item.quantity >= productDiscount.qty;
 
-          return applicableDiscount
+          return hasDiscount
             ? {
                 product_id: item.product_id,
-                discount_id: applicableDiscount.id,
-                discount_amount: applicableDiscount.pricetobereduced,
-                quantity_required: applicableDiscount.qty,
+                discount_id: productDiscount.id,
+                discount_amount: productDiscount.pricetobereduced,
+                quantity_required: productDiscount.qty,
               }
             : null;
         })
@@ -149,7 +192,7 @@ const PlaceOrder = () => {
         deliveryPincode: cart[0]?.CartShippingAddress.deliveryPincode,
       };
 
-      const res = await createOrder({
+      const res = await createRazorPayOrder({
         totalPrice: orderSummary.totalPrice,
       }).unwrap();
 
@@ -163,18 +206,36 @@ const PlaceOrder = () => {
         handler: async (response) => {
           try {
             setLoading(true);
-            const order = await requestOrderConfirmation({
+            const createdOrder = await createOrder({
               orderItems,
               shippingAddress,
               paymentMethod: "RazorPay",
               itemsPrice: orderSummary.itemsPrice,
               SGST: orderSummary.sgstTotal,
               CGST: orderSummary.cgstTotal,
-              IGST:orderSummary.igstTotal,
+              IGST: orderSummary.igstTotal,
               totalPrice: orderSummary.totalPrice,
               appliedDiscounts,
               paymentId: res.payment.id,
             }).unwrap();
+            setOrder(createdOrder.order);
+            const pdfBlob = await generateInvoicePDF(createdOrder.order);
+
+            const formData = new FormData();
+            formData.append(
+              "invoice",
+              pdfBlob,
+              `invoice-${createdOrder.order.id}.pdf`
+            );
+            formData.append("orderId", createdOrder.order.id);
+
+            const uploadResponse = await uploadInvoice(formData).unwrap();
+
+            await orderConfirmationViaEmails({
+              order: createdOrder.order,
+              invoicePath: uploadResponse.filePath,
+            }).unwrap();
+
             setLoading(false);
             alert("Payment successful!");
             navigate(`/order/${order.order.id}`);
@@ -203,14 +264,13 @@ const PlaceOrder = () => {
     const isSameState = cart[0]?.CartShippingAddress?.deliveryState === "TN";
 
     return cart.map((item, index) => {
-      const sortedDiscounts = [...discounts].sort((a, b) => b.qty - a.qty);
-      const applicableDiscount = sortedDiscounts.find(
-        (d) => item.quantity >= d.qty
-      );
+      const productDiscount = item.Products?.ProductDiscount;
+      const hasDiscount =
+        productDiscount && item.quantity >= productDiscount.qty;
 
       const originalItemPrice = item.Products.price * item.quantity;
-      const itemPrice = applicableDiscount
-        ? (item.Products.price - applicableDiscount.pricetobereduced) *
+      const itemPrice = hasDiscount
+        ? (item.Products.price - productDiscount.pricetobereduced) *
           item.quantity
         : originalItemPrice;
 
@@ -227,7 +287,6 @@ const PlaceOrder = () => {
         itemIGST = (itemPrice * item.Products.IGST) / 100;
         itemTotal = itemPrice + itemIGST;
       }
-
       return (
         <tr key={index} className="table-row">
           <td className="table-cell">
@@ -244,17 +303,17 @@ const PlaceOrder = () => {
             <Link to={`/product/${item.product_id}`} className="product-link">
               {item.Products?.name}
               <br />{" "}
-              {applicableDiscount && (
+              {hasDiscount && (
                 <div className="discount-badge">
-                  Discount: Buy {applicableDiscount.qty}+, Save{" "}
-                  {formatCurrency(applicableDiscount.pricetobereduced)} per unit
+                  Discount: Buy {productDiscount.qty}+, Save{" "}
+                  {formatCurrency(productDiscount.pricetobereduced)} per unit
                 </div>
               )}
             </Link>
           </td>
           <td className="table-cell">{item.quantity}</td>
           <td className="table-cell">
-            {applicableDiscount ? (
+            {hasDiscount ? (
               <>
                 <span
                   className="original-price"
@@ -264,7 +323,7 @@ const PlaceOrder = () => {
                 </span>
                 <span className="discounted-price">
                   {formatCurrency(
-                    item.Products.price - applicableDiscount.pricetobereduced
+                    item.Products.price - productDiscount.pricetobereduced
                   )}
                 </span>
               </>
@@ -291,6 +350,8 @@ const PlaceOrder = () => {
       );
     });
   };
+
+  console.log("orderrrrrrr", order);
 
   return (
     <div className="order-container">

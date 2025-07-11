@@ -8,7 +8,6 @@ const {
   forgotPassword,
 } = require("../controllers/auth.controller");
 
-const { exportCategories } = require("../controllers/category.controller.js");
 
 const { listIncoTerm } = require("../controllers/incoterm.controller.js");
 
@@ -32,7 +31,6 @@ router.post("/forgot-password", forgotPassword);
  
 
 //Un-Protected-Routes
-router.get("/exportCategories", exportCategories);
 router.get("/incoterm", listIncoTerm);
 router.get("/ports", listPort);
 router.get("/allproducts", fetchAllProducts);
