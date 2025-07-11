@@ -6,13 +6,12 @@ import {
   useDeleteProductMutation,
   useGetProductByIdQuery,
 } from "../../../redux/api/productApiSlice";
-import {
-  useFetchCategoriesQuery,
-} from "../../../redux/api/categoryApiSlice";
+import { useFetchCategoriesQuery } from "../../../redux/api/categoryApiSlice";
 import { useFetchIncoTermsQuery } from "../../../redux/api/incoTermApiSlice";
 import { useFetchPortsQuery } from "../../../redux/api/portApiSlice";
 import { toast } from "react-toastify";
 import getImage from "../../../Utils/GetImage";
+import { useFetchDiscountsQuery } from "../../../redux/api/discountApiSlice";
 
 const AdminProductUpdate = () => {
   const params = useParams();
@@ -23,6 +22,7 @@ const AdminProductUpdate = () => {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
+  const [moq, setMoq] = useState("");
   const [category, setCategory] = useState("");
   const [quantity, setQuantity] = useState("");
   const [brand, setBrand] = useState("");
@@ -30,17 +30,19 @@ const AdminProductUpdate = () => {
   const [hsnSac, setHsnSac] = useState("");
   const [cgst, setCgst] = useState("");
   const [sgst, setSgst] = useState("");
-   const [igst, setIgst] = useState("");
+  const [igst, setIgst] = useState("");
   const [isVisible, setIsVisible] = useState(true);
 
   const [productType, setProductType] = useState("WHOLESALE");
   const [incoTerm, setIncoTerm] = useState("");
   const [port, setPort] = useState("");
   const [country, setCountry] = useState("");
+  const [discount, setDiscount] = useState("");
 
   const { data: categories = [] } = useFetchCategoriesQuery();
   const { data: incoTerms = [] } = useFetchIncoTermsQuery();
   const { data: ports = [] } = useFetchPortsQuery();
+  const { data: discounts = [] } = useFetchDiscountsQuery();
   const [updateProduct] = useUpdateProductMutation();
   const [deleteProduct] = useDeleteProductMutation();
 
@@ -61,6 +63,7 @@ const AdminProductUpdate = () => {
       setName(productData.name);
       setDescription(productData.description);
       setPrice(productData.price);
+      setMoq(productData.moq);
       setCategory(productData.ProductCategory?.id || "");
       setQuantity(productData.weight);
       setBrand(productData.brand);
@@ -73,6 +76,7 @@ const AdminProductUpdate = () => {
 
       setProductType(productData.productType);
       setIncoTerm(productData.ProductIncoTerm?.id || "");
+      setDiscount(productData.ProductDiscount?.id || "");
       setPort(productData.ProductPort?.id || "");
 
       if (productData.variant) {
@@ -128,6 +132,7 @@ const AdminProductUpdate = () => {
       formData.append("name", name);
       formData.append("description", description);
       formData.append("price", price);
+      formData.append("moq", moq);
       formData.append("category", category);
       formData.append("quantity", quantity);
       formData.append("brand", brand);
@@ -138,6 +143,7 @@ const AdminProductUpdate = () => {
       formData.append("sgst", sgst);
       formData.append("igst", igst);
       formData.append("isVisible", isVisible);
+      formData.append("discount", discount);
 
       if (productType === "EXPORT") {
         formData.append("incoTerm", incoTerm);
@@ -287,6 +293,31 @@ const AdminProductUpdate = () => {
           </div>
 
           <div className="form-group">
+            <label className="form-label">Minimum Order Quantity (MOQ)</label>
+            <input
+              type="number"
+              className="form-control"
+              value={moq}
+              onChange={(e) => setMoq(e.target.value)}
+            />
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">Discount</label>
+            <select
+              className="form-control"
+              value={discount}
+              onChange={(e) => setDiscount(e.target.value)}
+            >
+              {discounts?.map((dis) => (
+                <option key={dis.id} value={dis.id}>
+                  {`Buy ${dis.qty}, Reduce ₹${dis.pricetobereduced}`}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="form-group">
             <label className="form-label">Weight (in KG)</label>
             <input
               type="number"
@@ -339,7 +370,7 @@ const AdminProductUpdate = () => {
             />
           </div>
 
-           <div className="form-group">
+          <div className="form-group">
             <label className="form-label">IGST (%)</label>
             <input
               type="number"

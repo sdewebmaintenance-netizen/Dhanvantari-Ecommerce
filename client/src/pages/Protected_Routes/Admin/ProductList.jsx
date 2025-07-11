@@ -1,13 +1,10 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCreateProductMutation } from "../../../redux/api/productApiSlice";
-import {   
-  useFetchCategoriesQuery,
-  useFetchExportCategoriesQuery,
-} from "../../../redux/api/categoryApiSlice";
+import { useFetchCategoriesQuery } from "../../../redux/api/categoryApiSlice";
 
 import { useFetchIncoTermsQuery } from "../../../redux/api/incoTermApiSlice";
-
+import { useFetchDiscountsQuery } from "../../../redux/api/discountApiSlice";
 import { useFetchPortsQuery } from "../../../redux/api/portApiSlice";
 import { toast } from "react-toastify";
 import { Country } from "country-state-city";
@@ -18,6 +15,7 @@ const ProductList = () => {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
+  const [moq, setMoq] = useState("");
   const [category, setCategory] = useState("");
   const [quantity, setQuantity] = useState("");
   const [brand, setBrand] = useState("");
@@ -31,13 +29,14 @@ const ProductList = () => {
   const [cgst, setCgst] = useState("");
   const [sgst, setSgst] = useState("");
   const [igst, setIgst] = useState("");
+  const [discount, setDiscount] = useState("");
   const navigate = useNavigate();
 
   const [createProduct] = useCreateProductMutation();
   const { data: categories } = useFetchCategoriesQuery();
   const { data: incoTerms } = useFetchIncoTermsQuery();
   const { data: ports } = useFetchPortsQuery();
-  const { data: exportCategories } = useFetchExportCategoriesQuery();
+  const { data: discounts } = useFetchDiscountsQuery();
 
   console.log("categories", categories);
   const countryOptions = Country.getAllCountries();
@@ -57,7 +56,11 @@ const ProductList = () => {
       const india = countryOptions.find((c) => c.name === "India");
       setCountry(india ? india.name : countryOptions[0].name);
     }
-  }, [categories, incoTerms, ports, exportCategories, countryOptions]);
+
+    if (discounts && discounts.length > 0) {
+      setDiscount(discounts[0].id);
+    }
+  }, [categories, incoTerms, ports, countryOptions, discounts]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -67,6 +70,7 @@ const ProductList = () => {
       productData.append("name", name);
       productData.append("description", description);
       productData.append("price", price);
+      productData.append("moq", moq);
       productData.append("category", category);
       productData.append("quantity", quantity);
       productData.append("brand", brand);
@@ -77,6 +81,7 @@ const ProductList = () => {
       productData.append("cgst", cgst);
       productData.append("sgst", sgst);
       productData.append("igst", igst);
+      productData.append("discount", discount);
 
       if (productType === "EXPORT") {
         productData.append("incoTerm", incoTerm);
@@ -85,8 +90,8 @@ const ProductList = () => {
       }
 
       image.forEach((img) => {
-      productData.append("images", img);
-    });
+        productData.append("images", img);
+      });
 
       const { data, error } = await createProduct(productData);
 
@@ -127,7 +132,7 @@ const ProductList = () => {
     URL.revokeObjectURL(imagePreviews[index]);
   };
 
-  console.log("asljhasbafsuiqwbkjla", image);
+  console.log("asljhasbafsuiqwbkjla", discounts);
   return (
     <div>
       <h1 className="title text-animation">Create Product</h1>
@@ -229,6 +234,34 @@ const ProductList = () => {
               onChange={(e) => setPrice(e.target.value)}
             />
           </div>
+
+          <div className="form-group">
+            <label htmlFor="name" className="form-label">
+              Minimum Order Quantity (MOQ)
+            </label>
+            <input
+              type="number"
+              className="form-control"
+              value={moq}
+              onChange={(e) => setMoq(e.target.value)}
+            />
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">Discount</label>
+            <select
+              className="form-control"
+              value={discount}
+              onChange={(e) => setDiscount(e.target.value)}
+            >
+              {discounts?.map((dis) => (
+                <option key={dis.id} value={dis.id}>
+                 {`Buy ${dis.qty}, Reduce ₹${dis.pricetobereduced}`}
+                </option>
+              ))}
+            </select>
+          </div>
+
           <div className="form-group">
             <label htmlFor="name" className="form-label">
               Weight
@@ -308,7 +341,6 @@ const ProductList = () => {
               step="0.01"
             />
           </div>
-
 
           <div className="form-group">
             <label htmlFor="igst" className="form-label">

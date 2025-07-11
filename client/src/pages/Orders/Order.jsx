@@ -114,13 +114,10 @@ const Order = () => {
           expectedShipment: "Within 5-7 business days",
         },
       };
-
       const result = await requestInvoice(orderDetails).unwrap();
-
       if (!result.ok) {
         console.log("error");
       }
-
       console.log("Invoice email sent successfully");
     } catch (error) {
       console.error("Error sending invoice email:", error);

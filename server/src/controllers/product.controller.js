@@ -10,12 +10,14 @@ const addProduct = asyncHandler(async (req, res) => {
     name,
     description,
     price,
+    moq,
     category,
     quantity,
     brand,
     countInStock,
     productType,
     incoTerm,
+    discount,
     port,
     variant,
     isVisible,
@@ -45,7 +47,9 @@ const addProduct = asyncHandler(async (req, res) => {
     name,
     description,
     price: parseFloat(price),
+    moq: parseFloat(moq),
     category_id: parseInt(category),
+    discount_id: parseInt(discount),
     weight: parseInt(quantity),
     brand,
     countInStock: parseInt(countInStock),
@@ -91,7 +95,9 @@ const updateProductDetails = asyncHandler(async (req, res) => {
     name,
     description,
     price,
+    moq,
     category,
+    discount,
     quantity,
     brand,
     countInStock,
@@ -127,7 +133,9 @@ const updateProductDetails = asyncHandler(async (req, res) => {
         name,
         description,
         price: parseFloat(price),
+        moq: parseFloat(moq),
         category_id: parseInt(category),
+        discount_id: parseInt(discount),
         weight: parseInt(quantity),
         brand,
         countInStock: parseInt(countInStock),
@@ -233,6 +241,7 @@ const fetchProducts = asyncHandler(async (req, res) => {
       include: {
         ProductCategory: true,
         ProductImages: true,
+        ProductDiscount: true,
       },
     }),
   ]);
@@ -249,10 +258,10 @@ const fetchProductById = asyncHandler(async (req, res) => {
   const product = await prisma.product.findUnique({
     where: {
       id: parseInt(req.params.id),
-      isVisible: true,
     },
     include: {
       ProductCategory: true,
+      ProductDiscount: true,
       ProductIncoTerm: true,
       ProductPort: true,
       ProductImages: true,
@@ -280,6 +289,7 @@ const fetchAllProducts = asyncHandler(async (req, res) => {
     where: { isVisible: true },
     include: {
       ProductCategory: true,
+      ProductDiscount: true,
       ProductImages: true,
       ProductIncoTerm: true,
       ProductPort: true,
@@ -292,11 +302,11 @@ const fetchAllProducts = asyncHandler(async (req, res) => {
   res.json(products);
 });
 
-
 const fetchAllProductsAdmin = asyncHandler(async (req, res) => {
   const products = await prisma.product.findMany({
     include: {
       ProductCategory: true,
+      ProductDiscount: true,
       ProductImages: true,
       ProductIncoTerm: true,
       ProductPort: true,
@@ -314,7 +324,7 @@ const addProductReview = asyncHandler(async (req, res) => {
   const productId = parseInt(req.params.id);
 
   const product = await prisma.product.findUnique({
-    where: { id: productId, },
+    where: { id: productId },
     include: {
       reviews: true,
     },
@@ -401,7 +411,7 @@ const fetchNewProducts = asyncHandler(async (req, res) => {
 const filterProducts = asyncHandler(async (req, res) => {
   const { checked, radio } = req.body;
 
-  let where = { isVisible: true};
+  let where = { isVisible: true };
   if (checked && checked.length > 0) {
     where.category_id = { in: checked.map((id) => parseInt(id)) };
   }
@@ -413,6 +423,7 @@ const filterProducts = asyncHandler(async (req, res) => {
     where,
     include: {
       ProductCategory: true,
+      ProductDiscount: true,
       ProductImages: true,
     },
   });
@@ -585,5 +596,5 @@ module.exports = {
   requestQuotaForExportProduct,
   requestInvoiceForPlacedOrder,
   requestMessage,
-  fetchAllProductsAdmin
+  fetchAllProductsAdmin,
 };

@@ -3,7 +3,7 @@ const router = express.Router();
 
 const {
   getKey,
-  createOrder,
+  createRazorPayOrder,
   updatePaymentStatus,
   getAllOrders,
   getUserOrders,
@@ -13,15 +13,19 @@ const {
   findOrderById,
   markOrderAsPaid,
   markOrderAsDelivered,
-  getOrderDetailsAndSendEmails,
-  deleteOrderWithItems
+  createOrder,
+  deleteOrderWithItems,
+  orderConfirmationViaEmails,
+  invoiceUpload,
 } = require("../controllers/order.controller.js");
+const { uploadPDF } = require("./upload.routes.js");
 
 router.get("/getKey", getKey);
 
 router.get("/getAllOrders", getAllOrders);
+router.post("/orderConfirmationViaEmails", orderConfirmationViaEmails);
 
-router.post("/createOrder", createOrder);
+router.post("/createRazorPayOrder", createRazorPayOrder);
 router.post("/updatePayment", updatePaymentStatus);
 
 router.get("/mine", getUserOrders);
@@ -32,10 +36,9 @@ router.get("/:id", findOrderById);
 router.put("/:id/pay", markOrderAsPaid);
 router.put("/:id/deliver", markOrderAsDelivered);
 
-router
-  .route("/:order_id")
-  .delete(deleteOrderWithItems);
+router.route("/:order_id").delete(deleteOrderWithItems);
 
-  router.post("/orderConfirmation", getOrderDetailsAndSendEmails);
+router.post("/create-order", createOrder);
+router.post("/upload-invoice", uploadPDF, invoiceUpload);
 
 module.exports = router;

@@ -7,22 +7,38 @@ export const orderApiSlice = apiSlice.injectEndpoints({
       query: () => `${ORDERS_URL}/getKey`,
     }),
 
-    createOrder: builder.mutation({
+    createRazorPayOrder: builder.mutation({
       query: (order) => ({
-        url: `${ORDERS_URL}/createOrder`,
+        url: `${ORDERS_URL}/createRazorPayOrder`,
         method: "POST",
         body: order,
       }),
     }),
 
-    requestOrderConfirmation: builder.mutation({
-      query: (orderConfirmation) => ({
-        url: `${ORDERS_URL}/orderConfirmation`,
+    createOrder: builder.mutation({
+      query: (order) => ({
+        url: `${ORDERS_URL}/create-order`,
         method: "POST",
-        body: orderConfirmation,
+        body: order,
       }),
     }),
-    
+
+    orderConfirmationViaEmails: builder.mutation({
+      query: (orderdata) => ({
+        url: `${ORDERS_URL}/orderConfirmationViaEmails`,
+        method: "POST",
+        body: orderdata
+      }),
+    }),
+
+    uploadInvoice: builder.mutation({
+      query: (order) => ({
+        url: `${ORDERS_URL}/upload-invoice`,
+        method: "POST",
+        body: order
+      }),
+    }),
+
     deleteOrder: builder.mutation({
       query: (orderId) => ({
         url: `${ORDERS_URL}/${orderId}`,
@@ -75,11 +91,13 @@ export const {
   useGetTotalOrdersQuery,
   useGetTotalSalesQuery,
   useGetTotalSalesByDateQuery,
-  useCreateOrderMutation,
+  useCreateRazorPayOrderMutation,
   useGetOrderDetailsQuery,
   useGetMyOrdersQuery,
   useDeliverOrderMutation,
   useGetOrdersQuery,
-  useRequestOrderConfirmationMutation,
-  useDeleteOrderMutation
+  useCreateOrderMutation,
+  useDeleteOrderMutation,
+  useOrderConfirmationViaEmailsMutation,
+  useUploadInvoiceMutation,
 } = orderApiSlice;

@@ -1,10 +1,13 @@
-
 const path = require("path");
+const fs = require('fs');
 const multer = require("multer");
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    const destPath = path.join(__dirname, '../../../client/src/assets/images/Product_Images');
+    const destPath = path.join(
+      __dirname,
+      "../../../client/src/assets/images/Product_Images"
+    );
     console.log("Saving file to:", destPath);
     cb(null, destPath);
   },
@@ -34,4 +37,30 @@ const upload = multer({ storage, fileFilter });
 
 const uploadMultipleImages = upload.array("images", 4);
 
-module.exports = uploadMultipleImages; 
+const pdfStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    const uploadDir = path.join(__dirname, "../../../client/src/assets/invoices");
+
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true });
+    }
+    cb(null, uploadDir);
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    cb(null, `invoice-${uniqueSuffix}.pdf`);
+  },
+});
+
+const uploadPDF = multer({
+  storage: pdfStorage,
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype === "application/pdf") {
+      cb(null, true);
+    } else {
+      cb(new Error("Only PDF files are allowed"), false);
+    }
+  },
+}).single("invoice");
+
+module.exports = { uploadMultipleImages, uploadPDF };

@@ -26,13 +26,8 @@
 }
 
 .logo-img {
-  height: 4rem;
+  height: 3rem;
   margin-right: var(--space-sm);
-}
-
-
-.logo .green {
-  color: var(--color-primary);
 }
 
 .logo .brown {
@@ -41,7 +36,7 @@
 
 .logo .tagline {
   width: fit-content;
-  font-size: 12px;
+  font-size: var(--font-size-sm);
   background: var(--color-primary);
   color: var(--color-secondary);
   padding: 2px 8px;

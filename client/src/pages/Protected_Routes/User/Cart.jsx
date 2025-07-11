@@ -7,7 +7,6 @@ import {
   useDeleteCartMutation,
   useClearCartMutation,
 } from "../../../redux/api/cartApiSlice";
-import { useFetchDiscountsQuery } from "../../../redux/api/discountApiSlice";
 import getImage from "../../../Utils/GetImage";
 import formatCurrency from "../../../Utils/FormatCurrency";
 import { useState, useEffect } from "react";
@@ -22,8 +21,6 @@ const Cart = () => {
     error,
   } = useFetchCartForUserQuery();
 
-  const { data: discounts = [] } = useFetchDiscountsQuery();
-
   const [updateCart, { isLoading: isUpdating }] = useUpdateCartMutation();
   const [deleteCart, { isLoading: isDeleting }] = useDeleteCartMutation();
   const [clearCart, { isLoading: isClearing }] = useClearCartMutation();
@@ -33,14 +30,11 @@ const Cart = () => {
     refetch();
   }, []);
 
-  const calculateDiscountedPrice = (price, quantity) => {
-    if (!discounts || discounts.length === 0) return null;
+  const calculateDiscountedPrice = (price, quantity, productDiscount) => {
+    if (!productDiscount) return null;
 
-    const sortedDiscounts = [...discounts].sort((a, b) => b.qty - a.qty);
-    const applicableDiscount = sortedDiscounts.find((d) => quantity >= d.qty);
-
-    return applicableDiscount
-      ? price - applicableDiscount.pricetobereduced
+    return quantity >= productDiscount.qty
+      ? price - productDiscount.pricetobereduced
       : null;
   };
 
@@ -54,7 +48,11 @@ const Cart = () => {
       const quantity = item.quantity;
       const price = item.Products?.price || 0;
       const discountedPrice =
-        calculateDiscountedPrice(price, quantity) || price;
+        calculateDiscountedPrice(
+          price,
+          quantity,
+          item.Products?.ProductDiscount
+        ) || price;
 
       totalItems += quantity;
       totalOriginalPrice += price * quantity;
@@ -127,7 +125,6 @@ const Cart = () => {
     return <Loader />;
   if (error) return <div>Error loading cart</div>;
 
-  console.log("Sfskaua", discounts);
 
   return (
     <div className="cart-container">
@@ -158,7 +155,8 @@ const Cart = () => {
             const price = item.Products?.price || 0;
             const discountedPrice = calculateDiscountedPrice(
               price,
-              item.quantity
+              item.quantity,
+              item.Products?.ProductDiscount
             );
             const hasDiscount = discountedPrice !== null;
 
@@ -194,12 +192,7 @@ const Cart = () => {
                         </span>
                         <div className="discount-badge">
                           Save {formatCurrency(price - discountedPrice)} (Buy{" "}
-                          {
-                            [...discounts]
-                              .sort((a, b) => b.qty - a.qty)
-                              .find((d) => item.quantity >= d.qty)?.qty
-                          }
-                          +)
+                          {item.Products?.ProductDiscount?.qty}+)
                         </div>
                       </>
                     ) : (
@@ -266,7 +259,7 @@ const Cart = () => {
                 className="btn-customized"
                 disabled={cart.length === 0 || isProcessing}
                 onClick={checkoutHandler}
-                style={{marginTop:"1rem"}}
+                style={{ marginTop: "1rem" }}
               >
                 Checkout
               </button>
