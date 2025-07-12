@@ -5,7 +5,10 @@ const TermsAndConditions = () => (
     <div className="section-content">
       <ul className="retail-list">
         <li>Goods once sold shall not be taken back.</li>
-        <li>Our responsibility ceases once goods leave our factory.</li>
+        <li>
+          Our responsibility ceases once goods leave our factory and return of
+          products and money refund not applicable.
+        </li>
         <li>Subject to Salem jurisdiction.</li>
         <li>
           We do not take responsibility for transportation payments. The buyer
@@ -23,8 +26,7 @@ const TermsAndConditions = () => (
           ).
         </li>
 
-         <li>Our responsibility ceases once goods leave our factory and return of products and money refund not applicable.</li>
-          <li>Privacy policy to safeguard customer information.</li>
+        <li>Privacy policy to safeguard customer information.</li>
       </ul>
     </div>
   </div>
