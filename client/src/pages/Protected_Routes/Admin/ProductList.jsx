@@ -58,7 +58,7 @@ const ProductList = () => {
     }
 
     if (discounts && discounts.length > 0) {
-      setDiscount(discounts[0].id);
+      setDiscount("");
     }
   }, [categories, incoTerms, ports, countryOptions, discounts]);
 
@@ -254,9 +254,10 @@ const ProductList = () => {
               value={discount}
               onChange={(e) => setDiscount(e.target.value)}
             >
+              <option value="">No Discount</option>
               {discounts?.map((dis) => (
                 <option key={dis.id} value={dis.id}>
-                 {`Buy ${dis.qty}, Reduce ₹${dis.pricetobereduced}`}
+                  {`Buy ${dis.qty}, Reduce ₹${dis.pricetobereduced}`}
                 </option>
               ))}
             </select>

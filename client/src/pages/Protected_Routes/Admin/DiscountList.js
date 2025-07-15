@@ -90,6 +90,7 @@ const DiscountList = () => {
   };
 
   const handleDeleteDiscount = async () => {
+
     try {
       setLoading(true);
       const result = await deleteDiscount(selectedDiscount.id).unwrap();

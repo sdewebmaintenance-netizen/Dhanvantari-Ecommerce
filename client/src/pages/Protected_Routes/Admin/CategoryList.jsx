@@ -88,6 +88,11 @@ const CategoryList = () => {
   };
 
   const handleDeleteCategory = async () => {
+    const confirmed = window.confirm(
+      `⚠️ WARNING: Deleting this category will also delete all associated products. Do you want to continue?`
+    );
+
+    if (!confirmed) return;
     try {
       setLoading(true);
       const result = await deleteCategory(selectedCategory.id).unwrap();
