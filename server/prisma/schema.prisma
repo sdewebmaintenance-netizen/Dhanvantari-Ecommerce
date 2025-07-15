@@ -42,7 +42,7 @@ model LoginHistory {
   userId      Int
   loginMethod LoginMethod
   loginTime   DateTime    @default(now())
-  user        User        @relation(fields: [userId], references: [id])
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 enum ProductType {
@@ -56,7 +56,7 @@ model Product {
   brand           String
   weight          Int            @default(0)
   category_id     Int
-  description     String
+  description     String         @db.LongText
   rating          Float          @default(0)
   numReviews      Int            @default(0)
   price           Float          @default(0)
@@ -77,7 +77,7 @@ model Product {
   ProductIncoTerm IncoTerm?      @relation(fields: [inco_term_id], references: [id])
   ProductDiscount Discount?      @relation(fields: [discount_id], references: [id])
   ProductPort     Port?          @relation(fields: [port_id], references: [id])
-  ProductCategory Category       @relation(fields: [category_id], references: [id])
+  ProductCategory Category       @relation(fields: [category_id], references: [id], onDelete: Cascade)
   reviews         Review[]
   orderItems      OrderItem[]
   ProductImages   ProductImage[]
@@ -94,7 +94,7 @@ model Cart {
   updatedAt           DateTime @updatedAt
 
   Products            Product?         @relation(fields: [product_id], references: [id])
-  CartUser            User             @relation(fields: [user_id], references: [id])
+  CartUser            User             @relation(fields: [user_id], references: [id], onDelete: Cascade)
   CartShippingAddress ShippingAddress? @relation(fields: [shipping_address_id], references: [id])
 }
 
@@ -132,8 +132,8 @@ model Review {
   user_id    Int
   product_id Int
 
-  ReviewProduct Product  @relation(fields: [product_id], references: [id])
-  ReviewUser    User     @relation(fields: [user_id], references: [id])
+  ReviewProduct Product  @relation(fields: [product_id], references: [id], onDelete: Cascade)
+  ReviewUser    User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 }
@@ -148,9 +148,9 @@ model OrderItem {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  OrderItemProduct Product   @relation(fields: [product_id], references: [id])
-  OrdersRecord     Order     @relation(fields: [order_id], references: [id])
-  OrderDiscount    Discount? @relation(fields: [discount_id], references: [id])
+  OrderItemProduct Product   @relation(fields: [product_id], references: [id], onDelete: Cascade)
+  OrdersRecord     Order     @relation(fields: [order_id], references: [id], onDelete: Cascade)
+  OrderDiscount    Discount? @relation(fields: [discount_id], references: [id], onDelete: Cascade)
 }
 
 model Order {
@@ -172,9 +172,9 @@ model Order {
   createdAt            DateTime        @default(now())
   updatedAt            DateTime        @updatedAt
   orderItems           OrderItem[]
-  OrderPaymentResult   PaymentResult   @relation(fields: [paymentResult_id], references: [id])
-  OrderShippingAddress ShippingAddress @relation(fields: [shippingAddress_id], references: [id])
-  OrderUser            User            @relation(fields: [user_id], references: [id])
+  OrderPaymentResult   PaymentResult   @relation(fields: [paymentResult_id], references: [id], onDelete: Cascade)
+  OrderShippingAddress ShippingAddress @relation(fields: [shippingAddress_id], references: [id], onDelete: Cascade)
+  OrderUser            User            @relation(fields: [user_id], references: [id], onDelete: Cascade)
 }
 
 model Discount {

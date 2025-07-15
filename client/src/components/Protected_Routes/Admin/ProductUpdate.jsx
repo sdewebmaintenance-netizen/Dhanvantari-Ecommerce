@@ -309,6 +309,7 @@ const AdminProductUpdate = () => {
               value={discount}
               onChange={(e) => setDiscount(e.target.value)}
             >
+              <option value="">No Discount</option>
               {discounts?.map((dis) => (
                 <option key={dis.id} value={dis.id}>
                   {`Buy ${dis.qty}, Reduce ₹${dis.pricetobereduced}`}

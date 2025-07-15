@@ -464,7 +464,11 @@
 }
 
 .product-table {
+   width: 100%;
   color: var(--color-secondary-light);
+  border-collapse: collapse;
+  overflow-x: auto;
+  display: block;
 }
 
 .product-table th,
