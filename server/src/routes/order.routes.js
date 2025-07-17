@@ -18,7 +18,7 @@ const {
   orderConfirmationViaEmails,
   invoiceUpload,
 } = require("../controllers/order.controller.js");
-const { uploadPDF } = require("./upload.routes.js");
+const { uploadInvoice } = require("../middlewares/multerConfiguration.js");
 
 router.get("/getKey", getKey);
 
@@ -39,6 +39,6 @@ router.put("/:id/deliver", markOrderAsDelivered);
 router.route("/:order_id").delete(deleteOrderWithItems);
 
 router.post("/create-order", createOrder);
-router.post("/upload-invoice", uploadPDF, invoiceUpload);
+router.post("/upload-invoice", uploadInvoice, invoiceUpload);
 
 module.exports = router;

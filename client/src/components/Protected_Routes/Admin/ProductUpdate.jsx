@@ -88,6 +88,7 @@ const AdminProductUpdate = () => {
         id: img.id,
         image_name: img.image_name,
       }));
+      console.log("initial", initialImages)
       setImages(initialImages);
       setPreviews(
         initialImages.map((img) => getImage(img.image_name, "ProductImage"))

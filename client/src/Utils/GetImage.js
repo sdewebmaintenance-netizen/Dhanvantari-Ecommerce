@@ -1,17 +1,28 @@
+import { BASE_URL } from "../config/config";
+
 const getImage = (imageName, source) => {
-  console.log("source", source)
+  console.log("source", source);
+
   try {
     let images;
+
+    if (!imageName) return "";
+
+    let basePath = "/uploads/";
+
     if (source == "Web-bg") {
       images = require.context("../assets/images/Website-bg", true);
     } else if (source == "ProductImage") {
-      images = require.context("../assets/images/Product_Images", true);
+       console.log("imaaaaaaaaaaaa", imageName);
+
+      return `${BASE_URL}${basePath}Product_Images/${imageName}`;
     } else if (source == "Certificates") {
       images = require.context("../assets/images/Certificates", true);
     } else {
       images = require.context("../assets/images/Logo", true);
     }
 
+   
     return images(`./${imageName}`);
   } catch (e) {
     console.error(`Error loading image ${imageName}:`, e);
