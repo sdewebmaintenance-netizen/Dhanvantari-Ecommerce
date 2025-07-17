@@ -2,6 +2,9 @@ const path = require("path");
 const express = require("express");
 const session = require("express-session");
 const dotenv = require("dotenv");
+
+const { uploadsDir, staticFileOptions } = require('./middlewares/multerConfiguration.js');
+
 dotenv.config();
 
 const morgan = require("morgan");
@@ -48,6 +51,8 @@ app.use(session({ secret: SECRET, resave: false, saveUninitialized: true }));
 
 app.use(passport.initialize());
 app.use(passport.session());
+
+app.use('/uploads', express.static(uploadsDir, staticFileOptions));
 
 app.use("/", authRoutes);
 

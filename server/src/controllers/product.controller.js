@@ -210,6 +210,8 @@ const updateProductDetails = asyncHandler(async (req, res) => {
 });
 
 const removeProduct = asyncHandler(async (req, res) => {
+
+  console.log("reeeeeeeeeeeeeeee", req.params)
   await prisma.product.delete({
     where: { id: parseInt(req.params.id) },
   });

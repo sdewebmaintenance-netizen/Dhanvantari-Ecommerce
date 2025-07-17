@@ -93,9 +93,9 @@ model Cart {
   createdAt           DateTime @default(now())
   updatedAt           DateTime @updatedAt
 
-  Products            Product?         @relation(fields: [product_id], references: [id])
-  CartUser            User             @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  CartShippingAddress ShippingAddress? @relation(fields: [shipping_address_id], references: [id])
+  Products            Product?         @relation(fields: [product_id], references: [id],  onDelete: Cascade)
+  CartUser            User             @relation(fields: [user_id], references: [id])
+  CartShippingAddress ShippingAddress? @relation(fields: [shipping_address_id], references: [id], onDelete: Cascade)
 }
 
 model IncoTerm {

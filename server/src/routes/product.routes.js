@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 
-const {uploadMultipleImages} = require("./upload.routes"); 
+const {uploadProductImages} = require("../middlewares/multerConfiguration.js"); 
 
 const {
   addProduct,
@@ -23,7 +23,7 @@ const checkId =require("../middlewares/checkId.js");
 router
   .route("/")
   .get(fetchProducts)
-  .post(uploadMultipleImages, addProduct);
+  .post(uploadProductImages, addProduct);
 
 router.route("/:id/reviews").post(checkId, addProductReview);
 router.get("/allproductsadmin", fetchAllProductsAdmin);
@@ -33,7 +33,7 @@ router.get("/new", fetchNewProducts);
 router
   .route("/:id")
   .get(fetchProductById)
-  .put(uploadMultipleImages, updateProductDetails)
+  .put(uploadProductImages, updateProductDetails)
   .delete(removeProduct);
 
 router.route("/filtered-products").post(filterProducts);
