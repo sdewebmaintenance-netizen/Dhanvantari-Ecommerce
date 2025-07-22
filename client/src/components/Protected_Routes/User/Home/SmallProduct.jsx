@@ -3,10 +3,18 @@ import formatCurrency from "../../../../Utils/FormatCurrency";
 import ProductImageCarousel from "../Product/ProductImageCarousel";
 
 const SmallProduct = ({ product }) => {
-  console.log("ajkfuibgslauiasb", product)
+  const hasDiscount = product?.ProductDiscount;
+  const hasRating = product?.rating > 0;
+
   return (
     <div className="small-product">
       <div className="small-product-image-container">
+        {hasDiscount && (
+          <div className="product-discount-ribbon">
+            Buy {product.ProductDiscount.qty}+ & Save ₹
+            {product.ProductDiscount.pricetobereduced}
+          </div>
+        )}
         <ProductImageCarousel
           images={product.ProductImages}
           imageclass="smallImage"
@@ -20,9 +28,24 @@ const SmallProduct = ({ product }) => {
           <div className="small-product-title">
             <div>{product.name}</div>
             <span className="small-product-price">
-              {" "}
               {formatCurrency(product?.price)}
             </span>
+          </div>
+
+          <div className="pro-in">
+            {product.IGST > 0 ? (
+              <p className="product-gst">GST: {product.IGST}%</p>
+            ) : product.CGST > 0 || product.SGST > 0 ? (
+              <p className="product-gst">
+                GST: {product.CGST + product.SGST}%
+                {product.CGST > 0 && ` (CGST: ${product.CGST}%)`}
+                {product.SGST > 0 && ` (SGST: ${product.SGST}%)`}
+              </p>
+            ) : null}
+
+            {hasRating && (
+              <p className="product-rating-badge">{product.rating} ★</p>
+            )}
           </div>
         </Link>
       </div>

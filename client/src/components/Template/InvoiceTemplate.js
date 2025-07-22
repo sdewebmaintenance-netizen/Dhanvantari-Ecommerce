@@ -7,7 +7,7 @@ import Dhanvantari from "../../assets/images/Logo/Dhanvantari-God.png";
 const converter = require("number-to-words");
 
 const InvoiceTemplate = ({ order }) => {
-  console.log("invoi", order)
+  console.log("invoi", order);
   const isWithinTamilNadu = () => {
     const shippingAddress = order.OrderShippingAddress;
     const stateToCheck = shippingAddress.deliveryState
@@ -73,23 +73,34 @@ const InvoiceTemplate = ({ order }) => {
   const taxTotal = withinTN ? sgstTotal + cgstTotal : igstTotal;
   const grandTotal = subtotal + taxTotal;
 
+
+  const generateInvoiceNumber = (order) => {
+  if (!order || !order.createdAt) return "SDE-WEB-XXXX-XXXX-000";
+
+  const date = new Date(order.createdAt);
+  const month = date.toLocaleString("en-US", { month: "short" }).toUpperCase(); 
+  const year = date.getFullYear(); 
+  return `SDE-WEB-${month}-${year}-${order.id}`;
+};
+
+
   return (
     <div className="invoice-container">
       <div className="invoice-header">
         <div className="invoice-content">
-          <h1>Sri Dhanvantari Exports</h1>
+          <h5>Sri Dhanvantari Exports</h5>
           <p>Dealing with All kinds of Food Starch of Products of</p>
           <p>Tapioca, Maize, Potato and Sabudana Sago items</p>
           <p>Phone: 9943760055</p>
           <p>Email: srdhanvantariexports@gmail.com</p>
           <p>GSTIN: 3382LRP29211220</p>
-          <p>State: 33-Tamil Nadu</p>
+          <p>State: Tamil Nadu</p>
         </div>
         <img src={Dhanvantari} alt={"Dhanvanatri"} className="Logo-pdf" />
       </div>
 
       <div className="invoice-title">
-        <h2>Tax Invoice</h2>
+        <h6>Tax Invoice</h6>
         {withinTN ? (
           <p className="tax-note">SGST & CGST Applicable (Within Tamil Nadu)</p>
         ) : (
@@ -133,7 +144,7 @@ const InvoiceTemplate = ({ order }) => {
 
         <div className="invoice-details">
           <h6>Invoice Details</h6>
-          <p>Invoice No.: {order.id}</p>
+          <p>Invoice No.: {generateInvoiceNumber(order)}</p>
           <p>Date: {formatDate(order.createdAt, "dd-MM-yyyy")}</p>
           <p>Time: {formatTime(order.createdAt, "hh:mm a")}</p>
           <p>
@@ -198,7 +209,7 @@ const InvoiceTemplate = ({ order }) => {
           </p>
 
           <p style={{ fontWeight: "700" }}>Terms And Conditions</p>
-          <ul  className="invoice-conditions">
+          <ul className="invoice-conditions">
             <li>Goods once sold shall not be taken back.</li>
             <li>Our responsibility ceases once goods leave our factory.</li>
             <li>Subject to Salem jurisdiction.</li>
@@ -216,6 +227,11 @@ const InvoiceTemplate = ({ order }) => {
                 sridhanvantariexports@gmail.com
               </a>
               ).
+            </li>
+            <li>Privacy policy to safeguard customer information.</li>
+            <li>
+              Delivery transit period within South India takes 2 to 5,North
+              India takes 4 to 10 days, North East India 11 to 18 Days.
             </li>
           </ul>
         </div>
@@ -256,6 +272,7 @@ const InvoiceTemplate = ({ order }) => {
       </div>
 
       <div className="signature">
+        <p>For: Sri Dhanvantari Exports</p>
         <img src={Signature} alt="Signature" className="signature-picture" />
         <p>Authorized Signatory</p>
       </div>

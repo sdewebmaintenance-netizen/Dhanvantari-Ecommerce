@@ -55,7 +55,7 @@ const ProductCarousel = () => {
                 className={`carousel-slide ${
                   index === currentIndex ? "active" : ""
                 }`}
-                style={{ backgroundImage: `url(${getImage(product.ProductImages[0]?.image_name, "ProductImage")})` }}
+                style={{ backgroundImage: `url(${product.ProductImages[0]?.image_url})` }}
               ></div>
             ))}
 
@@ -115,7 +115,7 @@ const ProductCarousel = () => {
                     </p>
                     <p>
                       <span className="icon-product-desc"><FaShoppingCart /></span> Quantity:{" "}
-                      {products[currentIndex].quantity}
+                      {products[currentIndex].weight}
                     </p>
                     <p>
                       <span className="icon-product-desc"><FaBox /></span> In Stock: {products[currentIndex].countInStock}

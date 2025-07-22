@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { toast } from "react-toastify";
 import PhoneInput from "react-phone-number-input";
 import "react-phone-number-input/style.css";
 import Loader from "../../../components/Common/Loader";
@@ -62,14 +61,14 @@ const Profile = () => {
 
       console.log("asgf", res)
       if(res.error){
-        toast(res.error)
+        alert(res.error)
       }
       dispatch(setCredentials({ ...res }));
       dispatch(logout());
       dispatch(apiSlice.util.resetApiState());
-      toast.success("Profile updated successfully");
+     alert("Profile updated successfully");
     } catch (err) {
-      toast.error(err?.data?.error);
+      alert(err?.data?.error);
     }
   };
 

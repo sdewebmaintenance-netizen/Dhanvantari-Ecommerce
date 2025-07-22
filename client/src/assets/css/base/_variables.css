@@ -28,7 +28,6 @@
 
   --color-bg: #fdf5e1;
   --color-bg-light: #fff7e6;
-  --color-bg-lighter: # ;
   --color-bg-dark: #f2e9cf;
 
   --color-border: #d6cfc3;
@@ -68,5 +67,4 @@
   --z-index-modal: 1050;
   --z-index-popover: 1060;
   --z-index-tooltip: 1070;
-  --z-index-toast: 1080;
 }

@@ -7,7 +7,6 @@ import {
 } from "../../../redux/api/categoryApiSlice";
 import Loader from "../../../components/Common/Loader";
 import Message from "../../../components/Common/Message";
-import { toast } from "react-toastify";
 import CategoryForm from "../../../components/Protected_Routes/Admin/CategoryForm";
 import Modal from "../../../components/Protected_Routes/Admin/Modal";
 
@@ -32,7 +31,7 @@ const CategoryList = () => {
     e.preventDefault();
 
     if (!name) {
-      toast.error("Category name is required");
+      alert("Category name is required");
       return;
     }
 
@@ -41,14 +40,14 @@ const CategoryList = () => {
       const result = await createCategory({ name }).unwrap();
       await refetch();
       if (result.error) {
-        toast.error(result.error);
+        alert(result.error);
       } else {
         setName("");
-        toast.success(`${result.name} is created.`);
+        alert(`${result.name} is created.`);
       }
     } catch (error) {
       console.error(error);
-      toast.error("Creating category failed, try again.");
+      alert("Creating category failed, try again.");
     } finally {
       setLoading(false);
     }
@@ -58,7 +57,7 @@ const CategoryList = () => {
     e.preventDefault();
 
     if (!updatingName) {
-      toast.error("Category name is required");
+      alert("Category name is required");
       return;
     }
 
@@ -73,9 +72,9 @@ const CategoryList = () => {
       await refetch();
 
       if (result.error) {
-        toast.error(result.error);
+        alert(result.error);
       } else {
-        toast.success(`${result.name} is updated`);
+       alert(`${result.name} is updated`);
         setSelectedCategory(null);
         setUpdatingName("");
         setModalVisible(false);
@@ -98,15 +97,15 @@ const CategoryList = () => {
       const result = await deleteCategory(selectedCategory.id).unwrap();
       await refetch();
       if (result.error) {
-        toast.error(result.error);
+        alert(result.error);
       } else {
-        toast.success(`Deleted Sucessfully.`);
+        alert(`Deleted Sucessfully.`);
         setSelectedCategory(null);
         setModalVisible(false);
       }
     } catch (error) {
       console.error(error);
-      toast.error("Category delection failed. Tray again.");
+      alert("Category delection failed. Tray again.");
     } finally {
       setLoading(false);
     }

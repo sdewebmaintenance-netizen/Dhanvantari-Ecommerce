@@ -78,6 +78,9 @@ const UserHeader = () => {
           <Link to="/home">HOME</Link>
 
           <Link to="/shop">SHOP</Link>
+          <Link to="/user-orders"  >
+            My Orders
+          </Link>
 
           <Link to="/cart">
             CART
@@ -121,7 +124,7 @@ const UserHeader = () => {
                     className="dropdown-item"
                     onClick={() => setAvatarMenuOpen(false)}
                   >
-                    <FiUser  className="dropdown-icon" />
+                    <FiUser className="dropdown-icon" />
                     Profile
                   </Link>
                   <div

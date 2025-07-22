@@ -20,7 +20,7 @@ const ProductDisplay = ({ product }) => {
   }, [hovered, product.ProductImages]);
 
   const displayImage = product.ProductImages?.length
-    ? getImage(product.ProductImages[imageIndex]?.image_name, "ProductImage")
+    ? product.ProductImages[imageIndex]?.image_url
     : getImage("default-product.jpg", "ProductImage");
 
   return (

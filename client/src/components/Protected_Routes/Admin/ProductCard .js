@@ -6,6 +6,7 @@ import formatDate from "../../../Utils/FormatDate";
 import formatTime from "../../../Utils/FormatTime";
 
 const ProductCard = ({ product }) => {
+  console.log("prrrrrrrrrrrrr", product);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
 
@@ -13,35 +14,29 @@ const ProductCard = ({ product }) => {
     let interval;
     if (isHovered && product.ProductImages.length > 1) {
       interval = setInterval(() => {
-        setCurrentImageIndex(prev => 
-          (prev + 1) % product.ProductImages.length
+        setCurrentImageIndex(
+          (prev) => (prev + 1) % product.ProductImages.length
         );
-      }, 1000); 
+      }, 1000);
     }
     return () => clearInterval(interval);
   }, [isHovered, product.ProductImages.length]);
 
   const getDisplayImage = () => {
     if (product.ProductImages.length > 0) {
-      return getImage(
-        product.ProductImages[currentImageIndex].image_name, 
-        "ProductImage"
-      );
+      return product.ProductImages[currentImageIndex].image_url;
     }
-    return getImage(product.image || "default-product.jpg", "ProductImage");
   };
 
   return (
     <div className="product-item">
       <div className="product-card-alt">
-        <section 
+        <section
           className="product-card-image-section"
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
         >
-          <span className="product-brand-badge">
-            {product?.brand}
-          </span>
+          <span className="product-brand-badge">{product?.brand}</span>
           <Link to={`/admin/product/update/${product.id}`}>
             <img
               className="product-card-image"
@@ -49,13 +44,15 @@ const ProductCard = ({ product }) => {
               alt={product.name}
             />
           </Link>
-          
+
           {product.ProductImages.length > 1 && (
             <div className="image-indicator">
               {product.ProductImages.map((_, index) => (
-                <span 
+                <span
                   key={index}
-                  className={`indicator-dot ${index === currentImageIndex ? 'active' : ''}`}
+                  className={`indicator-dot ${
+                    index === currentImageIndex ? "active" : ""
+                  }`}
                 />
               ))}
             </div>
@@ -75,12 +72,20 @@ const ProductCard = ({ product }) => {
           <p className="product-card-description">
             {product?.description?.substring(0, 60)}...
           </p>
-          <div className="flex justify-between">
+          <div className="btn">
             <Link
               to={`/admin/product/update/${product.id}`}
               className="btn-customized"
             >
               Update Product
+            </Link>
+          </div>
+          <div className="btn">
+            <Link
+              to={`/admin/product/view/${product.id}`}
+              className="btn-customized"
+            >
+              View Product
             </Link>
           </div>
         </div>

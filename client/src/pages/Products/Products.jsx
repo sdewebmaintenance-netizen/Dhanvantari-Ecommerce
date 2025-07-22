@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { toast } from "react-toastify";
 import {
   useGetProductDetailsQuery,
   useCreateReviewMutation,
@@ -57,9 +56,9 @@ const Product = () => {
         comment,
       }).unwrap();
       refetch();
-      toast.success("Review created successfully");
+      alert("Review created successfully");
     } catch (err) {
-      toast.error(err?.data?.error || err.error);
+      alert(err?.data?.error || err.error);
     }
   };
 

@@ -5,7 +5,6 @@ import "react-phone-number-input/style.css";
 import Loader from "../../Common/Loader";
 import Message from "../../Common/Message";
 import { useLoginMutation } from "../../../redux/api/usersApiSlice";
-import { toast } from "react-toastify";
 
 const Login = () => {
   const [phone, setPhone] = useState("");
@@ -21,7 +20,7 @@ const Login = () => {
       console.log("akjg,ali", res);
       navigate(`/callback?token=${res.token}&isAdmin=${res.isAdmin}`);
     } catch (err) {
-      toast.error(err?.data?.error || err.error);
+      alert(err?.data?.error || err.error);
     }
   };
 

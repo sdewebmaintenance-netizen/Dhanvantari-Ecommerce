@@ -10,7 +10,6 @@ import {
   useFetchShippingAddressQuery,
 } from "../../../redux/api/shippingAddressApiSlice";
 import ProgressSteps from "../../../components/Protected_Routes/User/Cart/ProgressSteps";
-import { toast } from "react-toastify";
 import Loader from "../../../components/Common/Loader";
 
 const Shipping = () => {
@@ -136,19 +135,19 @@ const Shipping = () => {
           shippingAddressId: shippingAddress.id,
           updatedShippingAddress: shippingData,
         }).unwrap();
-        toast.success("Shipping Address updated successfully");
+       alert("Shipping Address updated successfully");
       } else {
         result = await createShippingAddress({
           newShippingAddress: shippingData,
         }).unwrap();
-        toast.success("Shipping Address created successfully");
+       alert("Shipping Address created successfully");
       }
 
       await refetch();
       setIsEditMode(false);
     } catch (error) {
       console.error(error);
-      toast.error(error?.data?.error || "Operation failed, try again.");
+      alert(error?.data?.error || "Operation failed, try again.");
     }
   };
 
@@ -158,11 +157,11 @@ const Shipping = () => {
     ) {
       try {
         await deleteShippingAddress(shippingAddress.id).unwrap();
-        toast.success("Shipping Address deleted successfully");
+      alert("Shipping Address deleted successfully");
         navigate("/cart");
       } catch (error) {
         console.error(error);
-        toast.error(error?.data?.error || "Delete failed, try again.");
+       alert(error?.data?.error || "Delete failed, try again.");
       }
     }
   };

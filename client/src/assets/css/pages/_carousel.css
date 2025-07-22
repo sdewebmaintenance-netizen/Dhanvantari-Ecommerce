@@ -93,6 +93,7 @@
 .carousel-product-info {
   display: flex;
   justify-content: center;
+  background-color: var(--color-text)
 }
 
 .product-info-card {

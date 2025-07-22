@@ -6,7 +6,13 @@ const Product = ({ product }) => {
   return (
     <div className="small-product">
       <div className="small-product-image-container">
-         <ProductImageCarousel
+        {product.ProductDiscount && (
+          <div className="product-discount-ribbon">
+            Buy {product.ProductDiscount.qty}+ & Save ₹
+            {product.ProductDiscount.pricetobereduced}
+          </div>
+        )}
+        <ProductImageCarousel
           images={product.ProductImages}
           imageClassName="product-card-image"
           indicatorClassName="product-indicator-dot"
@@ -23,6 +29,22 @@ const Product = ({ product }) => {
             </span>
           </div>
         </Link>
+      </div>
+
+      <div className="pro-in">
+        {product.IGST > 0 ? (
+          <p className="product-gst">GST: {product.IGST}%</p>
+        ) : product.CGST > 0 || product.SGST > 0 ? (
+          <p className="product-gst">
+            GST: {product.CGST + product.SGST}%
+            {product.CGST > 0 && ` (CGST: ${product.CGST}%)`}
+            {product.SGST > 0 && ` (SGST: ${product.SGST}%)`}
+          </p>
+        ) : null}
+
+        {product.rating > 0 && (
+          <div className="product-rating-badge">{product.rating} ★</div>
+        )}
       </div>
     </div>
   );

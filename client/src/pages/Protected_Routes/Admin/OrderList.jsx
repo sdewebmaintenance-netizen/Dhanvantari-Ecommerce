@@ -157,7 +157,7 @@ const OrderList = () => {
                 <tr key={order.id} className="table-row">
                   <td className="table-cell">
                     <img
-                      src={getImage(order.orderItems[0].image, "ProductImage")}
+                      src={order.orderItems[0].image_url}
                       alt={order.id}
                       className="order-item-image"
                     />

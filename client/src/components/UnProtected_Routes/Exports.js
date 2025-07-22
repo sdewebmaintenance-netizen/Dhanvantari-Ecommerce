@@ -3,7 +3,6 @@ import {
   useAllProductsQuery,
   useRequestQuotaMutation,
 } from "../../redux/api/productApiSlice";
-import { toast } from "react-toastify";
 import PhoneInput from "react-phone-number-input";
 import "react-phone-number-input/style.css";
 import { Country, State, City } from "country-state-city";
@@ -74,12 +73,12 @@ const ProductQuoteTable = () => {
     e.preventDefault();
 
     if (selectedProducts.length === 0) {
-      toast.error("Please select at least one product");
+      alert("Please select at least one product");
       return;
     }
 
     if (contactForm.message.length > 1000) {
-      toast.error("Message should be less than 1000 characters");
+      alert("Message should be less than 1000 characters");
       return;
     }
 
@@ -102,7 +101,7 @@ const ProductQuoteTable = () => {
       const result = await requestQuota(requestData).unwrap();
 
       if (result.error) {
-        toast.error(result.error);
+        alert(result.error);
       } else {
         setShowContactForm(false);
         setSelectedProducts([]);
@@ -121,11 +120,11 @@ const ProductQuoteTable = () => {
         setPhone("");
         setProductQuantities({});
         setProductSpecs({});
-        toast.success("Quote request submitted successfully!");
+        alert("Quote request submitted successfully!");
       }
     } catch (error) {
       console.error(error);
-      toast.error("Failed to submit quote request. Please try again.");
+      alert("Failed to submit quote request. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -171,10 +170,7 @@ const ProductQuoteTable = () => {
                   </td>
                   <td>
                     <img
-                      src={getImage(
-                        product?.ProductImages[0]?.image_name,
-                        "ProductImage"
-                      )}
+                      src={product?.ProductImages[0]?.image_url}
                       alt={product.name}
                       className="product-thumbnail"
                     />

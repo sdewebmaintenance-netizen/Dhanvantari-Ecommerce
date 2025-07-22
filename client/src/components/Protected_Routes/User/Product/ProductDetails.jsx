@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
-import { toast } from "react-toastify";
 import {
   useGetProductDetailsQuery,
   useCreateReviewMutation,
@@ -47,7 +46,11 @@ const ProductDetails = () => {
         setDiscountedPrice(null);
       }
     }
-  }, [qty, product?.ProductDiscount, product?.price]);
+
+    if (product?.moq && qty < product.moq) {
+      setQty(product.moq);
+    }
+  }, [qty, product?.ProductDiscount, product?.price, product?.moq]);
 
   const [createReview, { isLoading: loadingProductReview }] =
     useCreateReviewMutation();
@@ -64,16 +67,16 @@ const ProductDetails = () => {
         comment,
       }).unwrap();
       refetch();
-      toast.success("Review created successfully");
+      alert("Review created successfully");
     } catch (error) {
-      toast.error(error?.data.error || error.message);
+      alert(error?.data.error || error.message);
     }
   };
 
   const addToCartHandler = async (e) => {
     e.preventDefault();
     if (!qty) {
-      toast.error("Quantity is required");
+      alert("Quantity is required");
       return;
     }
 
@@ -83,10 +86,10 @@ const ProductDetails = () => {
         quantity: parseInt(qty),
       }).unwrap();
 
-      toast.success("Item added to cart successfully");
+      alert("Item added to cart successfully");
     } catch (error) {
       console.error(error);
-      toast.error(error?.data?.error || "Adding to cart failed, try again.");
+      alert(error?.data?.error || "Adding to cart failed, try again.");
     }
   };
 
@@ -174,6 +177,21 @@ const ProductDetails = () => {
                     <FaStar className="stats-icon" /> Ratings: {rating}
                   </p>
                 </div>
+
+                <div className="stat-group">
+                  {product.SGST && (
+                    <p className="stat-item">SGST: {product.SGST}%</p>
+                  )}
+                  {product.CGST && (
+                    <p className="stat-item">CGST: {product.CGST}%</p>
+                  )}
+                  {product.IGST && (
+                    <p className="stat-item">IGST: {product.IGST}%</p>
+                  )}
+                  {product.moq && (
+                    <p className="stat-item">Minimum Order: {product.moq}</p>
+                  )}
+                </div>
               </div>
 
               <div className="product-details-actions">
@@ -189,12 +207,20 @@ const ProductDetails = () => {
                       onChange={(e) => setQty(e.target.value)}
                       className="quantity-select"
                     >
-                      {[...Array(product.countInStock).keys()].map((x) => (
-                        <option key={x + 1} value={x + 1}>
-                          {x + 1}
-                        </option>
-                      ))}
+                      {[...Array(product.countInStock).keys()]
+                        .map((x) => x + 1)
+                        .filter((x) => (product.moq ? x >= product.moq : true))
+                        .map((x) => (
+                          <option key={x} value={x}>
+                            {x}
+                          </option>
+                        ))}
                     </select>
+                    {product.moq && qty < product.moq && (
+                      <p className="text-danger small">
+                        Minimum order quantity is {product.moq}
+                      </p>
+                    )}
                   </div>
                 )}
               </div>
@@ -202,7 +228,10 @@ const ProductDetails = () => {
               <div>
                 <button
                   onClick={addToCartHandler}
-                  disabled={product.countInStock === 0}
+                  disabled={
+                    product.countInStock === 0 ||
+                    (product.moq && qty < product.moq)
+                  }
                   className="btn-customized"
                 >
                   Add To Cart

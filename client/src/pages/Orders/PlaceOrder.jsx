@@ -1,9 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
 import Message from "../../components/Common/Message";
 import ProgressSteps from "../../components/Protected_Routes/User/Cart/ProgressSteps";
 import Loader from "../../components/Common/Loader";
-import ReactDOM from "react-dom/client";
 import { createRoot } from "react-dom/client";
 
 import {
@@ -12,7 +10,6 @@ import {
   useGetRazorPayKeyIdQuery,
   useCreateOrderMutation,
   useOrderConfirmationViaEmailsMutation,
-  useUploadInvoiceMutation,
 } from "../../redux/api/orderApiSlice";
 import { toPng } from "html-to-image";
 import jsPDF from "jspdf";
@@ -39,47 +36,9 @@ const PlaceOrder = () => {
     useCreateRazorPayOrderMutation();
   const [orderConfirmationViaEmails] = useOrderConfirmationViaEmailsMutation();
   const [createOrder] = useCreateOrderMutation();
-  const [uploadInvoice] = useUploadInvoiceMutation();
   const [deleteOrder] = useDeleteOrderMutation();
 
   const { data: razorpayKey } = useGetRazorPayKeyIdQuery();
-
-  const generateInvoicePDF = async (orderData) => {
-    try {
-      const tempDiv = document.createElement("div");
-      document.body.appendChild(tempDiv);
-
-      const root = createRoot(tempDiv);
-      root.render(<InvoiceTemplate order={orderData} />);
-
-      await new Promise((resolve) => setTimeout(resolve, 500));
-
-      const dataUrl = await toPng(tempDiv, {
-        quality: 1,
-        pixelRatio: 2,
-        backgroundColor: "#ffffff",
-      });
-
-      root.unmount();
-      document.body.removeChild(tempDiv);
-
-      const pdf = new jsPDF({
-        orientation: "portrait",
-        unit: "mm",
-      });
-
-      const imgProps = pdf.getImageProperties(dataUrl);
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-
-      pdf.addImage(dataUrl, "PNG", 0, 0, pdfWidth, pdfHeight);
-
-      return pdf.output("blob");
-    } catch (error) {
-      console.error("Error generating invoice:", error);
-      throw error;
-    }
-  };
 
   const calculateOrderSummary = () => {
     if (!cart || cart.length === 0) return {};
@@ -99,7 +58,6 @@ const PlaceOrder = () => {
       const originalItemPrice = item.Products.price * item.quantity;
       originalItemsPrice += originalItemPrice;
 
-      // Use the product's specific discount
       const productDiscount = item.Products?.ProductDiscount;
       const hasDiscount =
         productDiscount && item.quantity >= productDiscount.qty;
@@ -219,26 +177,17 @@ const PlaceOrder = () => {
               paymentId: res.payment.id,
             }).unwrap();
             setOrder(createdOrder.order);
-            const pdfBlob = await generateInvoicePDF(createdOrder.order);
-
-            const formData = new FormData();
-            formData.append(
-              "invoice",
-              pdfBlob,
-              `invoice-${createdOrder.order.id}.pdf`
-            );
-            formData.append("orderId", createdOrder.order.id);
-
-            const uploadResponse = await uploadInvoice(formData).unwrap();
+            localStorage.setItem("redirect_url", "Order_Placed");
 
             await orderConfirmationViaEmails({
               order: createdOrder.order,
-              invoicePath: uploadResponse.filePath,
             }).unwrap();
 
             setLoading(false);
             alert("Payment successful!");
-            navigate(`/order/${order.order.id}`);
+
+            console.log("shsssa", createdOrder.order);
+            navigate(`/order/${createdOrder.order.id}`);
           } catch (err) {
             console.error("Error updating payment status:", err);
             alert("Payment success but failed to update status.");
@@ -256,7 +205,7 @@ const PlaceOrder = () => {
       const razorpay = new window.Razorpay(options);
       razorpay.open();
     } catch (error) {
-      toast.error(error);
+      alert(error);
     }
   };
 
@@ -291,10 +240,7 @@ const PlaceOrder = () => {
         <tr key={index} className="table-row">
           <td className="table-cell">
             <img
-              src={getImage(
-                item?.Products?.ProductImages[0]?.image_name,
-                "ProductImage"
-              )}
+              src={item?.Products?.ProductImages[0]?.image_url}
               alt={item.name}
               className="product-thumbnail"
             />

@@ -6,7 +6,6 @@ import { useFetchCategoriesQuery } from "../../../redux/api/categoryApiSlice";
 import { useFetchIncoTermsQuery } from "../../../redux/api/incoTermApiSlice";
 import { useFetchDiscountsQuery } from "../../../redux/api/discountApiSlice";
 import { useFetchPortsQuery } from "../../../redux/api/portApiSlice";
-import { toast } from "react-toastify";
 import { Country } from "country-state-city";
 
 const ProductList = () => {
@@ -15,6 +14,7 @@ const ProductList = () => {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
+  const [pcode, setPCode] = useState("");
   const [moq, setMoq] = useState("");
   const [category, setCategory] = useState("");
   const [quantity, setQuantity] = useState("");
@@ -70,6 +70,7 @@ const ProductList = () => {
       productData.append("name", name);
       productData.append("description", description);
       productData.append("price", price);
+      productData.append("pcode", pcode);
       productData.append("moq", moq);
       productData.append("category", category);
       productData.append("quantity", quantity);
@@ -96,12 +97,12 @@ const ProductList = () => {
       const { data, error } = await createProduct(productData);
 
       if (error) {
-        toast.error("Product create failed. Try Again.");
+       alert("Product create failed. Try Again.");
       } else {
         navigate("/admin/allproductslist");
       }
     } catch (error) {
-      toast.error(error);
+     alert(error);
       console.error(error);
     }
   };
@@ -110,7 +111,7 @@ const ProductList = () => {
     const files = Array.from(e.target.files).slice(0, 4);
 
     if (files.length + image.length > 4) {
-      toast.error("You can only upload up to 4 images");
+      alert("You can only upload up to 4 images");
       return;
     }
 
@@ -122,7 +123,7 @@ const ProductList = () => {
       const newPreviews = files.map((file) => URL.createObjectURL(file));
       setImagePreviews((prev) => [...prev, ...newPreviews]);
     } catch (error) {
-      toast.error(error?.data?.message || error.error);
+     alert(error?.data?.message || error.error);
     }
   };
 
@@ -212,6 +213,7 @@ const ProductList = () => {
               </button>
             </div>
           </div>
+
           <div className="form-group">
             <label htmlFor="name" className="form-label">
               Name
@@ -221,6 +223,17 @@ const ProductList = () => {
               className="form-control"
               value={name}
               onChange={(e) => setName(e.target.value)}
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="name" className="form-label">
+              Product Code
+            </label>
+            <input
+              type="text"
+              className="form-control"
+              value={pcode}
+              onChange={(e) => setPCode(e.target.value)}
             />
           </div>
           <div className="form-group">

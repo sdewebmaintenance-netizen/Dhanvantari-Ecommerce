@@ -7,7 +7,6 @@ import {
 } from "../../../redux/api/incoTermApiSlice";
 import Loader from "../../../components/Common/Loader";
 import Message from "../../../components/Common/Message";
-import { toast } from "react-toastify";
 import IncoTermForm from "../../../components/Protected_Routes/Admin/IncoTermForm";
 import Modal from "../../../components/Protected_Routes/Admin/Modal";
 
@@ -30,7 +29,7 @@ const IncoTermList = () => {
   const handleCreate = async (e) => {
     e.preventDefault();
     if (!name) {
-      toast.error("IncoTerm name is required");
+      alert("IncoTerm name is required");
       return;
     }
 
@@ -39,14 +38,14 @@ const IncoTermList = () => {
       const result = await createIncoTerm({ inco_term_name: name }).unwrap();
       await refetch();
       if (result.error) {
-        toast.error(result.error);
+        alert(result.error);
       } else {
         setName("");
-        toast.success(`${result.inco_term_name} is created.`);
+        alert(`${result.inco_term_name} is created.`);
       }
     } catch (error) {
       console.error(error);
-      toast.error("Creating IncoTerm failed, try again.");
+      alert("Creating IncoTerm failed, try again.");
     } finally {
       setLoading(false);
     }
@@ -55,7 +54,7 @@ const IncoTermList = () => {
   const handleUpdate = async (e) => {
     e.preventDefault();
     if (!name) {
-      toast.error("IncoTerm name is required");
+      alert("IncoTerm name is required");
       return;
     }
 
@@ -68,9 +67,9 @@ const IncoTermList = () => {
       await refetch();
 
       if (result.error) {
-        toast.error(result.error);
+      alert(result.error);
       } else {
-        toast.success(`${result.inco_term_name} is updated`);
+       alert(`${result.inco_term_name} is updated`);
         setSelectedIncoTerm(null);
         setName("");
         setModalVisible(false);
@@ -88,15 +87,15 @@ const IncoTermList = () => {
       const result = await deleteIncoTerm(selectedIncoTerm.id).unwrap();
       await refetch();
       if (result.error) {
-        toast.error(result.error);
+alert(result.error);
       } else {
-        toast.success(`Deleted Successfully.`);
+        alert(`Deleted Successfully.`);
         setSelectedIncoTerm(null);
         setModalVisible(false);
       }
     } catch (error) {
       console.error(error);
-      toast.error("IncoTerm deletion failed. Try again.");
+alert("IncoTerm deletion failed. Try again.");
     } finally {
       setLoading(false);
     }

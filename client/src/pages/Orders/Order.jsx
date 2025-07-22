@@ -8,7 +8,6 @@ import {
   useGetOrderDetailsQuery,
 } from "../../redux/api/orderApiSlice";
 import { useGetUserInfoQuery } from "../../redux/api/usersApiSlice";
-import { useRequestInvoiceMutation } from "../../redux/api/productApiSlice";
 import getImage from "../../Utils/GetImage";
 import formatDate from "../../Utils/FormatDate";
 import { useRef } from "react";
@@ -28,16 +27,15 @@ const Order = () => {
     error,
   } = useGetOrderDetailsQuery(orderId);
 
-  const [requestInvoice] = useRequestInvoiceMutation();
   const invoiceRef = useRef();
 
   const isWithinTamilNadu = () => {
     const shippingAddress = order.OrderShippingAddress;
-    const stateToCheck = shippingAddress.deliveryState 
-      ? shippingAddress.deliveryState 
+    const stateToCheck = shippingAddress.deliveryState
+      ? shippingAddress.deliveryState
       : shippingAddress.state;
-    
-    return stateToCheck === "TN"; 
+
+    return stateToCheck === "TN";
   };
 
   const generateAndSaveInvoice = async () => {
@@ -51,7 +49,7 @@ const Order = () => {
       const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
 
       const pageHeight = pdf.internal.pageSize.getHeight();
-      
+
       let heightLeft = pdfHeight;
       let position = 0;
       const imgWidth = pdfWidth;
@@ -60,7 +58,9 @@ const Order = () => {
       pdf.addImage(dataUrl, "PNG", 0, position, imgWidth, imgHeight);
       heightLeft -= pageHeight;
 
-      while (heightLeft >= 0) {
+      console.log("heigh", heightLeft);
+
+      while (heightLeft >= 0.1) {
         position = heightLeft - imgHeight;
         pdf.addPage();
         pdf.addImage(dataUrl, "PNG", 0, position, imgWidth, imgHeight);
@@ -75,6 +75,12 @@ const Order = () => {
 
       const pdfBlob = pdf.output("blob");
       saveAs(pdfBlob, fileName);
+
+      const redirecturl = localStorage.getItem("redirect_url");
+
+      if (redirecturl) {
+        localStorage.removeItem("redirect_url");
+      }
 
       return pdf.output("datauristring");
     } catch (error) {
@@ -91,44 +97,13 @@ const Order = () => {
     }
   };
 
-  const sendInvoiceEmail = async () => {
-    try {
-      const pdfDataUrl = await generateAndSaveInvoice();
-
-      const orderDetails = {
-        orderId: order._id,
-        email: order.OrderUser.email,
-        userName: order.OrderUser.username,
-        pdfDataUrl: pdfDataUrl,
-        orderDetails: {
-          orderNumber: order._id,
-          items: order.orderItems.map((item) => ({
-            name: item.name,
-            quantity: item.qty,
-            unit: "unit",
-            price: formatCurrency(item.price),
-          })),
-          shippingCost: formatCurrency(order.shippingPrice),
-          totalAmount: formatCurrency(order.totalPrice),
-          paymentStatus: order.isPaid ? "Paid" : "Pending",
-          expectedShipment: "Within 5-7 business days",
-        },
-      };
-      const result = await requestInvoice(orderDetails).unwrap();
-      if (!result.ok) {
-        console.log("error");
-      }
-      console.log("Invoice email sent successfully");
-    } catch (error) {
-      console.error("Error sending invoice email:", error);
-    }
-  };
-
   useEffect(() => {
     const redirectUrl = localStorage.getItem("redirect_url");
+
     if (redirectUrl === "Order_Placed" && order && order.isPaid) {
-      sendInvoiceEmail();
-      /* localStorage.removeItem("redirect_url"); */
+      setTimeout(() => {
+        handleDownloadInvoice();
+      }, 5000);
     }
   }, [order]);
 
@@ -146,15 +121,21 @@ const Order = () => {
     const price = item.OrderItemProduct.price;
     const quantity = item.qty;
     const discount = item.OrderDiscount?.pricetobereduced || 0;
-    
+
     const discountedPrice = price - discount;
     const itemPrice = discountedPrice * quantity;
-    
+
     const isTamilNadu = isWithinTamilNadu();
-    const itemSGST = isTamilNadu ? (itemPrice * item.OrderItemProduct.SGST) / 100 : 0;
-    const itemCGST = isTamilNadu ? (itemPrice * item.OrderItemProduct.CGST) / 100 : 0;
-    const itemIGST = !isTamilNadu ? (itemPrice * item.OrderItemProduct.IGST) / 100 : 0;
-    
+    const itemSGST = isTamilNadu
+      ? (itemPrice * item.OrderItemProduct.SGST) / 100
+      : 0;
+    const itemCGST = isTamilNadu
+      ? (itemPrice * item.OrderItemProduct.CGST) / 100
+      : 0;
+    const itemIGST = !isTamilNadu
+      ? (itemPrice * item.OrderItemProduct.IGST) / 100
+      : 0;
+
     return {
       originalPrice: price * quantity,
       discountedPrice: itemPrice,
@@ -162,7 +143,7 @@ const Order = () => {
       cgst: itemCGST,
       igst: itemIGST,
       total: itemPrice + itemSGST + itemCGST + itemIGST,
-      discountAmount: discount * quantity
+      discountAmount: discount * quantity,
     };
   };
 
@@ -172,7 +153,7 @@ const Order = () => {
     <Messsage variant="danger">{error.data.message}</Messsage>
   ) : (
     <>
-      <div style={{ position: "absolute", left: "-9999px" }}>
+      <div /*  style={{ position: "absolute", left: "-9999px" }} */>
         <div ref={invoiceRef}>
           <InvoiceTemplate order={order} />
         </div>
@@ -232,11 +213,10 @@ const Order = () => {
                         <tr key={index} className="order-table-row">
                           <td className="order-table-cell">
                             <img
-                              src={getImage(
+                              src={
                                 item?.OrderItemProduct?.ProductImages[0]
-                                  ?.image_name,
-                                "ProductImage"
-                              )}
+                                  ?.image_url
+                              }
                               alt={item.name}
                               className="order-item-image"
                             />
@@ -250,8 +230,17 @@ const Order = () => {
                               {item.name}
                               {item.OrderDiscount && (
                                 <div className="discount-badge">
-                                  <FaTag style={{ marginRight: "5px", color: "green" }} />
-                                  Buy {item.OrderDiscount.qty}+, Save {formatCurrency(item.OrderDiscount.pricetobereduced)} per unit
+                                  <FaTag
+                                    style={{
+                                      marginRight: "5px",
+                                      color: "green",
+                                    }}
+                                  />
+                                  Buy {item.OrderDiscount.qty}+, Save{" "}
+                                  {formatCurrency(
+                                    item.OrderDiscount.pricetobereduced
+                                  )}{" "}
+                                  per unit
                                 </div>
                               )}
                             </Link>
@@ -266,7 +255,9 @@ const Order = () => {
                           <td className="order-table-cell text-center">
                             {item.OrderDiscount ? (
                               <>
-                                <span style={{ textDecoration: "line-through" }}>
+                                <span
+                                  style={{ textDecoration: "line-through" }}
+                                >
                                   {formatCurrency(itemTotal.originalPrice)}
                                 </span>
                                 <br />
@@ -281,15 +272,18 @@ const Order = () => {
                           {isWithinTamilNadu() ? (
                             <>
                               <td className="order-table-cell text-center">
-                                {formatCurrency(itemTotal.cgst)} ({item.OrderItemProduct.CGST}%)
+                                {formatCurrency(itemTotal.cgst)} (
+                                {item.OrderItemProduct.CGST}%)
                               </td>
                               <td className="order-table-cell text-center">
-                                {formatCurrency(itemTotal.sgst)} ({item.OrderItemProduct.SGST}%)
+                                {formatCurrency(itemTotal.sgst)} (
+                                {item.OrderItemProduct.SGST}%)
                               </td>
                             </>
                           ) : (
                             <td className="order-table-cell text-center">
-                              {formatCurrency(itemTotal.igst)} ({item.OrderItemProduct.IGST}%)
+                              {formatCurrency(itemTotal.igst)} (
+                              {item.OrderItemProduct.IGST}%)
                             </td>
                           )}
                           <td className="order-table-cell text-center">
@@ -389,23 +383,27 @@ const Order = () => {
               <span>Items</span>
               <span>{formatCurrency(order?.itemsUnitPrice)}</span>
             </div>
-            
-            {order.orderItems.some(item => item.OrderDiscount) && (
+
+            {order.orderItems.some((item) => item.OrderDiscount) && (
               <div className="price-summary-item discount-item">
                 <span>
                   <FaTag style={{ marginRight: "5px", color: "green" }} />
                   Total Discounts
                 </span>
                 <span style={{ color: "green" }}>
-                  -{formatCurrency(
+                  -
+                  {formatCurrency(
                     order.orderItems.reduce((total, item) => {
-                      return total + (item.OrderDiscount?.pricetobereduced || 0) * item.qty;
+                      return (
+                        total +
+                        (item.OrderDiscount?.pricetobereduced || 0) * item.qty
+                      );
                     }, 0)
                   )}
                 </span>
               </div>
             )}
-            
+
             {isWithinTamilNadu() ? (
               <>
                 <div className="price-summary-item">
@@ -429,7 +427,7 @@ const Order = () => {
               <span>{formatCurrency(order?.totalPrice)}</span>
             </div>
           </div>
-          
+
           {loadingDeliver && <Loader />}
           {userInfo &&
             userInfo.isAdmin &&

@@ -21,6 +21,9 @@ const Shop = () => {
   const categoriesQuery = useFetchCategoriesQuery();
   const [priceFilter, setPriceFilter] = useState("");
   const [showFilters, setShowFilters] = useState(false);
+  const [selectedDiscount, setSelectedDiscount] = useState("");
+  const [selectedWeight, setSelectedWeight] = useState("");
+
   const closeFilters = () => setShowFilters(false);
 
   const filteredProductsQuery = useGetFilteredProductsQuery({
@@ -35,21 +38,55 @@ const Shop = () => {
   }, [categoriesQuery.data, dispatch]);
 
   useEffect(() => {
-    if (!checked.length || !radio.length) {
-      if (!filteredProductsQuery.isLoading) {
-        const filteredProducts = filteredProductsQuery.data.filter(
-          (product) => {
-            return (
-              product.price.toString().includes(priceFilter) ||
-              product.price <= parseInt(priceFilter, 10)
-            );
-          }
-        );
+    if (!filteredProductsQuery.isLoading) {
+      let filtered = [...filteredProductsQuery.data];
 
-        dispatch(setProducts(filteredProducts));
+      // Filter by checked categories
+      if (checked.length) {
+        filtered = filtered.filter((p) => checked.includes(p.category_id));
       }
+
+      // Filter by selected brand
+      if (radio.length) {
+        filtered = filtered.filter((p) => radio.includes(p.brand));
+      }
+
+      // Filter by price
+      if (priceFilter) {
+        filtered = filtered.filter(
+          (p) =>
+            p.price.toString().includes(priceFilter) ||
+            p.price <= parseInt(priceFilter)
+        );
+      }
+
+      // Filter by discount
+      if (selectedDiscount) {
+        filtered = filtered.filter(
+          (p) =>
+            p.ProductDiscount &&
+            p.ProductDiscount.qty === parseInt(selectedDiscount)
+        );
+      }
+
+      // Filter by weight
+      if (selectedWeight) {
+        filtered = filtered.filter(
+          (p) => parseInt(p.weight) === parseInt(selectedWeight)
+        );
+      }
+
+      dispatch(setProducts(filtered));
     }
-  }, [checked, radio, filteredProductsQuery.data, dispatch, priceFilter]);
+  }, [
+    checked,
+    radio,
+    priceFilter,
+    selectedDiscount,
+    selectedWeight,
+    filteredProductsQuery.data,
+    dispatch,
+  ]);
 
   const handleBrandClick = (brand) => {
     const productsByBrand = filteredProductsQuery.data?.filter(
@@ -83,7 +120,21 @@ const Shop = () => {
     setShowFilters(!showFilters);
   };
 
-  console.log("sss", products)
+  console.log("sss", products);
+
+  const discountOptions = [
+    ...new Set(
+      filteredProductsQuery.data
+        ?.filter((p) => p.ProductDiscount)
+        .map((p) => p.ProductDiscount.qty)
+    ),
+  ];
+
+  const weightOptions = [
+    ...new Set(
+      filteredProductsQuery.data?.map((p) => p.weight).filter(Boolean)
+    ),
+  ];
 
   return (
     <div className="shop-container">
@@ -151,6 +202,44 @@ const Shop = () => {
                   </div>
                 </div>
               ))}
+            </div>
+
+            <h2 className="filter-title">Filter by Discount Quantity</h2>
+            <div className="filter-options">
+              <select
+                className="form-control"
+                value={selectedDiscount}
+                onChange={(e) => {
+                  setSelectedDiscount(e.target.value);
+                  closeFilters();
+                }}
+              >
+                <option value="">All</option>
+                {discountOptions.map((qty) => (
+                  <option key={qty} value={qty}>
+                    {qty}+ units
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <h2 className="filter-title">Filter by Weight</h2>
+            <div className="filter-options">
+              <select
+                className="form-control"
+                value={selectedWeight}
+                onChange={(e) => {
+                  setSelectedWeight(e.target.value);
+                  closeFilters();
+                }}
+              >
+                <option value="">All</option>
+                {weightOptions.map((w) => (
+                  <option key={w} value={w}>
+                    {w} Kg
+                  </option>
+                ))}
+              </select>
             </div>
 
             <h2 className="filter-title">Filter by Price</h2>

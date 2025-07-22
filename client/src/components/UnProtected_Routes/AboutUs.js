@@ -23,8 +23,7 @@ const AboutUs = () => {
         <h2 className="title text-animation">Our Mission</h2>
         <div className="section-content">
           <p>
-            To be the worlds reliable company to bring the maximum value to added to customers for the price they pay us and also make customers delight by having business with us.
-          </p>
+           Aims to Bring maximum value to customers for the price they pay us to all our Retail, Wholesale and Global Customers.</p>
         </div>
       </div>
     </div>
