@@ -27,6 +27,7 @@ const TermsAndConditions = () => (
         </li>
 
         <li>Privacy policy to safeguard customer information.</li>
+         <li>Delivery transit period within South India takes 2 to 5,North India takes 4 to 10 days, North East India 11 to 18 Days.</li>
       </ul>
     </div>
   </div>

@@ -25,7 +25,7 @@ const ProductImageCarousel = ({
     return () => clearInterval(interval);
   }, [hovered, images, autoRotate, rotationInterval]);
 
-  const displayImage = getImage(images[imageIndex]?.image_name, "ProductImage")
+  const displayImage = images[imageIndex]?.image_url
 
   return (
     <section

@@ -142,7 +142,7 @@ const createOrder = asyncHandler(async (req, res) => {
 
 const orderConfirmationViaEmails = asyncHandler(async (req, res) => {
   try {
-    const { order, invoicePath } = req.body;
+    const { order } = req.body;
 
     const Order = await prisma.order.findUnique({
       where: { id: parseInt(order.id) },
@@ -309,12 +309,6 @@ const orderConfirmationViaEmails = asyncHandler(async (req, res) => {
     );
 
     const attachments = [];
-    if (invoicePath) {
-      attachments.push({
-        path: invoicePath,
-        filename: `Invoice-${Order.id}.pdf`,
-      });
-    }
 
     await EmailTransmitter(
       Order.OrderUser.email,

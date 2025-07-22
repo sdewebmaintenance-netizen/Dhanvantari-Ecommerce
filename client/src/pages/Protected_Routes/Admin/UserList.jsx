@@ -7,7 +7,6 @@ import {
   useGetUsersQuery,
   useUpdateUserMutation,
 } from "../../../redux/api/usersApiSlice";
-import { toast } from "react-toastify";
 import PaginationControls from "../../../Utils/PaginationControls";
 import { IoMdArrowRoundUp, IoMdArrowRoundDown } from "react-icons/io";
 
@@ -101,7 +100,7 @@ const UserList = () => {
         await deleteUser(id);
         refetch();
       } catch (err) {
-        toast.error(err?.data?.error || err.error);
+       alert(err?.data?.error || err.error);
       }
     }
   };
@@ -114,7 +113,7 @@ const UserList = () => {
       });
       refetch();
     } catch (err) {
-      toast.error(err?.data?.error || err.error);
+alert(err?.data?.error || err.error);
     }
   };
 

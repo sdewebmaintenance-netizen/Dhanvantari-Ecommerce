@@ -8,15 +8,39 @@
   box-sizing: border-box;
   background: white;
   color: #000;
+  line-height: 1.1;
+}
+
+.invoice-container p,
+.invoice-container tr,
+.invoice-container ul,
+.invoice-container div {
+  font-size: 0.75rem;
+  font-weight: normal;
+}
+
+.invoice-container p {
+  margin: 0;
+  color: black;
+}
+
+.invoice-container th {
+  font-weight: 500;
+}
+
+.invoice-container h6 {
+  font-size: 1rem;
+  font-weight: 500;
+  color:black;
 }
 
 .Logo-pdf {
-  width: 5rem;
-  height: 7rem;
+  width: 3rem;
+  height: 4rem;
 }
 
 .invoice-header {
-  border-bottom: 2px solid var(--color-primary-dark);
+  border-bottom: 2px solid #5387ea;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -24,12 +48,12 @@
 
 .invoice-content {
   text-align: left;
-  padding-bottom: var(--space-lg);
-  margin-bottom: var(--space-lg);
+  margin-bottom: var(--space-md);
 }
 
-.invoice-header h1 {
-  margin-bottom: var(--space-md);
+.invoice-header h5 {
+  margin-bottom: var(--space-sm);
+  color: black;
 }
 
 .invoice-header p {
@@ -37,9 +61,16 @@
 }
 
 .invoice-title {
-  text-align: center;
-  color: var(--color-primary-dark);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items:center ;
   margin-bottom: var(--space-md);
+ 
+}
+
+.invoice-title h6{
+ color:#5287eb;
 }
 
 .details-section {
@@ -75,8 +106,8 @@
 }
 
 .items-table th {
-  background-color: var(--color-secondary-lighter);
-  color: var(--color-primary-light);
+  background-color: #5287eb;
+  color: white;
 }
 
 .items-table tfoot td {
@@ -120,18 +151,22 @@
 }
 
 .signature-picture {
-  width: 10rem;
-  height: 5rem;
+  width: 7rem;
+  height: 3rem;
 }
 
 .total {
   padding: var(--space-sm);
-  background-color: var(--color-secondary-lighter);
-  color: var(--color-primary-light);
+  background-color: #5287eb;
+  color: white;
 }
 
-.invoice-conditions{
+.invoice-conditions {
   margin-left: var(--space-xl);
+}
+
+.text-link{
+  color: black;
 }
 
 @media print {
@@ -139,12 +174,12 @@
     page-break-after: always;
     break-after: page;
   }
-  
+
   body {
     margin: 0;
     padding: 0;
   }
-  
+
   .invoice-page {
     width: 210mm;
     height: 297mm;

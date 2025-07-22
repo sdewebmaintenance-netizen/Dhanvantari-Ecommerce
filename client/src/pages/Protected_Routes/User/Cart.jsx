@@ -1,5 +1,4 @@
 import { Link, useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
 import { FaTrash } from "react-icons/fa";
 import {
   useFetchCartForUserQuery,
@@ -9,7 +8,7 @@ import {
 } from "../../../redux/api/cartApiSlice";
 import getImage from "../../../Utils/GetImage";
 import formatCurrency from "../../../Utils/FormatCurrency";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Loader from "../../../components/Common/Loader";
 
 const Cart = () => {
@@ -25,6 +24,7 @@ const Cart = () => {
   const [deleteCart, { isLoading: isDeleting }] = useDeleteCartMutation();
   const [clearCart, { isLoading: isClearing }] = useClearCartMutation();
   const [isProcessing, setIsProcessing] = useState(false);
+  const [quantityErrors, setQuantityErrors] = useState({});
 
   useEffect(() => {
     refetch();
@@ -32,17 +32,17 @@ const Cart = () => {
 
   const calculateDiscountedPrice = (price, quantity, productDiscount) => {
     if (!productDiscount) return null;
-
     return quantity >= productDiscount.qty
       ? price - productDiscount.pricetobereduced
       : null;
   };
 
-  const calculateTotals = () => {
+  const { totals, quantityErrors: calculatedErrors } = useMemo(() => {
     let totalItems = 0;
     let totalOriginalPrice = 0;
     let totalDiscountedPrice = 0;
     let totalSavings = 0;
+    const newQuantityErrors = {};
 
     cart.forEach((item) => {
       const quantity = item.quantity;
@@ -53,6 +53,11 @@ const Cart = () => {
           quantity,
           item.Products?.ProductDiscount
         ) || price;
+      const minQty = item.Products?.moq || 0;
+
+      if (minQty > 0 && quantity < minQty) {
+        newQuantityErrors[item.id] = `Minimum order quantity is ${minQty}`;
+      }
 
       totalItems += quantity;
       totalOriginalPrice += price * quantity;
@@ -62,17 +67,32 @@ const Cart = () => {
     totalSavings = totalOriginalPrice - totalDiscountedPrice;
 
     return {
-      totalItems,
-      totalOriginalPrice,
-      totalDiscountedPrice,
-      totalSavings,
+      totals: {
+        totalItems,
+        totalOriginalPrice,
+        totalDiscountedPrice,
+        totalSavings,
+        hasMinimumQuantityError: Object.keys(newQuantityErrors).length > 0,
+      },
+      quantityErrors: newQuantityErrors,
     };
-  };
+  }, [cart]);
 
-  const { totalItems, totalOriginalPrice, totalDiscountedPrice, totalSavings } =
-    calculateTotals();
+  useEffect(() => {
+    setQuantityErrors(calculatedErrors);
+  }, [calculatedErrors]);
 
-  const updateCartHandler = async (cartItemId, newQuantity) => {
+  const updateCartHandler = async (cartItemId, newQuantity, product) => {
+    const minQty = product?.moq || 0;
+
+    if (minQty > 0 && newQuantity < minQty) {
+      setQuantityErrors((prev) => ({
+        ...prev,
+        [cartItemId]: `Minimum order quantity is ${minQty}`,
+      }));
+      return;
+    }
+
     setIsProcessing(true);
     try {
       await updateCart({
@@ -80,10 +100,10 @@ const Cart = () => {
         updatedCart: { quantity: parseInt(newQuantity) },
       }).unwrap();
       await refetch();
-      toast.success("Cart updated successfully");
+      alert("Cart updated successfully");
     } catch (error) {
       console.error(error);
-      toast.error(error?.data?.error || "Updating cart failed, try again.");
+      alert(error?.data?.error || "Updating cart failed, try again.");
     } finally {
       setIsProcessing(false);
     }
@@ -94,10 +114,10 @@ const Cart = () => {
     try {
       await deleteCart(cartItemId).unwrap();
       await refetch();
-      toast.success("Item removed from cart successfully");
+      alert("Item removed from cart successfully");
     } catch (error) {
       console.error(error);
-      toast.error(error?.data?.error || "Removing item failed, try again.");
+      alert(error?.data?.error || "Removing item failed, try again.");
     } finally {
       setIsProcessing(false);
     }
@@ -108,23 +128,28 @@ const Cart = () => {
     try {
       await clearCart().unwrap();
       await refetch();
-      toast.success("Cart emptied successfully");
+      alert("Cart emptied successfully");
     } catch (error) {
       console.error(error);
-      toast.error(error?.data?.error || "Emptying cart failed, try again.");
+      alert(error?.data?.error || "Emptying cart failed, try again.");
     } finally {
       setIsProcessing(false);
     }
   };
 
   const checkoutHandler = () => {
+    if (totals.hasMinimumQuantityError) {
+      alert(
+        "Please ensure all items meet the minimum quantity requirements before checkout."
+      );
+      return;
+    }
     navigate("/shipping");
   };
 
   if (isCartLoading || isClearing || isDeleting || isProcessing || isUpdating)
     return <Loader />;
   if (error) return <div>Error loading cart</div>;
-
 
   return (
     <div className="cart-container">
@@ -159,15 +184,24 @@ const Cart = () => {
               item.Products?.ProductDiscount
             );
             const hasDiscount = discountedPrice !== null;
+            const minQty = item.Products?.moq || 0;
+            const stock = item.Products?.countInStock || 0;
+            const options = [];
+
+            const startQty = minQty > 0 ? minQty : 1;
+            const endQty = Math.max(stock, startQty);
+
+            for (let i = startQty; i <= endQty; i++) {
+              options.push(i);
+            }
 
             return (
               <div key={item.id} className="cart-item">
                 <div className="cart-item-image">
                   <img
-                    src={getImage(
-                      item.Products?.ProductImages[0]?.image_name,
-                      "ProductImage"
-                    )}
+                    src={
+                      item.Products?.ProductImages[0]?.image_url
+                     }
                     alt={item.Products?.name}
                     className="product-image"
                   />
@@ -210,13 +244,16 @@ const Cart = () => {
                     }
                     disabled={isProcessing}
                   >
-                    {[...Array(item.Products?.countInStock || 10).keys()].map(
-                      (x) => (
-                        <option key={x + 1} value={x + 1}>
-                          {x + 1}
-                        </option>
+                    {[...Array(item.Products.countInStock).keys()]
+                      .map((x) => x + 1)
+                      .filter((x) =>
+                        item.Products.moq ? x >= item.Products.moq : true
                       )
-                    )}
+                      .map((x) => (
+                        <option key={x} value={x}>
+                          {x}
+                        </option>
+                      ))}
                   </select>
                 </div>
 
@@ -235,29 +272,39 @@ const Cart = () => {
 
           <div className="cart-summary">
             <div className="summary-content">
-              <h4 className="summary-title">Items ({totalItems})</h4>
+              <h4 className="summary-title">Items ({totals.totalItems})</h4>
 
-              {totalDiscountedPrice < totalOriginalPrice ? (
+              {totals.totalDiscountedPrice < totals.totalOriginalPrice ? (
                 <>
                   <div className="original-total">
-                    Original: {formatCurrency(totalOriginalPrice)}
+                    Original: {formatCurrency(totals.totalOriginalPrice)}
                   </div>
                   <div className="discounted-total">
-                    Discounted: {formatCurrency(totalDiscountedPrice)}
+                    Discounted: {formatCurrency(totals.totalDiscountedPrice)}
                   </div>
                   <div className="savings">
-                    You save: {formatCurrency(totalSavings)}
+                    You save: {formatCurrency(totals.totalSavings)}
                   </div>
                 </>
               ) : (
                 <div className="total-price">
-                  Total: {formatCurrency(totalOriginalPrice)}
+                  Total: {formatCurrency(totals.totalOriginalPrice)}
+                </div>
+              )}
+
+              {totals.hasMinimumQuantityError && (
+                <div className="checkout-error">
+                  Please adjust quantities to meet minimum order requirements
                 </div>
               )}
 
               <button
                 className="btn-customized"
-                disabled={cart.length === 0 || isProcessing}
+                disabled={
+                  cart.length === 0 ||
+                  isProcessing ||
+                  totals.hasMinimumQuantityError
+                }
                 onClick={checkoutHandler}
                 style={{ marginTop: "1rem" }}
               >

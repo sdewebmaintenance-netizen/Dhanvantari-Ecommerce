@@ -7,7 +7,6 @@ import {
 } from "../../../redux/api/portApiSlice";
 import Loader from "../../../components/Common/Loader";
 import Message from "../../../components/Common/Message";
-import { toast } from "react-toastify";
 import PortForm from "../../../components/Protected_Routes/Admin/PortForm";
 import Modal from "../../../components/Protected_Routes/Admin/Modal";
 
@@ -34,7 +33,7 @@ const PortList = () => {
   const handleCreate = async (e) => {
     e.preventDefault();
     if (!formData.country || !formData.district) {
-      toast.error("Country and district are required");
+      alert("Country and district are required");
       return;
     }
 
@@ -46,14 +45,14 @@ const PortList = () => {
       }).unwrap();
       await refetch();
       if (result.error) {
-        toast.error(result.error);
+       alert(result.error);
       } else {
         setFormData({ country: "", district: "" });
-        toast.success(`Port created successfully`);
+        alert(`Port created successfully`);
       }
     } catch (error) {
       console.error(error);
-      toast.error("Creating port failed, try again.");
+      alert("Creating port failed, try again.");
     } finally {
       setLoading(false);
     }
@@ -62,7 +61,7 @@ const PortList = () => {
   const handleUpdate = async (e) => {
     e.preventDefault();
     if (!formData.country || !formData.district) {
-      toast.error("Country and district are required");
+     alert("Country and district are required");
       return;
     }
 
@@ -78,9 +77,9 @@ const PortList = () => {
       await refetch();
 
       if (result.error) {
-        toast.error(result.error);
+        alert(result.error);
       } else {
-        toast.success(`Port updated successfully`);
+       alert(`Port updated successfully`);
         setSelectedPort(null);
         setFormData({ country: "", district: "" });
         setModalVisible(false);
@@ -98,15 +97,15 @@ const PortList = () => {
       const result = await deletePort(selectedPort.id).unwrap();
       await refetch();
       if (result.error) {
-        toast.error(result.error);
+        alert(result.error);
       } else {
-        toast.success(`Port deleted successfully`);
+        alert(`Port deleted successfully`);
         setSelectedPort(null);
         setModalVisible(false);
       }
     } catch (error) {
       console.error(error);
-      toast.error("Port deletion failed. Try again.");
+      alert("Port deletion failed. Try again.");
     } finally {
       setLoading(false);
     }

@@ -9,7 +9,6 @@ import {
 import { useFetchCategoriesQuery } from "../../../redux/api/categoryApiSlice";
 import { useFetchIncoTermsQuery } from "../../../redux/api/incoTermApiSlice";
 import { useFetchPortsQuery } from "../../../redux/api/portApiSlice";
-import { toast } from "react-toastify";
 import getImage from "../../../Utils/GetImage";
 import { useFetchDiscountsQuery } from "../../../redux/api/discountApiSlice";
 
@@ -22,6 +21,7 @@ const AdminProductUpdate = () => {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
+  const [pcode, setPCode] = useState("");
   const [moq, setMoq] = useState("");
   const [category, setCategory] = useState("");
   const [quantity, setQuantity] = useState("");
@@ -63,6 +63,7 @@ const AdminProductUpdate = () => {
       setName(productData.name);
       setDescription(productData.description);
       setPrice(productData.price);
+      setPCode(productData.pcode);
       setMoq(productData.moq);
       setCategory(productData.ProductCategory?.id || "");
       setQuantity(productData.weight);
@@ -86,13 +87,11 @@ const AdminProductUpdate = () => {
       const initialImages = productData.ProductImages.map((img) => ({
         type: "existing",
         id: img.id,
-        image_name: img.image_name,
+        image_name: img.image_url,
       }));
-      console.log("initial", initialImages)
+      console.log("initial", initialImages);
       setImages(initialImages);
-      setPreviews(
-        initialImages.map((img) => getImage(img.image_name, "ProductImage"))
-      );
+      setPreviews(initialImages.map((img) => img.image_name));
     }
   }, [productData, countryOptions]);
 
@@ -101,7 +100,7 @@ const AdminProductUpdate = () => {
     const availableSlots = 4 - images.length;
 
     if (files.length > availableSlots) {
-      toast.error(`You can only add ${availableSlots} more image(s)`);
+      alert(`You can only add ${availableSlots} more image(s)`);
       return;
     }
 
@@ -133,6 +132,7 @@ const AdminProductUpdate = () => {
       formData.append("name", name);
       formData.append("description", description);
       formData.append("price", price);
+      formData.append("pcode", pcode);
       formData.append("moq", moq);
       formData.append("category", category);
       formData.append("quantity", quantity);
@@ -169,14 +169,14 @@ const AdminProductUpdate = () => {
       });
 
       if (error) {
-        toast.error(error.data?.error || "Update failed");
+        alert(error.data?.error || "Update failed");
       } else {
-        toast.success("Product updated successfully");
+        alert("Product updated successfully");
         navigate("/admin/allproductslist");
       }
     } catch (err) {
       console.error(err);
-      toast.error("Product update failed. Try again.");
+      alert("Product update failed. Try again.");
     }
   };
 
@@ -188,11 +188,11 @@ const AdminProductUpdate = () => {
       if (!answer) return;
 
       await deleteProduct(params.id).unwrap();
-      toast.success("Product deleted successfully");
+      alert("Product deleted successfully");
       navigate("/admin/allproductslist");
     } catch (err) {
       console.error(err);
-      toast.error("Delete failed. Try again.");
+      alert("Delete failed. Try again.");
     }
   };
 
@@ -280,6 +280,16 @@ const AdminProductUpdate = () => {
               className="form-control"
               value={name}
               onChange={(e) => setName(e.target.value)}
+            />
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">Product Code</label>
+            <input
+              type="text"
+              className="form-control"
+              value={pcode}
+              onChange={(e) => setPCode(e.target.value)}
             />
           </div>
 

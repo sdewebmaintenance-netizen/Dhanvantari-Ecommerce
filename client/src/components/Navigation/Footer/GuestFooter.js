@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import PrivacyPolicy from "../../../assets/images/Privacy-Policy/SDE-Privacy-Policy.pdf";
 
 const GuestFooter = () => {
   return (
@@ -19,11 +20,20 @@ const GuestFooter = () => {
             <li>
               <Link to="/about-us">About Us</Link>
             </li>
-             <li>
-               <Link to="/terms-and-conditions">Terms and Conditions</Link>
+            <li>
+              <Link to="/terms-and-conditions">Terms and Conditions</Link>
             </li>
             <li>
               <Link to="/contact-us">Contact Us</Link>
+            </li>
+            <li>
+              <a
+                href={PrivacyPolicy}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Privacy Policy
+              </a>
             </li>
           </ul>
         </div>
@@ -56,7 +66,6 @@ const GuestFooter = () => {
             <div>+91 99437 60055</div>
           </div>
         </div>
-        
       </div>
 
       <div className="footer-bottom">

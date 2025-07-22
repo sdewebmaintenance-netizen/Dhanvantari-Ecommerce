@@ -1,6 +1,4 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import "./assets/css/main.css";
 
 import GuestHeader from "./components/Navigation/Header/GuestHeader";
@@ -35,6 +33,7 @@ import CategoryList from "./pages/Protected_Routes/Admin/CategoryList";
 import ProductList from "./pages/Protected_Routes/Admin/ProductList";
 import AllProducts from "./pages/Protected_Routes/Admin/AllProducts";
 import ProductUpdate from "./components/Protected_Routes/Admin/ProductUpdate";
+import ProductView from "./components/Protected_Routes/Admin/ProductView";
 import OrderList from "./pages/Protected_Routes/Admin/OrderList";
 import AdminDashboard from "./pages/Protected_Routes/Admin/AdminDashboard";
 import { useGetUserInfoQuery } from "./redux/api/usersApiSlice";
@@ -79,7 +78,6 @@ const App = () => {
     <BrowserRouter>
       {renderHeader()}
       <div className="container">
-        <ToastContainer />
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/food-starch" element={<FoodStarch />} />
@@ -115,6 +113,7 @@ const App = () => {
             <Route path="portlist" element={<PortList />} />
             <Route path="discount" element={<DiscountList />} />
             <Route path="create-product" element={<ProductList />} />
+            <Route path="product/view/:id" element={<ProductView />} />
             <Route path="allproductslist" element={<AllProducts />} />
             <Route path="product/update/:id" element={<ProductUpdate />} />
             <Route path="orderlist" element={<OrderList />} />

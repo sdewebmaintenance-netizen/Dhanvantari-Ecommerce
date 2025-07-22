@@ -1,5 +1,6 @@
 const { prisma } = require("../config/prismaClient.config.js");
 const asyncHandler = require("../middlewares/asyncHandler.js");
+const cloudinary = require("../config/cloudinary.config.js");
 
 const { EmailTransmitter } = require("../utils/nodemailer.js");
 const EmailTemplates = require("../utils/EmailTemplates.js");
@@ -10,6 +11,7 @@ const addProduct = asyncHandler(async (req, res) => {
     name,
     description,
     price,
+    pcode,
     moq,
     category,
     quantity,
@@ -28,12 +30,13 @@ const addProduct = asyncHandler(async (req, res) => {
   } = req.body;
   const images = req.files;
 
-  console.log("req", req.file, req.body);
+  console.log("req", req.files, req.body);
 
   if (
     !name ||
     !description ||
     !price ||
+    !pcode ||
     !category ||
     !quantity ||
     !brand ||
@@ -43,10 +46,24 @@ const addProduct = asyncHandler(async (req, res) => {
     return res.status(400).json({ error: "All fields are required" });
   }
 
+  const uploadResults = await Promise.all(
+    req.files.map(async (file) => {
+      const result = await cloudinary.uploader.upload(file.path, {
+        folder: "product_images",
+        resource_type: "auto",
+      });
+      return {
+        image_url: result.secure_url,
+        public_id: result.public_id,
+      };
+    })
+  );
+
   const productData = {
     name,
     description,
     price: parseFloat(price),
+    pcode,
     moq: parseFloat(moq),
     category_id: parseInt(category),
     discount_id: parseInt(discount),
@@ -79,22 +96,25 @@ const addProduct = asyncHandler(async (req, res) => {
     data: productData,
   });
 
-  if (images && images.length > 0) {
+  console.log("uppp", uploadResults);
+
+  if (uploadResults.length > 0) {
     await prisma.productImage.createMany({
-      data: images.map((img) => ({
-        image_name: img.filename,
+      data: uploadResults.map((img) => ({
+        image_url: img.image_url,
+        public_id: img.public_id,
         product_id: product.id,
       })),
     });
   }
   res.status(201).json(product);
 });
-
 const updateProductDetails = asyncHandler(async (req, res) => {
   const {
     name,
     description,
     price,
+    pcode,
     moq,
     category,
     discount,
@@ -113,26 +133,50 @@ const updateProductDetails = asyncHandler(async (req, res) => {
     isVisible,
   } = req.body;
 
-  const newImages = req.files || [];
-
-  if (
-    !name ||
-    !description ||
-    !price ||
-    !category ||
-    !quantity ||
-    !brand ||
-    !productType
-  ) {
+  if (!name || !description || !price || !pcode || !category || !quantity || !brand || !productType) {
     return res.status(400).json({ error: "All fields are required" });
   }
 
   try {
+    const uploadedImages = await Promise.all(
+      (req.files || []).map(async (file) => {
+        const result = await cloudinary.uploader.upload(file.path, {
+          folder: "product_images",
+          resource_type: "auto",
+        });
+        return {
+          image_url: result.secure_url,
+          public_id: result.public_id,
+        };
+      })
+    );
+
+   
+    const existingImageIds = existingImages
+      ? Array.isArray(existingImages)
+        ? existingImages.map((id) => parseInt(id))
+        : JSON.parse(existingImages).map((id) => parseInt(id))
+      : [];
+
+    const imagesToDelete = await prisma.productImage.findMany({
+      where: {
+        product_id: parseInt(req.params.id),
+        id: {
+          notIn: existingImageIds,
+        },
+      },
+    });
+
+    await Promise.all(
+      imagesToDelete.map((img) => cloudinary.uploader.destroy(img.public_id))
+    );
+
     const updatedProduct = await prisma.$transaction(async (prisma) => {
       const updateData = {
         name,
         description,
         price: parseFloat(price),
+        pcode,
         moq: parseFloat(moq),
         category_id: parseInt(category),
         discount_id: parseInt(discount),
@@ -148,10 +192,6 @@ const updateProductDetails = asyncHandler(async (req, res) => {
       };
 
       if (productType === "EXPORT") {
-        if (!incoTerm || !port || !variant) {
-          throw new Error("Export fields are required for EXPORT productType");
-        }
-
         Object.assign(updateData, {
           inco_term_id: parseInt(incoTerm),
           port_id: parseInt(port),
@@ -162,30 +202,24 @@ const updateProductDetails = asyncHandler(async (req, res) => {
       const product = await prisma.product.update({
         where: { id: parseInt(req.params.id) },
         data: updateData,
-        include: {
-          ProductImages: true,
-        },
       });
 
-      const existingImageIds = existingImages
-        ? Array.isArray(existingImages)
-          ? existingImages.map((id) => parseInt(id))
-          : JSON.parse(existingImages).map((id) => parseInt(id))
-        : [];
-
-      await prisma.productImage.deleteMany({
-        where: {
-          product_id: product.id,
-          id: {
-            notIn: existingImageIds,
+      if (imagesToDelete.length > 0) {
+        await prisma.productImage.deleteMany({
+          where: {
+            product_id: product.id,
+            id: {
+              notIn: existingImageIds,
+            },
           },
-        },
-      });
+        });
+      }
 
-      if (newImages.length > 0) {
+      if (uploadedImages.length > 0) {
         await prisma.productImage.createMany({
-          data: newImages.map((file) => ({
-            image_name: file.filename,
+          data: uploadedImages.map((img) => ({
+            image_url: img.image_url,
+            public_id: img.public_id,
             product_id: product.id,
           })),
         });
@@ -199,23 +233,90 @@ const updateProductDetails = asyncHandler(async (req, res) => {
         throw new Error("Product cannot have more than 4 images");
       }
 
-      return product;
+      return prisma.product.findUnique({
+        where: { id: product.id },
+        include: {
+          ProductImages: true,
+          ProductCategory: true,
+          ProductDiscount: true,
+          ProductIncoTerm: true,
+          ProductPort: true,
+        },
+      });
+    }, {
+      maxWait: 10000, 
+      timeout: 10000, 
     });
 
     res.json(updatedProduct);
   } catch (error) {
     console.error(error);
-    res.status(400).json({ error: error.message });
+    
+    if (uploadedImages) {
+      await Promise.all(
+        uploadedImages.map(img => 
+          cloudinary.uploader.destroy(img.public_id).catch(e => console.error(e))
+        )
+      );
+    }
+
+    res.status(400).json({ 
+      error: error.message || "Product update failed",
+      code: error.code
+    });
   }
 });
 
 const removeProduct = asyncHandler(async (req, res) => {
+  try {
+    console.log("Deleting product with ID:", req.params.id);
+    const productId = parseInt(req.params.id);
 
-  console.log("reeeeeeeeeeeeeeee", req.params)
-  await prisma.product.delete({
-    where: { id: parseInt(req.params.id) },
-  });
-  res.json({ message: "Product removed" });
+    const productImages = await prisma.productImage.findMany({
+      where: { product_id: productId }
+    });
+
+    const deleteFromCloudinary = async () => {
+      const deletePromises = productImages.map(img => {
+        if (img.public_id) {
+          return cloudinary.uploader.destroy(img.public_id)
+            .catch(err => {
+              console.error(`Failed to delete image ${img.public_id} from Cloudinary:`, err);
+        
+              return Promise.resolve();
+            });
+        }
+        return Promise.resolve();
+      });
+      return Promise.all(deletePromises);
+    };
+
+    await prisma.$transaction(async (prisma) => {
+      await prisma.productImage.deleteMany({
+        where: { product_id: productId }
+      });
+
+      await prisma.product.delete({
+        where: { id: productId }
+      });
+    });
+
+    await deleteFromCloudinary();
+
+    res.json({ 
+      success: true,
+      message: "Product and all associated images removed successfully",
+      deletedImagesCount: productImages.length
+    });
+
+  } catch (error) {
+    console.error("Error deleting product:", error);
+    res.status(500).json({ 
+      success: false,
+      error: error.message || "Failed to delete product",
+      code: error.code
+    });
+  }
 });
 
 const fetchProducts = asyncHandler(async (req, res) => {
@@ -393,6 +494,7 @@ const fetchTopProducts = asyncHandler(async (req, res) => {
     take: 4,
     include: {
       ProductImages: true,
+      ProductDiscount: true,
     },
   });
 

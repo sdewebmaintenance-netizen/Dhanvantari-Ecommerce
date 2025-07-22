@@ -146,6 +146,16 @@
   color: var(--color-bg);
 }
 
+.btn-customized:disabled,
+.btn-customized.disabled {
+  background-color: transparent;
+  color: var(--color-secondary-lighter);
+  border: 2px solid var(--color-secondary-lighter);
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+
 .button-group {
   display: flex;
   gap: 1rem;

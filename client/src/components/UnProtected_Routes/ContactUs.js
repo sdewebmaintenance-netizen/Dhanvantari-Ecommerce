@@ -2,7 +2,6 @@ import { useState } from "react";
 import PhoneInput from "react-phone-number-input";
 import "react-phone-number-input/style.css";
 import { useRequestMessageMutation } from "../../redux/api/productApiSlice";
-import { toast } from "react-toastify";
 import Loader from "../Common/Loader";
 
 const ContactUs = () => {
@@ -33,7 +32,7 @@ const ContactUs = () => {
     e.preventDefault();
 
     if (formData === 0) {
-      toast.error("Please select at least one product");
+      alert("Please select at least one product");
       return;
     }
 
@@ -42,7 +41,7 @@ const ContactUs = () => {
       const result = await requestMessage(formData).unwrap();
 
       if (result.error) {
-        toast.error(result.error);
+        alert(result.error);
       } else {
         setFormData({
           name: "",
@@ -50,11 +49,11 @@ const ContactUs = () => {
           phone: "",
           message: "",
         });
-        toast.success("Message submitted successfully!");
+       alert("Message submitted successfully!");
       }
     } catch (error) {
       console.error(error);
-      toast.error("Failed to submit message. Please try again.");
+      alert("Failed to submit message. Please try again.");
     } finally {
       setLoading(false);
     }

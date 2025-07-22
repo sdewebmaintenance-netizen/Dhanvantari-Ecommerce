@@ -7,7 +7,6 @@ import {
 } from "../../../redux/api/discountApiSlice";
 import Loader from "../../../components/Common/Loader";
 import Message from "../../../components/Common/Message";
-import { toast } from "react-toastify";
 import Modal from "../../../components/Protected_Routes/Admin/Modal";
 import DiscountForm from "../../../components/Protected_Routes/Admin/DiscountForm";
 
@@ -33,7 +32,7 @@ const DiscountList = () => {
     e.preventDefault();
 
     if (!quantity || !priceToReduce) {
-      toast.error("Both quantity and price to reduce are required");
+      alert("Both quantity and price to reduce are required");
       return;
     }
 
@@ -47,15 +46,15 @@ const DiscountList = () => {
       await refetch();
 
       if (result.error) {
-        toast.error(result.error);
+       alert(result.error);
       } else {
         setQuantity("");
         setPriceToReduce("");
-        toast.success(`Discount created successfully`);
+        alert(`Discount created successfully`);
       }
     } catch (error) {
       console.error(error);
-      toast.error("Creating discount failed, try again.");
+      alert("Creating discount failed, try again.");
     } finally {
       setLoading(false);
     }
@@ -75,15 +74,15 @@ const DiscountList = () => {
       await refetch();
 
       if (result.error) {
-        toast.error(result.error);
+        alert(result.error);
       } else {
-        toast.success(`Discount updated successfully`);
+       alert(`Discount updated successfully`);
         setSelectedDiscount(null);
         setModalVisible(false);
       }
     } catch (error) {
       console.error(error);
-      toast.error("Updating discount failed, try again.");
+      alert("Updating discount failed, try again.");
     } finally {
       setLoading(false);
     }
@@ -97,15 +96,15 @@ const DiscountList = () => {
       await refetch();
 
       if (result.error) {
-        toast.error(result.error);
+        alert(result.error);
       } else {
-        toast.success(`Discount deleted successfully`);
+       alert(`Discount deleted successfully`);
         setSelectedDiscount(null);
         setModalVisible(false);
       }
     } catch (error) {
       console.error(error);
-      toast.error("Discount deletion failed. Try again.");
+     alert("Discount deletion failed. Try again.");
     } finally {
       setLoading(false);
     }
