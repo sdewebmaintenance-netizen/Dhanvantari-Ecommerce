@@ -153,12 +153,12 @@ const Order = () => {
     <Messsage variant="danger">{error.data.message}</Messsage>
   ) : (
     <>
-      <div /*  style={{ position: "absolute", left: "-9999px" }} */>
+      <div style={{ position: "absolute", left: "-9999px" }} >
         <div ref={invoiceRef}>
           <InvoiceTemplate order={order} />
         </div>
       </div>
-      <div className="pdf-Container">
+      <div className="pdf-Container"> 
         <div>
           <Link to="/user-orders" className="btn-customized">
             Go Back
