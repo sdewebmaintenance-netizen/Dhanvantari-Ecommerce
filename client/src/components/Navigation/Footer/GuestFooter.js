@@ -27,11 +27,7 @@ const GuestFooter = () => {
               <Link to="/contact-us">Contact Us</Link>
             </li>
             <li>
-              <a
-                href={PrivacyPolicy}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
+              <a href={PrivacyPolicy} target="_blank" rel="noopener noreferrer">
                 Privacy Policy
               </a>
             </li>
@@ -53,8 +49,8 @@ const GuestFooter = () => {
               <strong>Sri Dhanvantari Exports</strong>
             </div>
             <div>
-              Ganesh Nagar, Puzhuthivakkam, Madipakkam Chennai-600091, Tamil
-              Nadu, India.
+              Ganesh Nagar, Puzhuthivakkam, Madipakkam <br /> Chennai-600091,
+              Tamil Nadu, India.
             </div>
             <div>
               {" "}

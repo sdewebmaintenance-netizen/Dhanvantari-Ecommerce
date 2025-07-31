@@ -23,6 +23,7 @@
 
 .logo-left{
   display: flex;
+  cursor: pointer;
 }
 
 .logo-img {

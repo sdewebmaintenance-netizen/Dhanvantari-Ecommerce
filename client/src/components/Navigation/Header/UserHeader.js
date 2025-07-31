@@ -51,10 +51,14 @@ const UserHeader = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  const handleLogoClick = () => {
+    navigate("/home"); 
+  };
+
   return (
     <div className="navbar">
       <div className="navbar-container">
-        <div className="logo-left">
+        <div className="logo-left" onClick={handleLogoClick}>
           <img src={getImage("Logo.jpeg", "Logo")} className="logo-img" />
           <div className="logo">
             <span className="brown">Sri Dhanvantari Exports</span>
