@@ -68,9 +68,9 @@ model Product {
   port_id         Int?
   variant         String?
   productType     ProductType?
-  CGST            Int?
-  SGST            Int?
-  IGST            Int?
+  CGST            Float?
+  SGST            Float?
+  IGST            Float?
   hsnSac          Int?
   isVisible       Boolean        @default(true)
   createdAt       DateTime       @default(now())

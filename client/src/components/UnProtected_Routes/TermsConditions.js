@@ -16,7 +16,7 @@ const TermsAndConditions = () => (
         </li>
         <li>
           On arrival of goods, any damage or discrepancy in quality must be
-          reported by the buyer within&nbsp;7&nbsp;days&nbsp;(
+          reported by the buyer within &nbsp;7&nbsp;days&nbsp; <br />(
           <a
             href="mailto:sridhanvantariexports@gmail.com"
             className="text-link"

@@ -10,11 +10,12 @@ import AdminHeader from "./components/Navigation/Header/AdminHeader";
 import PrivateRoute from "./components/Auth/PrivateRoute";
 import AdminRoute from "../src/components/Auth/AdminRoute";
 
+import ScrollToTop from "./Utils/ScrollToTop";
+
 import LandingPage from "./pages/UnProtected_Routes/LandingPage";
 import FoodStarch from "./components/UnProtected_Routes/FoodStarch";
 import Product from "./components/UnProtected_Routes/Product";
 import RetailInfo from "./components/UnProtected_Routes/RetailsInfo";
-
 
 import GoogleCallback from "./components/Auth/GoogleCallback";
 
@@ -51,10 +52,9 @@ import TermsAndConditions from "./components/UnProtected_Routes/TermsConditions"
 import ContactUs from "./components/UnProtected_Routes/ContactUs";
 
 const App = () => {
-
   const { data } = useGetUserInfoQuery();
- 
-  const renderHeader = () => {   
+
+  const renderHeader = () => {
     if (!data) {
       return <GuestHeader />;
     } else if (data.isAdmin === true) {
@@ -62,7 +62,7 @@ const App = () => {
     } else {
       return <UserHeader />;
     }
-  }; 
+  };
 
   const renderFooter = () => {
     if (!data) {
@@ -78,6 +78,7 @@ const App = () => {
     <BrowserRouter>
       {renderHeader()}
       <div className="container">
+        <ScrollToTop />
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/food-starch" element={<FoodStarch />} />
@@ -85,9 +86,11 @@ const App = () => {
           <Route path="/retail" element={<RetailInfo />} />
           <Route path="/exports" element={<ProductQuoteTable />} />
           <Route path="/about-us" element={<AboutUs />} />
-          <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
+          <Route
+            path="/terms-and-conditions"
+            element={<TermsAndConditions />}
+          />
           <Route path="/contact-us" element={<ContactUs />} />
-
           <Route path="/login-options" element={<LoginOptions />} />
           <Route path="/login" element={<Login />} />
           <Route path="/sign-up" element={<Signup />} />

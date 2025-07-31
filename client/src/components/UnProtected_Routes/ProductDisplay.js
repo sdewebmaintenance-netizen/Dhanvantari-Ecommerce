@@ -58,9 +58,6 @@ const ProductDisplay = ({ product }) => {
               {formatCurrency(product?.price)}
             </p>
           </div>
-          <p className="product-card-meta">
-            {formatDate(product?.createdAt)} {formatTime(product?.createdAt)}
-          </p>
           <p className="product-card-description">
             {product?.description?.substring(0, 60)}...
           </p>

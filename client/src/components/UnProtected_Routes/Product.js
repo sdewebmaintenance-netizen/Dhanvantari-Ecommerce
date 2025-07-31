@@ -5,6 +5,7 @@ import { useAllProductsQuery } from "../../redux/api/productApiSlice";
 import Loader from "../../components/Common/Loader";
 import Message from "../../components/Common/Message";
 import ProductDisplay from "./ProductDisplay";
+import { filterProductsByType } from "../../Utils/FilterProducts";
 
 const Product = () => {
   const { data: products, isLoading, error } = useAllProductsQuery();
@@ -24,6 +25,8 @@ const Product = () => {
       <Message variant="danger">{error?.data?.message || error.error}</Message>
     );
 
+  const filteredProducts = filterProductsByType(products, "wholesale");
+
   return (
     <>
       <HowItWorks />
@@ -31,13 +34,13 @@ const Product = () => {
       <div className="product-list-container">
         <div className="product-list-main">
           <div className="products-grid">
-            {products?.slice(0, visibleCount).map((product) => (
+            {filteredProducts?.slice(0, visibleCount).map((product) => (
               <ProductDisplay key={product.id} product={product} />
             ))}
             <div className="view-more-container">
-              {visibleCount < products?.length ? (
+              {visibleCount < filteredProducts?.length ? (
                 <button className="btn-customized" onClick={showMore}>
-                  + View All {products?.length} Products
+                  + View All {filteredProducts?.length} Products
                 </button>
               ) : (
                 <button className="btn-customized" onClick={showLess}>

@@ -265,6 +265,7 @@
   margin-bottom: var(--space-md);
   color: var(--color-text-muted);
   text-align: left;
+  margin-top: 0;
 }
 
 .product-card-actions {
