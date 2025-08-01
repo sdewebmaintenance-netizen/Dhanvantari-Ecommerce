@@ -38,7 +38,7 @@ const stats = [
 const GlobalStats = () => {
   return (
     <div className="global-stats-container">
-        <h2 className="title" style={{marginTop:"1rem"}}>Our Global Reach</h2>
+        <h2 className="title globe-t" style={{marginTop:"1rem"}}>Our Global Reach</h2>
       <div className="globe-background">
         <img src={getImage("globe.png", "Web-bg")} alt="Globe" className="globe" />
       </div>

@@ -147,7 +147,7 @@ const ProductQuoteTable = () => {
           <table className="product-table">
             <thead>
               <tr>
-                <th style={{ maxWidth: "2rem" }}>Select</th>
+                <th>Select</th>
                 <th>Product Image</th>
                 <th>Product Name</th>
                 <th>Variant</th>

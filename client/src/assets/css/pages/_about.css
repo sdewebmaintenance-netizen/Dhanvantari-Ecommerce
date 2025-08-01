@@ -57,6 +57,10 @@
   width: 100%;
 }
 
+.globe-t{
+  font-size: var(--font-size-2xl);
+}
+
 .globe-background {
   position: relative;
   display: flex;
@@ -140,6 +144,7 @@
 
   .stat-content {
     width: 100%;
+    margin-top: 0;
   }
 }
 
@@ -322,6 +327,13 @@
   margin-left: var(--space-2xl);
   padding-left: var(--shadow-md);
   color: var(--color-secondary-light);
+}
+
+
+@media (max-width: 768px) {
+  .retail-list .btn-customized {
+    margin-left: -3rem;
+  }
 }
 
 .retail-list li {
