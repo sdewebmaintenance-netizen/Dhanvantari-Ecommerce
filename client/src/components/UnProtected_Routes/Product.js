@@ -37,17 +37,17 @@ const Product = () => {
             {filteredProducts?.slice(0, visibleCount).map((product) => (
               <ProductDisplay key={product.id} product={product} />
             ))}
-            <div className="view-more-container">
-              {visibleCount < filteredProducts?.length ? (
-                <button className="btn-customized" onClick={showMore}>
-                  + View All {filteredProducts?.length} Products
-                </button>
-              ) : (
-                <button className="btn-customized" onClick={showLess}>
-                  - Show Less
-                </button>
-              )}
-            </div>
+          </div>
+          <div className="view-more-container">
+            {visibleCount < filteredProducts?.length ? (
+              <button className="btn-customized" onClick={showMore}>
+                + View All {filteredProducts?.length} Products
+              </button>
+            ) : (
+              <button className="btn-customized" onClick={showLess}>
+                - Show Less
+              </button>
+            )}
           </div>
         </div>
         <div className="vertical-divider"></div>

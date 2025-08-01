@@ -75,6 +75,11 @@
   margin-bottom: var(--space-md);
 }
 
+.cta-section .btn-customized {
+    padding: var(--space-xs) var(--space-lg); 
+    font-size: var(--font-size-sm); 
+  }
+
 .vertical-divider {
   width: 2px;
   background-color: var(--color-border);
