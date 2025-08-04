@@ -52,7 +52,7 @@ const GuestFooter = () => {
               Ganesh Nagar, Puzhuthivakkam, Madipakkam <br /> Chennai-600091,
               Tamil Nadu, India.
             </div>
-            <div>
+            <div className="links" >
               {" "}
               <strong>Email: </strong>sales@sridhanvantariexports.com
             </div>

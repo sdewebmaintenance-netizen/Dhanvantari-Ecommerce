@@ -423,6 +423,20 @@ const ProductQuoteTable = () => {
                           setShowContactForm(false);
                           setSelectedProducts([]);
                           setModalVisible(false);
+                          setContactForm({
+                            name: "",
+                            email: "",
+                            company: "",
+                            street: "",
+                            country: "",
+                            state: "",
+                            district: "",
+                            pincode: "",
+                            message: "",
+                          });
+                          setPhone("");
+                          setProductQuantities({});
+                          setProductSpecs({});
                         }}
                       >
                         Cancel
