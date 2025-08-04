@@ -31,7 +31,7 @@
 .invoice-container h6 {
   font-size: 1rem;
   font-weight: 500;
-  color:black;
+  color: black;
 }
 
 .Logo-pdf {
@@ -64,13 +64,12 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items:center ;
+  align-items: center;
   margin-bottom: var(--space-md);
- 
 }
 
-.invoice-title h6{
- color:#5287eb;
+.invoice-title h6 {
+  color: #5287eb;
 }
 
 .details-section {
@@ -165,8 +164,23 @@
   margin-left: var(--space-xl);
 }
 
-.text-link{
+.text-link {
   color: black;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  white-space: normal;
+}
+
+.links {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  white-space: normal;
+}
+
+@media (max-width: 768px) {
+  .font {
+    font-size: var(--font-size-2xl);
+  }
 }
 
 @media print {

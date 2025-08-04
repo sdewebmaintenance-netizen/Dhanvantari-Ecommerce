@@ -42,6 +42,12 @@
   color: var(--color-secondary-light);
 }
 
+.info-card p {
+  text-align: left;
+}
+
+
+
 @media (max-width: 768px) {
   .info-card {
     width: 80%;

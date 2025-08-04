@@ -1,6 +1,6 @@
 const TermsAndConditions = () => (
   <div className="section">
-    <h1 className="title text-animation">Terms &amp; Conditions</h1>
+    <h1 className="title text-animation font">Terms &amp; Conditions</h1>
 
     <div className="section-content">
       <ul className="retail-list">
