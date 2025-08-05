@@ -23,7 +23,7 @@ const Product = ({ product }) => {
       <div className="small-product-details">
         <Link to={`/product/${product.id}`} className="small-product-link">
           <div className="small-product-title">
-            <div>{product.name}</div>
+            <div className="product-card-name">{product.name}</div>
             <span className="small-product-price">
               {formatCurrency(product?.price)}
             </span>

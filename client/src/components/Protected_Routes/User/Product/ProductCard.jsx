@@ -47,7 +47,7 @@ const ProductCard = ({ p, setParentLoading }) => {
 
       <div className="product-card-body">
         <div className="product-card-header">
-          <p className="product-card-name">{p?.name}</p>
+          <p className="product-card-names">{p?.name}</p>
           <p className="product-card-price">{formatCurrency(p?.price)}</p>
         </div>
 
