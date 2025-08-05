@@ -61,7 +61,7 @@ const ProductCard = ({ product }) => {
 
         <div className="product-card-body">
           <div className="product-card-header">
-            <p className="product-card-name">{product?.name}</p>
+            <p className="product-card-names">{product?.name}</p>
             <p className="product-card-price">
               {formatCurrency(product?.price)}
             </p>

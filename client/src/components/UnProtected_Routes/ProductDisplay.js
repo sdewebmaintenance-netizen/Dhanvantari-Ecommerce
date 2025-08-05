@@ -1,9 +1,6 @@
 import React, { useState, useEffect } from "react";
 import formatCurrency from "../../Utils/FormatCurrency";
-import formatDate from "../../Utils/FormatDate";
-import formatTime from "../../Utils/FormatTime";
 import getImage from "../../Utils/GetImage";
-import { Link } from "react-router-dom";
 
 const ProductDisplay = ({ product }) => {
   const [hovered, setHovered] = useState(false);
@@ -53,14 +50,11 @@ const ProductDisplay = ({ product }) => {
 
         <div className="product-card-body">
           <div className="product-card-header">
-            <p className="product-card-name">{product?.name}</p>
+            <p className="product-card-names">{product?.name}</p>
             <p className="product-card-price">
               {formatCurrency(product?.price)}
             </p>
           </div>
-          <p className="product-card-description">
-            {product?.description?.substring(0, 60)}...
-          </p>
         </div>
       </div>
     </div>

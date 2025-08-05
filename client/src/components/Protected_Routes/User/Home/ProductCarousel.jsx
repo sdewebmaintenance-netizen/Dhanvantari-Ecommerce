@@ -88,12 +88,8 @@ const ProductCarousel = () => {
           <div className="carousel-product-info">
             {products[currentIndex] && (
               <div className="product-info-card">
-                <h6>{products[currentIndex].name}</h6>
+                <h6 className="product-card-name">{products[currentIndex].name}</h6>
                 <p> {formatCurrency(products[currentIndex].price)}</p>
-
-                <p>
-                  {products[currentIndex].description?.substring(0, 170)} ...
-                </p>
 
                 <div className="product-info-meta">
                   <div>
