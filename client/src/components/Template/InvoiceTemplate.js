@@ -111,7 +111,7 @@ const InvoiceTemplate = ({ order }) => {
       <div className="details-section">
         <div className="bill-to">
           <h6>Bill To</h6>
-          <p>{order.OrderUser.username}</p>
+          <p>{order.OrderShippingAddress.customerName}</p>
           <p>
             {order.OrderShippingAddress.addressLine1},{" "}
             {order.OrderShippingAddress.district},{" "}

@@ -309,7 +309,7 @@ const Order = () => {
               Name:{" "}
               <strong className="highlight-text">
                 {" "}
-                {order.OrderUser.username}
+                {order.OrderShippingAddress.customerName}
               </strong>
             </p>
 
