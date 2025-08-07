@@ -301,7 +301,7 @@ const PlaceOrder = () => {
                 IGST: orderSummary.igstTotal,
                 totalPrice: orderSummary.totalPrice,
                 appliedDiscounts,
-                paymentId: response.razorpay_payment_id,
+                paymentId:  res.payment.id,
               }).unwrap();
 
               setOrder(createdOrder.order);
