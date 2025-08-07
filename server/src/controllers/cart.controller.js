@@ -47,8 +47,8 @@ const createCart = asyncHandler(async (req, res) => {
 
 const updateCart = asyncHandler(async (req, res) => {
   console.log("Ssss", req.body);
-  const { quantity } = req.body;
   const { cartId } = req.params;
+  const { user_id } = req.user;
 
   try {
     const cart = await prisma.Cart.findUnique({
@@ -59,13 +59,26 @@ const updateCart = asyncHandler(async (req, res) => {
       return res.status(404).json({ error: "Cart item not found" });
     }
 
-    const updatedCart = await prisma.Cart.update({
-      where: { id: parseInt(cartId) },
-      data: { quantity: parseInt(quantity) },
-      include: {
-        Products: true,
-      },
-    });
+    let updatedCart;
+
+    if (req.body.quantity) {
+      updatedCart = await prisma.Cart.update({
+        where: { id: parseInt(cartId) },
+        data: { quantity: parseInt(quantity) },
+        include: {
+          Products: true,
+        },
+      });
+    } else {
+      updatedCart = await prisma.cart.updateMany({
+        where: {
+          user_id: user_id,
+        },
+        data: {
+          shipping_address_id: req.body.shipping_address_id,
+        },
+      })
+    }
 
     res.json(updatedCart);
   } catch (error) {
@@ -117,17 +130,17 @@ const listCart = asyncHandler(async (req, res) => {
   const cart = await prisma.Cart.findMany({
     where: { user_id: parseInt(user_id) },
     include: {
-      Products:{
-        include:{
-          ProductImages:true,
-          ProductDiscount:true
-        }
+      Products: {
+        include: {
+          ProductImages: true,
+          ProductDiscount: true,
+        },
       },
       CartShippingAddress: true,
     },
   });
 
-  console.log("ss", cart)
+  console.log("ss", cart);
 
   res.json(cart);
 });

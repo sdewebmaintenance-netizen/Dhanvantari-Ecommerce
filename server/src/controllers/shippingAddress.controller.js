@@ -6,6 +6,7 @@ const createShippingAddress = asyncHandler(async (req, res) => {
   const {
     addressLine1,
     addressLine2,
+    customerName,
     country,
     state,
     district,
@@ -43,15 +44,8 @@ const createShippingAddress = asyncHandler(async (req, res) => {
         deliveryDistrict,
         deliveryPincode,
         contactNumber,
-      },
-    });
-
-    const updatedCarts = await prisma.cart.updateMany({
-      where: {
-        user_id: user_id,
-      },
-      data: {
-        shipping_address_id: newShippingAddress.id,
+        customerName,
+        user_id
       },
     });
 
@@ -78,8 +72,11 @@ const updateShippingAddress = asyncHandler(async (req, res) => {
     deliveryDistrict,
     deliveryPincode,
     contactNumber,
+    customerName
   } = req.body;
   const { shippingAddressId } = req.params;
+
+  const {user_id} = req.user;
 
   try {
     const shippingAddress = await prisma.ShippingAddress.findUnique({
@@ -107,6 +104,8 @@ const updateShippingAddress = asyncHandler(async (req, res) => {
         deliveryDistrict,
         deliveryPincode,
         contactNumber,
+        customerName,
+        user_id
       },
     });
 
@@ -119,7 +118,7 @@ const updateShippingAddress = asyncHandler(async (req, res) => {
 const removeShippingAddress = asyncHandler(async (req, res) => {
   const { shippingAddressId } = req.params;
 
-  const {user_id}= req.user;
+  const { user_id } = req.user;
 
   const shippingAddress = await prisma.ShippingAddress.findUnique({
     where: { id: parseInt(shippingAddressId) },
@@ -134,13 +133,13 @@ const removeShippingAddress = asyncHandler(async (req, res) => {
   });
 
   const updatedCarts = await prisma.cart.updateMany({
-      where: {
-        user_id: user_id,
-      },
-      data: {
-        shipping_address_id: null,
-      },
-    });
+    where: {
+      user_id: user_id,
+    },
+    data: {
+      shipping_address_id: null,
+    },
+  });
 
   res.json({ message: "Shipping Address removed successfully" });
 });
@@ -150,21 +149,34 @@ const listShippingAddress = asyncHandler(async (req, res) => {
 
   const cart = await prisma.cart.findFirst({
     where: { user_id },
-    select: { shipping_address_id: true },
   });
 
-  if (!cart || !cart.shipping_address_id) {
-    return res
-      .status(404)
-      .json({ message: "No shipping address linked to cart" });
+  if (!cart) {
+    return res.status(404).json({ message: "No cart found for this user" });
   }
 
-  const shippingAddress = await prisma.shippingAddress.findUnique({
-    where: { id: cart.shipping_address_id },
+  let shippingAddress;
+
+  if (cart.shipping_address_id != null) {
+    shippingAddress = await prisma.shippingAddress.findUnique({
+      where: { id: cart.shipping_address_id },
+    });
+  }
+
+  res.json({ shippingAddress, cart });
+});
+
+const listAllShippingAddress = asyncHandler(async (req, res) => {
+  const { user_id } = req.user;
+
+  const shippingAddress = await prisma.ShippingAddress.findMany({
+    where: { user_id },
   });
 
   if (!shippingAddress) {
-    return res.status(404).json({ message: "Shipping address not found" });
+    return res
+      .status(404)
+      .json({ message: "No shipping address found for this user" });
   }
 
   res.json(shippingAddress);
@@ -175,4 +187,5 @@ module.exports = {
   updateShippingAddress,
   removeShippingAddress,
   listShippingAddress,
+  listAllShippingAddress,
 };

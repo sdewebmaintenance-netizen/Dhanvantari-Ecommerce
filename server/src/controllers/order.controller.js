@@ -255,7 +255,7 @@ const orderConfirmationViaEmails = asyncHandler(async (req, res) => {
       totalAmount: `₹${order.totalPrice.toFixed(2)}`,
       paymentMethod: order.paymentMethod,
       paymentStatus: "Paid",
-      transactionId: order.OrderPaymentResult.transactionId,
+      transactionId: order.OrderPaymentResult?.transactionId ? order.OrderPaymentResult?.transactionId : "N/A – Direct payment method selected.",
       expectedShipment: expectedShipment,
       withinTN: withinTN,
     };

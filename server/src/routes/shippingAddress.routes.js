@@ -6,12 +6,13 @@ const {
   updateShippingAddress,
   removeShippingAddress,
   listShippingAddress,
+  listAllShippingAddress
 } = require("../controllers/shippingAddress.controller.js");
 
 router.post("/", createShippingAddress);
 router.put("/:shippingAddressId", updateShippingAddress);
 router.delete("/:shippingAddressId", removeShippingAddress);
 router.get("/shippingAddress", listShippingAddress);
-
+router.get("/listAllShippingAddress", listAllShippingAddress);
 
 module.exports = router;

@@ -31,12 +31,37 @@
 }
 
 
-.same-line{
+.same-line {
   display: flex;
   flex-direction: row;
-  gap: var(--space-md);
+  gap: var(--space-sm);
   color: var(--color-secondary);
   font-weight: 600;
   align-items: baseline;
-  margin-left: 0.5rem;
+}
+
+.same-line > :first-child {
+  width: 5%;
+  flex-shrink: 0; 
+}
+
+.same-line > :nth-child(2) {
+  width: 95%;
+}
+
+
+.address-card {
+  background-color: var(--color-bg);
+  padding: var(--space-md);
+  border-radius: var(--space-md);
+}
+
+.btn-address {
+  display: flex;
+  justify-content: space-between;
+}
+
+.btn-address .btn-icon{
+  padding: var(--space-sm);
+  font-size: var(--font-size-lg);
 }

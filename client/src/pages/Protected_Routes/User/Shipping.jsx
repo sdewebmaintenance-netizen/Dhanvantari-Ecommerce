@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Country, State, City } from "country-state-city";
+import { MdEdit, MdDelete } from "react-icons/md";
+import { IoCheckbox } from "react-icons/io5";
+import { MdCheckBoxOutlineBlank } from "react-icons/md";
 import PhoneInput from "react-phone-number-input";
 import "react-phone-number-input/style.css";
 import {
@@ -8,27 +11,31 @@ import {
   useUpdateShippingAddressMutation,
   useDeleteShippingAddressMutation,
   useFetchShippingAddressQuery,
+  useFetchAllShippingAddressQuery,
 } from "../../../redux/api/shippingAddressApiSlice";
+import { useUpdateCartMutation } from "../../../redux/api/cartApiSlice";
 import ProgressSteps from "../../../components/Protected_Routes/User/Cart/ProgressSteps";
 import Loader from "../../../components/Common/Loader";
 
 const Shipping = () => {
-  const {
-    data: shippingAddress,
-    refetch,
-    isLoading,
-  } = useFetchShippingAddressQuery();
+  const { data, refetch } = useFetchShippingAddressQuery();
+  const shippingAddress = data?.shippingAddress;
+  const cart = data?.cart;
+  const { data: allShippingAddress } = useFetchAllShippingAddressQuery();
+  const [updateCart] = useUpdateCartMutation();
   const [createShippingAddress] = useCreateShippingAddressMutation();
   const [updateShippingAddress] = useUpdateShippingAddressMutation();
   const [deleteShippingAddress] = useDeleteShippingAddressMutation();
   const navigate = useNavigate();
 
   const [isEditMode, setIsEditMode] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState("RazorPay");
+  const [isAddingNew, setIsAddingNew] = useState(false);
+  const [addressId, setAddressId] = useState("");
   const [addressLine1, setAddressLine1] = useState("");
   const [addressLine2, setAddressLine2] = useState("");
   const [pincode, setPincode] = useState("");
   const [gstin, setGstin] = useState("");
+  const [customerName, setCustomerName] = useState("");
   const [contactNumber, setContactNumber] = useState("");
   const [transportation, setTransportation] = useState("");
   const [vehicleNumber, setVehicleNumber] = useState("");
@@ -44,6 +51,12 @@ const Shipping = () => {
   const [deliveryStateOptions, setDeliveryStateOptions] = useState([]);
   const [deliveryDistrictOptions, setDeliveryDistrictOptions] = useState([]);
   const [useSameAddress, setUseSameAddress] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const [selectedAddressId, setSelectedAddressId] = useState(
+    shippingAddress?.id || null
+  );
+  const [hoveredId, setHoveredId] = useState(null);
 
   useEffect(() => {
     const india = Country.getAllCountries().find((c) => c.name === "India");
@@ -71,6 +84,14 @@ const Shipping = () => {
   }, [state]);
 
   useEffect(() => {
+    if (shippingAddress?.id) {
+      setSelectedAddressId(shippingAddress.id);
+    } else {
+      setSelectedAddressId(null);
+    }
+  }, [shippingAddress]);
+
+  useEffect(() => {
     if (deliveryState) {
       const india = Country.getAllCountries().find((c) => c.name === "India");
       if (india) {
@@ -82,36 +103,57 @@ const Shipping = () => {
     }
   }, [deliveryState]);
 
-  useEffect(() => {
-    if (shippingAddress) {
-      setAddressLine1(shippingAddress.addressLine1 || "");
-      setAddressLine2(shippingAddress.addressLine2 || "");
-      setPincode(shippingAddress.pincode || "");
-      setGstin(shippingAddress.gstin || "");
-      setContactNumber(shippingAddress.contactNumber || "");
-      setTransportation(shippingAddress.transportation || "");
-      setVehicleNumber(shippingAddress.vehicleNumber || "");
-      setCountry(shippingAddress.country || "India");
-      setState(shippingAddress.state || "");
-      setDistrict(shippingAddress.district || "");
-      setDeliveryCountry(shippingAddress.deliveryCountry || "India");
-      setDeliveryState(shippingAddress.deliveryState || "");
-      setDeliveryDistrict(shippingAddress.deliveryDistrict || "");
-      setDeliveryPincode(shippingAddress.deliveryPincode || "");
-      setUseSameAddress(
-        shippingAddress.deliveryCountry === shippingAddress.country &&
-          shippingAddress.deliveryState === shippingAddress.state &&
-          shippingAddress.deliveryDistrict === shippingAddress.district &&
-          shippingAddress.deliveryPincode === shippingAddress.pincode
-      );
-      setIsEditMode(false);
-    }
-  }, [shippingAddress]);
+  const resetForm = () => {
+    setAddressId("");
+    setAddressLine1("");
+    setAddressLine2("");
+    setPincode("");
+    setGstin("");
+    setCustomerName("");
+    setContactNumber("");
+    setTransportation("");
+    setVehicleNumber("");
+    setCountry("India");
+    setState("");
+    setDistrict("");
+    setDeliveryCountry("India");
+    setDeliveryState("");
+    setDeliveryDistrict("");
+    setDeliveryPincode("");
+    setUseSameAddress(true);
+  };
+
+  const fillFormWithAddress = (address) => {
+    setAddressId(address.id || "");
+    setAddressLine1(address.addressLine1 || "");
+    setAddressLine2(address.addressLine2 || "");
+    setPincode(address.pincode || "");
+    setGstin(address.gstin || "");
+    setCustomerName(address.customerName || "");
+    setContactNumber(address.contactNumber || "");
+    setTransportation(address.transportation || "");
+    setVehicleNumber(address.vehicleNumber || "");
+    setCountry(address.country || "India");
+    setState(address.state || "");
+    setDistrict(address.district || "");
+    setDeliveryCountry(address.deliveryCountry || "India");
+    setDeliveryState(address.deliveryState || "");
+    setDeliveryDistrict(address.deliveryDistrict || "");
+    setDeliveryPincode(address.deliveryPincode || "");
+    setUseSameAddress(
+      address.deliveryCountry === address.country &&
+        address.deliveryState === address.state &&
+        address.deliveryDistrict === address.district &&
+        address.deliveryPincode === address.pincode
+    );
+  };
 
   const submitHandler = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
 
     const shippingData = {
+      addressId,
       addressLine1,
       addressLine2,
       country,
@@ -119,6 +161,7 @@ const Shipping = () => {
       district,
       pincode,
       gstin,
+      customerName,
       contactNumber,
       transportation,
       vehicleNumber,
@@ -128,164 +171,278 @@ const Shipping = () => {
       deliveryPincode: useSameAddress ? pincode : deliveryPincode,
     };
 
+    console.log("shippin", shippingData);
+
     try {
-      let result;
-      if (shippingAddress) {
-        result = await updateShippingAddress({
-          shippingAddressId: shippingAddress.id,
-          updatedShippingAddress: shippingData,
-        }).unwrap();
-       alert("Shipping Address updated successfully");
-      } else {
-        result = await createShippingAddress({
+      if (isAddingNew) {
+        await createShippingAddress({
           newShippingAddress: shippingData,
         }).unwrap();
-       alert("Shipping Address created successfully");
+
+        alert("Shipping Address created successfully");
+        window.location.reload();
+      } else {
+        await updateShippingAddress({
+          shippingAddressId: shippingData.addressId,
+          updatedShippingAddress: shippingData,
+        }).unwrap();
+
+        alert("Shipping Address updated successfully");
+        window.location.reload();
       }
 
       await refetch();
+
       setIsEditMode(false);
+      setIsAddingNew(false);
     } catch (error) {
       console.error(error);
-      alert(error?.data?.error || "Operation failed, try again.");
+      alert(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const handleDelete = async () => {
+  const handleDelete = async (addressId) => {
     if (
       window.confirm("Are you sure you want to delete this shipping address?")
     ) {
+      setIsLoading(true);
       try {
-        await deleteShippingAddress(shippingAddress.id).unwrap();
-      alert("Shipping Address deleted successfully");
-        navigate("/cart");
+        await deleteShippingAddress(addressId).unwrap();
+        alert("Shipping Address deleted successfully");
+        window.location.reload();
       } catch (error) {
         console.error(error);
-       alert(error?.data?.error || "Delete failed, try again.");
+        alert(error?.data?.error || "Delete failed, try again.");
+      } finally {
+        setIsLoading(false);
       }
     }
   };
 
-  if (isLoading)
+  const handleSelectAddress = async (addressId) => {
+    try {
+      setIsLoading(true);
+      console.log("sss", addressId, cart.id);
+      const isUnselecting = selectedAddressId === addressId;
+      await updateCart({
+        cartId: cart.id,
+        updatedCart: {
+          shipping_address_id: isUnselecting ? null : parseInt(addressId),
+        },
+      }).unwrap();
+      await refetch();
+      setSelectedAddressId(isUnselecting ? null : addressId);
+      alert(
+        isUnselecting
+          ? "Redirecting to Select New Shipping Address"
+          : "Selected Shipping Address successfully"
+      );
+    } catch (error) {
+      console.error(error);
+      alert(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleAddNewAddress = () => {
+    resetForm();
+    setIsAddingNew(true);
+    setIsEditMode(true);
+  };
+
+  const handleEditAddress = (address) => {
+    fillFormWithAddress(address);
+    setIsAddingNew(false);
+    setIsEditMode(true);
+  };
+
+  if (isLoading) {
     return (
       <div>
         <Loader />
       </div>
     );
+  }
 
-  return (
-    <div>
-      <ProgressSteps step1 step2 />
-      <div className="shipping-content">
-        {shippingAddress && !isEditMode ? (
+  if (!shippingAddress && allShippingAddress?.length > 0 && !isEditMode) {
+    return (
+      <div>
+        <ProgressSteps step1 step2 />
+        <div className="shipping-content">
           <div className="shipping-form">
             <h1
               className="title text-animation"
               style={{ marginBottom: "2rem" }}
             >
-              Shipping Details
+              Select Shipping Address
             </h1>
 
-            <div className="address-card">
-              <div className="address-section">
-                <h2>Customer Information</h2>
-                <p>
-                  <strong>Contact:</strong> {shippingAddress.contactNumber}
-                </p>
-                {shippingAddress.gstin && (
-                  <p>
-                    <strong>GSTIN:</strong> {shippingAddress.gstin}
-                  </p>
-                )}
-              </div>
+            <div className="address-list">
+              {allShippingAddress.map((address) => (
+                <div key={address.id} style={{ marginBottom: "2rem" }}>
+                  <div className="address-card">
+                    <div className="address-section">
+                      <div className="btn-address">
+                        <h2>Customer Information</h2>
+                        <div>
+                          <button
+                            key={address.id}
+                            type="button"
+                            title="Select Address"
+                            className="btn-icon"
+                            onMouseEnter={() => setHoveredId(address.id)}
+                            onMouseLeave={() => setHoveredId(null)}
+                            onClick={() => handleSelectAddress(address.id)}
+                          >
+                            {hoveredId === address.id ? (
+                              <IoCheckbox />
+                            ) : (
+                              <MdCheckBoxOutlineBlank />
+                            )}
+                          </button>
+                          <button
+                            type="button"
+                            className="btn-icon"
+                            title="Edit Address"
+                            onClick={() => handleEditAddress(address)}
+                          >
+                            <MdEdit />
+                          </button>
+                          <button
+                            type="button"
+                            className="btn-icon"
+                            title="Delete Address"
+                            onClick={() => handleDelete(address.id)}
+                          >
+                            <MdDelete />
+                          </button>
+                        </div>
+                      </div>
+                      <p>
+                        <strong>Customer Name:</strong> {address.customerName}
+                      </p>
+                      <p>
+                        <strong>Contact:</strong> {address.contactNumber}
+                      </p>
 
-              <div className="address-section">
-                <h2>Shipping Address</h2>
-                <p>{shippingAddress.addressLine1}</p>
-                {shippingAddress.addressLine2 && (
-                  <p>{shippingAddress.addressLine2}</p>
-                )}
-                <p>
-                  {shippingAddress.district}, {shippingAddress.state}
-                </p>
-                <p>
-                  {shippingAddress.country} - {shippingAddress.pincode}
-                </p>
-              </div>
+                      {address.gstin && (
+                        <p>
+                          <strong>GSTIN:</strong> {address.gstin}
+                        </p>
+                      )}
+                    </div>
 
-              {!useSameAddress && (
-                <div className="address-section">
-                  <h2>Delivery Address</h2>
-                  <p>
-                    {shippingAddress.deliveryDistrict},{" "}
-                    {shippingAddress.deliveryState}
-                  </p>
-                  <p>
-                    {shippingAddress.deliveryCountry} -{" "}
-                    {shippingAddress.deliveryPincode}
-                  </p>
+                    <div className="address-section">
+                      <h2>Shipping Address</h2>
+                      <p>{address.addressLine1}</p>
+                      {address.addressLine2 && <p>{address.addressLine2}</p>}
+                      <p>
+                        {address.district}, {address.state}
+                      </p>
+                      <p>
+                        {address.country} - {address.pincode}
+                      </p>
+                    </div>
+
+                    {((address.deliveryCountry &&
+                      address.deliveryCountry !== address.country) ||
+                      (address.deliveryState &&
+                        address.deliveryState !== address.state) ||
+                      (address.deliveryDistrict &&
+                        address.deliveryDistrict !== address.district) ||
+                      (address.deliveryPincode &&
+                        address.deliveryPincode !== address.pincode)) && (
+                      <div className="address-section">
+                        <h2>Delivery Address</h2>
+                        {address.deliveryDistrict && address.deliveryState ? (
+                          <p>
+                            {address.deliveryDistrict}, {address.deliveryState}
+                          </p>
+                        ) : (
+                          <p>
+                            {address.deliveryDistrict || address.deliveryState}
+                          </p>
+                        )}
+                        {(address.deliveryCountry ||
+                          address.deliveryPincode) && (
+                          <p>
+                            {address.deliveryCountry}
+                            {address.deliveryPincode &&
+                              ` - ${address.deliveryPincode}`}
+                          </p>
+                        )}
+                      </div>
+                    )}
+
+                    {(address.transportation || address.vehicleNumber) && (
+                      <div className="address-section">
+                        <h2>Transportation Details</h2>
+
+                        {address.transportation && (
+                          <p>
+                            <strong>Transportation:</strong>{" "}
+                            {address.transportation}
+                          </p>
+                        )}
+
+                        {address.vehicleNumber && (
+                          <p>
+                            <strong>Vehicle No:</strong> {address.vehicleNumber}
+                          </p>
+                        )}
+                      </div>
+                    )}
+                  </div>
                 </div>
-              )}
-
-              {(shippingAddress.transportation ||
-                shippingAddress.vehicleNumber) && (
-                <div className="address-section">
-                  <h2>Transportation Details</h2>
-                  {shippingAddress.transportation && (
-                    <p>
-                      <strong>Transportation:</strong>{" "}
-                      {shippingAddress.transportation}
-                    </p>
-                  )}
-                  {shippingAddress.vehicleNumber && (
-                    <p>
-                      <strong>Vehicle No:</strong>{" "}
-                      {shippingAddress.vehicleNumber}
-                    </p>
-                  )}
-                </div>
-              )}
-
-              <div className="address-section">
-                <h2>Payment Method</h2>
-                <p>RazorPay</p>
-              </div>
+              ))}
             </div>
 
-            <div className="button-group">
-              <button
-                type="button"
-                className="btn-customized"
-                onClick={() => setIsEditMode(true)}
-              >
-                Edit Address
-              </button>
-              <button
-                type="button"
-                className="btn-customized danger"
-                onClick={handleDelete}
-              >
-                Delete Address
-              </button>
-              <button
-                type="button"
-                className="btn-customized primary"
-                onClick={() => navigate("/placeorder")}
-              >
-                Continue to Payment
-              </button>
-            </div>
+            {allShippingAddress.length < 3 && (
+              <div className="button-group" style={{ marginTop: "2rem" }}>
+                <button
+                  type="button"
+                  className="btn-customized"
+                  onClick={handleAddNewAddress}
+                >
+                  Add New Address
+                </button>
+              </div>
+            )}
           </div>
-        ) : (
+        </div>
+      </div>
+    );
+  }
+
+  if (isEditMode) {
+    return (
+      <div>
+        <ProgressSteps step1 step2 />
+        <div className="shipping-content">
           <form onSubmit={submitHandler} className="shipping-form">
             <h1 className="title text-animation">
-              {shippingAddress
-                ? "Edit Shipping Details"
-                : "Add Shipping Details"}
+              {isAddingNew
+                ? "Add New Shipping Address"
+                : "Edit Shipping Address"}
             </h1>
 
             <div className="form-section" style={{ marginTop: "2rem" }}>
               <h2 className="title">Customer Information</h2>
+
+              <div className="form-group">
+                <label className="form-label">Customer Name</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  placeholder="Customer Name"
+                  value={customerName}
+                  required
+                  onChange={(e) => setCustomerName(e.target.value)}
+                />
+              </div>
 
               <div className="form-group">
                 <label className="form-label">Contact Number</label>
@@ -312,8 +469,9 @@ const Shipping = () => {
                 />
               </div>
             </div>
+
             <div className="form-section">
-              <h2 className="section-title">Customer Address</h2>
+              <h2 className="section-title">Shipping Address</h2>
 
               <div className="form-group">
                 <label className="form-label">Address Line 1</label>
@@ -400,17 +558,15 @@ const Shipping = () => {
               </div>
             </div>
 
-            <div className="form-section">
+            <div className="form-section ">
               <div className="form-group same-line">
-                <label className="form-label">
-                  <input
-                    type="checkbox"
-                    checked={useSameAddress}
-                    onChange={() => setUseSameAddress(!useSameAddress)}
-                    className="form-control"
-                  />
-                  Same as shipping address
-                </label>
+                <input
+                  type="checkbox"
+                  checked={useSameAddress}
+                  onChange={() => setUseSameAddress(!useSameAddress)}
+                  className="form-control"
+                />
+                <label className="form-label">Same as shipping address </label>
               </div>
 
               {!useSameAddress && (
@@ -508,39 +664,149 @@ const Shipping = () => {
               </div>
             </div>
 
-            <div className="form-section">
-              <h2 className="section-title">Payment Method</h2>
-              <div className="payment-method-options">
-                <label className="payment-method-option">
-                  <input
-                    type="radio"
-                    name="paymentMethod"
-                    value="RazorPay"
-                    checked={paymentMethod === "RazorPay"}
-                    onChange={(e) => setPaymentMethod(e.target.value)}
-                    required
-                  />
-                  <span className="payment-method-text">RazorPay</span>
-                </label>
-              </div>
-            </div>
-
             <div className="button-group">
               <button className="btn-customized" type="submit">
-                {shippingAddress ? "Update Address" : "Create Address"}
+                {isAddingNew ? "Create Address" : "Update Address"}
               </button>
-              {shippingAddress && (
-                <button
-                  type="button"
-                  className="btn-customized secondary"
-                  onClick={() => setIsEditMode(false)}
-                >
-                  Cancel
-                </button>
-              )}
+              <button
+                type="button"
+                className="btn-customized secondary"
+                onClick={() => {
+                  setIsEditMode(false);
+                  setIsAddingNew(false);
+                }}
+              >
+                Cancel
+              </button>
             </div>
           </form>
-        )}
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <ProgressSteps step1 step2 />
+      <div className="shipping-content">
+        <div className="shipping-form">
+          <h1 className="title text-animation" style={{ marginBottom: "2rem" }}>
+            Shipping Details
+          </h1>
+
+          {shippingAddress ? (
+            <>
+              <div className="address-card">
+                <div className="address-section">
+                  <h2>Customer Information</h2>
+                  <p>
+                    <strong>Customer Name:</strong>{" "}
+                    {shippingAddress.customerName}
+                  </p>
+                  <p>
+                    <strong>Contact:</strong> {shippingAddress.contactNumber}
+                  </p>
+                  {shippingAddress.gstin && (
+                    <p>
+                      <strong>GSTIN:</strong> {shippingAddress.gstin}
+                    </p>
+                  )}
+                </div>
+
+                <div className="address-section">
+                  <h2>Shipping Address</h2>
+                  <p>{shippingAddress.addressLine1}</p>
+                  {shippingAddress.addressLine2 && (
+                    <p>{shippingAddress.addressLine2}</p>
+                  )}
+                  <p>
+                    {shippingAddress.district}, {shippingAddress.state}
+                  </p>
+                  <p>
+                    {shippingAddress.country} - {shippingAddress.pincode}
+                  </p>
+                </div>
+
+                {!useSameAddress && (
+                  <div className="address-section">
+                    <h2>Delivery Address</h2>
+                    <p>
+                      {shippingAddress.deliveryDistrict},{" "}
+                      {shippingAddress.deliveryState}
+                    </p>
+                    <p>
+                      {shippingAddress.deliveryCountry} -{" "}
+                      {shippingAddress.deliveryPincode}
+                    </p>
+                  </div>
+                )}
+
+                {(shippingAddress.transportation ||
+                  shippingAddress.vehicleNumber) && (
+                  <div className="address-section">
+                    <h2>Transportation Details</h2>
+                    {shippingAddress.transportation && (
+                      <p>
+                        <strong>Transportation:</strong>{" "}
+                        {shippingAddress.transportation}
+                      </p>
+                    )}
+                    {shippingAddress.vehicleNumber && (
+                      <p>
+                        <strong>Vehicle No:</strong>{" "}
+                        {shippingAddress.vehicleNumber}
+                      </p>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              <div className="button-group">
+                <button
+                  type="button"
+                  className="btn-customized danger"
+                  onClick={() => handleSelectAddress(selectedAddressId)}
+                >
+                  Select Different Address
+                </button>
+                <button
+                  type="button"
+                  className="btn-customized"
+                  onClick={() => handleEditAddress(shippingAddress)}
+                >
+                  Edit Address
+                </button>
+                <button
+                  type="button"
+                  className="btn-customized danger"
+                  onClick={() => handleDelete(shippingAddress.id)}
+                >
+                  Delete Address
+                </button>
+                <button
+                  type="button"
+                  className="btn-customized primary"
+                  onClick={() => navigate("/placeorder")}
+                >
+                  Continue to Payment
+                </button>
+              </div>
+            </>
+          ) : (
+            <>
+              <p>No shipping address created</p>
+              <div className="button-group">
+                <button
+                  type="button"
+                  className="btn-customized"
+                  onClick={handleAddNewAddress}
+                >
+                  Add New Address
+                </button>
+              </div>
+            </>
+          )}
+        </div>
       </div>
     </div>
   );

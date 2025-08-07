@@ -2,7 +2,6 @@ import { Link, useNavigate } from "react-router-dom";
 import Message from "../../components/Common/Message";
 import ProgressSteps from "../../components/Protected_Routes/User/Cart/ProgressSteps";
 import Loader from "../../components/Common/Loader";
-import { createRoot } from "react-dom/client";
 
 import {
   useCreateRazorPayOrderMutation,
@@ -11,13 +10,9 @@ import {
   useCreateOrderMutation,
   useOrderConfirmationViaEmailsMutation,
 } from "../../redux/api/orderApiSlice";
-import { toPng } from "html-to-image";
-import jsPDF from "jspdf";
-import getImage from "../../Utils/GetImage";
 import formatCurrency from "../../Utils/FormatCurrency";
 import { useFetchCartForUserQuery } from "../../redux/api/cartApiSlice";
 import { useEffect, useState } from "react";
-import InvoiceTemplate from "../../components/Template/InvoiceTemplate";
 
 const PlaceOrder = () => {
   const navigate = useNavigate();
@@ -37,6 +32,8 @@ const PlaceOrder = () => {
   const [orderConfirmationViaEmails] = useOrderConfirmationViaEmailsMutation();
   const [createOrder] = useCreateOrderMutation();
   const [deleteOrder] = useDeleteOrderMutation();
+
+  const [paymentMethod, setPaymentMethod] = useState("");
 
   const { data: razorpayKey } = useGetRazorPayKeyIdQuery();
 
@@ -105,7 +102,7 @@ const PlaceOrder = () => {
   };
   const orderSummary = calculateOrderSummary();
 
-  const placeOrderHandler = async () => {
+  /* const placeOrderHandler = async () => {
     try {
       const orderItems = cart.map((item) => ({
         product_id: item.product_id,
@@ -167,7 +164,7 @@ const PlaceOrder = () => {
             const createdOrder = await createOrder({
               orderItems,
               shippingAddress,
-              paymentMethod: "RazorPay",
+              paymentMethod: paymentMethod,
               itemsPrice: orderSummary.itemsPrice,
               SGST: orderSummary.sgstTotal,
               CGST: orderSummary.cgstTotal,
@@ -178,14 +175,11 @@ const PlaceOrder = () => {
             }).unwrap();
             setOrder(createdOrder.order);
             localStorage.setItem("redirect_url", "Order_Placed");
-
             await orderConfirmationViaEmails({
               order: createdOrder.order,
             }).unwrap();
-
             setLoading(false);
             alert("Payment successful!");
-
             console.log("shsssa", createdOrder.order);
             navigate(`/order/${createdOrder.order.id}`);
           } catch (err) {
@@ -206,6 +200,141 @@ const PlaceOrder = () => {
       razorpay.open();
     } catch (error) {
       alert(error);
+    }
+  }; */
+
+  const placeOrderHandler = async () => {
+    try {
+      const orderItems = cart.map((item) => ({
+        product_id: item.product_id,
+        quantity: item.quantity,
+        price: item.Products.price,
+        CGST: item.Products.CGST,
+        SGST: item.Products.SGST,
+        IGST: item.Products.IGST,
+        name: item.Products.name,
+        image: item.Products.ProductImages[0]?.image_name,
+      }));
+
+      const appliedDiscounts = cart
+        .map((item) => {
+          const productDiscount = item.Products?.ProductDiscount;
+          const hasDiscount =
+            productDiscount && item.quantity >= productDiscount.qty;
+
+          return hasDiscount
+            ? {
+                product_id: item.product_id,
+                discount_id: productDiscount.id,
+                discount_amount: productDiscount.pricetobereduced,
+                quantity_required: productDiscount.qty,
+              }
+            : null;
+        })
+        .filter(Boolean);
+
+      const shippingAddress = {
+        id: cart[0]?.CartShippingAddress.id,
+        addressLine1: cart[0]?.CartShippingAddress.addressLine1,
+        addressLine2: cart[0]?.CartShippingAddress.addressLine2,
+        district: cart[0]?.CartShippingAddress.district,
+        state: cart[0]?.CartShippingAddress.state,
+        country: cart[0]?.CartShippingAddress.country,
+        pincode: cart[0]?.CartShippingAddress.pincode,
+        contactNumber: cart[0]?.CartShippingAddress.contactNumber,
+        gstin: cart[0]?.CartShippingAddress.gstin,
+        deliveryDistrict: cart[0]?.CartShippingAddress.deliveryDistrict,
+        deliveryState: cart[0]?.CartShippingAddress.deliveryState,
+        deliveryCountry: cart[0]?.CartShippingAddress.deliveryCountry,
+        deliveryPincode: cart[0]?.CartShippingAddress.deliveryPincode,
+      };
+
+      if (paymentMethod === "Pay_Direct") {
+        // Skip Razorpay and place order directly
+        setLoading(true);
+        const createdOrder = await createOrder({
+          orderItems,
+          shippingAddress,
+          paymentMethod: paymentMethod,
+          itemsPrice: orderSummary.itemsPrice,
+          SGST: orderSummary.sgstTotal,
+          CGST: orderSummary.cgstTotal,
+          IGST: orderSummary.igstTotal,
+          totalPrice: orderSummary.totalPrice,
+          appliedDiscounts,
+          paymentId: null, // No Razorpay payment
+        }).unwrap();
+
+        setOrder(createdOrder.order);
+        localStorage.setItem("redirect_url", "Order_Placed");
+
+        await orderConfirmationViaEmails({
+          order: createdOrder.order,
+        }).unwrap();
+
+        setLoading(false);
+        alert("Order placed successfully via Pay Direct!");
+        navigate(`/order/${createdOrder.order.id}`);
+      } else {
+        // Razorpay flow
+        const res = await createRazorPayOrder({
+          totalPrice: orderSummary.totalPrice,
+        }).unwrap();
+
+        const options = {
+          key: razorpayKey,
+          amount: orderSummary.totalPrice * 100,
+          currency: "INR",
+          name: "Shri Dhanvantari Exports",
+          description: "Product Buying Payment Transaction",
+          order_id: res.RazorPay_Order.id,
+          handler: async (response) => {
+            try {
+              setLoading(true);
+              const createdOrder = await createOrder({
+                orderItems,
+                shippingAddress,
+                paymentMethod: paymentMethod,
+                itemsPrice: orderSummary.itemsPrice,
+                SGST: orderSummary.sgstTotal,
+                CGST: orderSummary.cgstTotal,
+                IGST: orderSummary.igstTotal,
+                totalPrice: orderSummary.totalPrice,
+                appliedDiscounts,
+                paymentId: response.razorpay_payment_id,
+              }).unwrap();
+
+              setOrder(createdOrder.order);
+              localStorage.setItem("redirect_url", "Order_Placed");
+
+              await orderConfirmationViaEmails({
+                order: createdOrder.order,
+              }).unwrap();
+
+              setLoading(false);
+              alert("Payment successful!");
+              navigate(`/order/${createdOrder.order.id}`);
+            } catch (err) {
+              console.error("Error updating payment status:", err);
+              alert("Payment success but failed to update status.");
+            }
+          },
+          prefill: {
+            name: "John Doe",
+            email: "johndoe@example.com",
+            contact: "9999999999",
+          },
+          theme: {
+            color: "#4E474A",
+          },
+        };
+
+        const razorpay = new window.Razorpay(options);
+        razorpay.open();
+      }
+    } catch (error) {
+      console.error("Order error:", error);
+      alert("Something went wrong. Please try again.");
     }
   };
 
@@ -431,16 +560,39 @@ const PlaceOrder = () => {
 
               <div className="payment-info">
                 <h4 className="title text-animation">Payment Method</h4>
-                <p className="info-text">
-                  <strong>Method:</strong> RazorPay
-                </p>
+
+                <div className="form-group same-line">
+                  <input
+                    type="radio"
+                    value="RazorPay"
+                    checked={paymentMethod === "RazorPay"}
+                    onChange={() => setPaymentMethod("RazorPay")}
+                    className="form-control"
+                  />
+                  <label className="form-label">RazorPay</label>
+                </div>
+
+                <div className="form-group same-line">
+                  <input
+                    type="radio"
+                    value="Pay_Direct"
+                    checked={paymentMethod === "Pay_Direct"}
+                    onChange={() => setPaymentMethod("Pay_Direct")}
+                    className="form-control"
+                  />
+                  <label className="form-label">
+                    {" "}
+                    Pay directly (G pay/phone pay : +91 9789108155 or NEFT
+                    Transfer)
+                  </label>
+                </div>
               </div>
             </div>
 
             <button
               type="button"
               className="btn-customized"
-              disabled={cart.cartItems === 0}
+              disabled={cart.cartItems === 0 || paymentMethod === ""}
               onClick={placeOrderHandler}
               style={{ marginTop: "2rem", width: "100%" }}
             >
