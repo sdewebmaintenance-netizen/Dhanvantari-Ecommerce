@@ -52,6 +52,7 @@
 }
 
 .invoice-header h5 {
+  font-size: var(--font-size-sm);
   margin-bottom: var(--space-sm);
   color: black;
 }

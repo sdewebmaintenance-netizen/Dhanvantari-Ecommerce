@@ -10,13 +10,13 @@ const GuestHeader = () => {
   const navigate = useNavigate();
 
   const handleLogoClick = () => {
-    navigate("/"); 
+    navigate("/");
   };
 
   return (
     <header className="navbar">
       <div className="navbar-container">
-        <div className="logo-left" onClick={handleLogoClick} >
+        <div className="logo-left" onClick={handleLogoClick}>
           <img src={getImage("Logo.jpeg", "Logo")} className="logo-img" />
           <div className="logo">
             <span className="brown">Sri Dhanvantari Exports</span>

@@ -49,7 +49,7 @@ const GuestFooter = () => {
               <strong>Sri Dhanvantari Exports</strong>
             </div>
             <div>
-              Ganesh Nagar, Puzhuthivakkam, Madipakkam <br /> Chennai-600091,
+              Ganesh Nagar, Puzhuthivakkam, Madipakkam, Chennai-600091,
               Tamil Nadu, India.
             </div>
             <div className="links" >
