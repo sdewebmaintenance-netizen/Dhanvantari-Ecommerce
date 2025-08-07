@@ -29,6 +29,10 @@ export const shippingAddressApiSlice = apiSlice.injectEndpoints({
     fetchShippingAddress: builder.query({
       query: () => `${SHIPPING_ADDRESS_URL}/shippingAddress`,
     }),
+
+    fetchAllShippingAddress: builder.query({
+      query: () => `${SHIPPING_ADDRESS_URL}/listAllShippingAddress`,
+    }),
   }),
 });
 
@@ -37,4 +41,5 @@ export const {
   useUpdateShippingAddressMutation,
   useDeleteShippingAddressMutation,
   useFetchShippingAddressQuery,
+  useFetchAllShippingAddressQuery,
 } = shippingAddressApiSlice;

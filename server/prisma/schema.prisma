@@ -16,20 +16,21 @@ model Category {
 }
 
 model User {
-  id              Int            @id @default(autoincrement())
+  id              Int               @id @default(autoincrement())
   username        String?
-  email           String?        @unique
-  isAdmin         Boolean        @default(false)
-  createdAt       DateTime       @default(now())
-  updatedAt       DateTime       @updatedAt
+  email           String?           @unique
+  isAdmin         Boolean           @default(false)
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
   display_picture String?
-  phone           String?        @unique
+  phone           String?           @unique
   password        String?
   GSTIN           String?
   reviews         Review[]
   orders          Order[]
   loginHistory    LoginHistory[]
   Cart            Cart[]
+  ShippingAddress ShippingAddress[]
 }
 
 enum LoginMethod {
@@ -160,7 +161,7 @@ model Order {
   user_id              Int
   shippingAddress_id   Int
   paymentMethod        String
-  paymentResult_id     Int
+  paymentResult_id     Int?
   invoicePath          String?
   itemsUnitPrice       Float           @default(0)
   SGST                 Float           @default(0)
@@ -174,7 +175,7 @@ model Order {
   createdAt            DateTime        @default(now())
   updatedAt            DateTime        @updatedAt
   orderItems           OrderItem[]
-  OrderPaymentResult   PaymentResult   @relation(fields: [paymentResult_id], references: [id], onDelete: Cascade)
+  OrderPaymentResult   PaymentResult?   @relation(fields: [paymentResult_id], references: [id], onDelete: Cascade)
   OrderShippingAddress ShippingAddress @relation(fields: [shippingAddress_id], references: [id], onDelete: Cascade)
   OrderUser            User            @relation(fields: [user_id], references: [id], onDelete: Cascade)
 }
@@ -192,8 +193,10 @@ model Discount {
 
 model ShippingAddress {
   id               Int      @id @default(autoincrement())
+  user_id          Int?
   addressLine1     String?
   addressLine2     String?
+  customerName     String?
   country          String
   state            String
   district         String?
@@ -209,8 +212,9 @@ model ShippingAddress {
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
 
-  Order Order[]
-  Cart  Cart[]
+  Order               Order[]
+  Cart                Cart[]
+  ShippingAddressUser User?    @relation(fields: [user_id], references: [id], onDelete: Cascade)
 }
 
 model PaymentResult {
