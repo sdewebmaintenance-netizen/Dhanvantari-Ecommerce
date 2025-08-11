@@ -231,24 +231,27 @@
   text-decoration: none;
 }
 
+.product-brand-badge-holder{
+  display: flex;
+  justify-content: end;
+}
+
 .product-brand-badge {
-  position: absolute;
-  bottom: var(--space-sm);
-  right: var(--space-sm);
   background-color: var(--color-primary-light);
   color: var(--color-secondary);
   font-size: var(--font-size-xs);
-  padding: var(--space-xs) var(--space-sm);
+  padding: 5px 15px;
   border-radius: var(--radius-full);
+  z-index: 10;
 }
 
 .product-card-body {
-  padding: var(--space-md);
+  padding: 15px;
 }
 
 .product-card-header {
   display: flex;
-  justify-content: space-between;
+  gap: 5px;
 }
 
 .product-card-name {

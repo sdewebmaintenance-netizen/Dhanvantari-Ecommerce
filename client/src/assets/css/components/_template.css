@@ -66,7 +66,7 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  margin-bottom: var(--space-md);
+  margin-top: 5px;
 }
 
 .invoice-title h6 {
@@ -152,7 +152,6 @@
 
 .signature-picture {
   width: 7rem;
-  height: 3rem;
 }
 
 .total {
@@ -163,6 +162,9 @@
 
 .invoice-conditions {
   margin-left: var(--space-xl);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .text-link {
@@ -176,6 +178,26 @@
   word-wrap: break-word;
   overflow-wrap: break-word;
   white-space: normal;
+}
+
+.bank-details p {
+  margin: 3px 0;
+}
+
+.bank-details .bank-details-title{
+  font-weight: bold;
+}
+
+.payment-method p{
+  display: flex;
+  justify-content: center;
+  max-width: fit-content;
+  font-size: large;
+  margin: 5px 0;
+  padding: 5px;
+  border: 1px solid black;
+  box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.1);
+  border-radius: 5px;
 }
 
 @media (max-width: 768px) {

@@ -101,11 +101,6 @@ const InvoiceTemplate = ({ order }) => {
 
       <div className="invoice-title">
         <h6>Tax Invoice</h6>
-        {withinTN ? (
-          <p className="tax-note">SGST & CGST Applicable (Within Tamil Nadu)</p>
-        ) : (
-          <p className="tax-note">IGST Applicable (Outside Tamil Nadu)</p>
-        )}
       </div>
 
       <div className="details-section">
@@ -233,6 +228,15 @@ const InvoiceTemplate = ({ order }) => {
               Delivery transit period within South India takes 2 to 5,North
               India takes 4 to 10 days, North East India 11 to 18 Days.
             </li>
+            <li className="bank-details">
+              <p className="bank-details-title">Pay To:</p>
+              <p>Bank Account No.: 0135386000000211</p>
+              <p>Bank IFSC code: DBSSOlN0135</p>
+              <p>Account Holder's Name: Sri Dhanvantari Exports</p>
+            </li>
+            <div className="payment-method">
+              <p>Payment Method: {order.paymentMethod}</p>
+            </div>
           </ul>
         </div>
 

@@ -35,7 +35,6 @@ const ProductCard = ({ p, setParentLoading }) => {
             </div>
           )}
 
-          <span className="product-brand-badge">{p?.brand}</span>
           <ProductImageCarousel
             images={p.ProductImages}
             imageClassName="product-card-image"
@@ -46,6 +45,9 @@ const ProductCard = ({ p, setParentLoading }) => {
       </section>
 
       <div className="product-card-body">
+        <div className="product-brand-badge-holder">
+          <span className="product-brand-badge">{p?.brand}</span>
+        </div>
         <div className="product-card-header">
           <p className="product-card-names">{p?.name}</p>
           <p className="product-card-price">{formatCurrency(p?.price)}</p>
