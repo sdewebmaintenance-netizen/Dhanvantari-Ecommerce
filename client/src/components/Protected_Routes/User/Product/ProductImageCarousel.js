@@ -34,14 +34,13 @@ const ProductImageCarousel = ({
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
-      <div className="product-img-holder">
+
       <img
         className={imageclass}
         src={displayImage}
         alt={"Product image"}
         onClick={onImageClick}
       />
-</div>
       
     </section>
 

@@ -83,6 +83,8 @@ const Shipping = () => {
     }
   }, [state]);
 
+  console.log("District Options:", districtOptions);
+
   useEffect(() => {
     if (shippingAddress?.id) {
       setSelectedAddressId(shippingAddress.id);
@@ -533,7 +535,8 @@ const Shipping = () => {
                     onChange={(e) => setDistrict(e.target.value)}
                     disabled={!state}
                   >
-                    <option value="">Select District</option>
+                    <option value="">-- Select a State First --</option>
+                    
                     {districtOptions.map((city) => (
                       <option key={city.name} value={city.name}>
                         {city.name}

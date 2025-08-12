@@ -9,6 +9,7 @@ export const cartApiSlice = apiSlice.injectEndpoints({
         method: "POST",
         body: newCart,
       }),
+      invalidatesTags: ["Cart"],
     }),
 
     updateCart: builder.mutation({
@@ -17,6 +18,7 @@ export const cartApiSlice = apiSlice.injectEndpoints({
         method: "PUT",
         body: updatedCart,
       }),
+      invalidatesTags: ["Cart"],
     }),
 
     deleteCart: builder.mutation({
@@ -24,10 +26,12 @@ export const cartApiSlice = apiSlice.injectEndpoints({
         url: `${CART_URL}/${cartId}`,
         method: "DELETE",
       }),
+      invalidatesTags: ["Cart"],
     }),
 
     fetchCartForUser: builder.query({
       query: () => `${CART_URL}/cart`,
+      invalidatesTags: ["Cart"],
     }),
 
     clearCart: builder.mutation({
@@ -35,6 +39,7 @@ export const cartApiSlice = apiSlice.injectEndpoints({
         url: `${CART_URL}/clear`,
         method: "DELETE",
       }),
+      invalidatesTags: ["Cart"],
     }),
   }),
 });

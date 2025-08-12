@@ -117,7 +117,8 @@ const ProductTabs = ({
                   <div className="review-header">
                     <strong className="review-author">{review.name}</strong>
                     <p className="review-date">
-                      {review.createdAt.substring(0, 10)}
+                      {new Date(review.createdAt).toLocaleDateString("en-GB")}
+                      {/* {review.createdAt} */}
                     </p>
                   </div>
                   <p className="review-comment">{review.comment}</p>

@@ -38,7 +38,6 @@
 }
 
 .card-title {
-  margin-bottom: var(--space-sm);
   font-size: var(--font-size-lg);
 }
 
@@ -233,7 +232,13 @@
 
 .product-brand-badge-holder{
   display: flex;
+  justify-content: space-between;
+}
+
+.product-brand-name-holder{
+  display: flex;
   justify-content: end;
+  margin-left: auto;
 }
 
 .product-brand-badge {
@@ -251,7 +256,6 @@
 
 .product-card-header {
   display: flex;
-  gap: 5px;
 }
 
 .product-card-name {
@@ -263,6 +267,17 @@
   color: var(--color-secondary);
   font-weight: 600;
   text-align: left;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  margin-bottom: 0;
+}
+
+.product-price-contents-holder{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .product-card-price {
@@ -282,6 +297,10 @@
   align-items: center;
 }
 
+.btn-customized{
+  font-size: medium;
+}
+
 .read-more-icon {
   width: 0.875rem;
   height: 0.875rem;
@@ -289,13 +308,14 @@
 }
 
 .add-to-cart-btn {
-  padding: var(--space-xs);
-  border-radius: var(--radius-full);
+  /* border-radius: var(--radius-full); */
   background: none;
   border: none;
   cursor: pointer;
   color: var(--color-secondary);
   transition: color var(--transition-fast);
+  display: flex;
+  padding: 10px;
 }
 
 .add-to-cart-btn:hover {
@@ -317,7 +337,6 @@
 }
 
 .product-rating-badge {
-  margin: var(--space-sm);
   background-color: #ffc107;
   color: black;
   font-size: 0.75rem;
@@ -331,14 +350,12 @@
 .product-gst {
   font-size: var(--font-size-xs);
   color: var(--color-secondary);
-  text-align: left;
-  margin-top: var(--space-sm);
 }
 
 .pro-in {
   display: flex;
   justify-content: space-between;
-  align-items: baseline;
+  align-items: center;
 }
 
 .product-view-container {

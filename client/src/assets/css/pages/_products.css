@@ -612,12 +612,18 @@
   position: relative;
   overflow: hidden;
   transition: all 0.3s ease;
+  height: 360px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-bottom: 1px solid black;
 }
 
 
 .product-card-image {
-  width: 100%;
   object-fit: contain;
+  width: 100%;
   transition: opacity 0.5s ease;
   cursor: pointer;
 }
