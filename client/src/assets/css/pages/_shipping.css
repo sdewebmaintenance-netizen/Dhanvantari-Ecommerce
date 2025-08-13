@@ -7,8 +7,8 @@
 }
 
 .shipping-form {
-  width: 90%;
-  padding: var(--space-xl);
+  min-width: 90%;
+  padding: var(--space-md);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-md);
 }

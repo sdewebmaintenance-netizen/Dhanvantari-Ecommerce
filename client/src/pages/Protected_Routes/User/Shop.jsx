@@ -53,11 +53,12 @@ const Shop = () => {
 
       // Filter by price
       if (priceFilter) {
-        filtered = filtered.filter(
-          (p) =>
-            p.price.toString().includes(priceFilter) ||
-            p.price <= parseInt(priceFilter)
-        );
+        // filtered = filtered.filter(
+        //   (p) =>
+        //     p.price.toString().includes(priceFilter) ||
+        //     p.price <= parseInt(priceFilter)
+        // );
+        filtered = filtered.filter((p) => p.price <= parseInt(priceFilter));
       }
 
       // Filter by discount
@@ -270,21 +271,27 @@ const Shop = () => {
         ) : (
           <div className="shop-products">
             <h2 className="products-count">{products?.length} Products</h2>
-            <div className="products-grid">
-              {products.length === 0 ? (
-                <Loader />
+            
+       
+              {filteredProductsQuery.isLoading ? (
+                <div><Loader /></div>
+              ) : products.length === 0 ? (
+                <div style={{ textAlign: "center", margin: "20px 0" }}>
+                  <p style={{ textAlign: "center" }}>No products available to match your criteria.</p>
+                </div>
               ) : (
-                products?.map((p) => (
-                  <div className="product-item" key={p.id}>
-                    <ProductCard
-                      p={p}
-                      setParentLoading={setIsAddingToCart}
-                      parentLoading={isAddingToCart}
-                    />
-                  </div>
-                ))
-              )}
+            <div className="products-grid">
+              {products.map((p) => (
+                <div className="product-item" key={p.id}>
+                  <ProductCard
+                    p={p}
+                    setParentLoading={setIsAddingToCart}
+                    parentLoading={isAddingToCart}
+                  />
+                </div>
+              ))}
             </div>
+              )}
           </div>
         )}
       </div>

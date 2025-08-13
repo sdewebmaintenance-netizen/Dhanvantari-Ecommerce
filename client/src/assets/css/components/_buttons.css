@@ -164,6 +164,12 @@
 
 .button-group {
   display: flex;
+  flex-wrap: wrap;
+  justify-content: right;
   gap: 1rem;
   margin-top: 2rem;
+}
+
+.button-group .btn {
+  padding: 5px 10px;
 }

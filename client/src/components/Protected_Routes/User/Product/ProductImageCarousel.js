@@ -28,19 +28,23 @@ const ProductImageCarousel = ({
   const displayImage = images[imageIndex]?.image_url
 
   return (
+    <div>
     <section
       className={`product-card-image-section ${className}`}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
+
       <img
         className={imageclass}
         src={displayImage}
         alt={"Product image"}
         onClick={onImageClick}
       />
+      
+    </section>
 
-      {showIndicators && images?.length > 1 && (
+    {showIndicators && images?.length > 1 && (
         <div className="image-indicator">
           {images.map((_, index) => (
             <span
@@ -53,7 +57,7 @@ const ProductImageCarousel = ({
           ))}
         </div>
       )}
-    </section>
+      </div>
   );
 };
 

@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { AiOutlineShoppingCart } from "react-icons/ai";
 import formatCurrency from "../../../../Utils/FormatCurrency";
-import { useCreateCartMutation } from "../../../../redux/api/cartApiSlice";
+import { useCreateCartMutation, useUpdateCartMutation } from "../../../../redux/api/cartApiSlice";
 import ProductImageCarousel from "./ProductImageCarousel";
 
 const ProductCard = ({ p, setParentLoading }) => {
@@ -17,6 +17,8 @@ const ProductCard = ({ p, setParentLoading }) => {
         quantity: parseInt(qty),
       }).unwrap();
       alert("Item added to cart successfully");
+      // update card state
+      
     } catch (error) {
       alert(error?.data?.error || "Adding to cart failed, try again.");
     } finally {
@@ -35,7 +37,6 @@ const ProductCard = ({ p, setParentLoading }) => {
             </div>
           )}
 
-          <span className="product-brand-badge">{p?.brand}</span>
           <ProductImageCarousel
             images={p.ProductImages}
             imageClassName="product-card-image"
@@ -46,13 +47,21 @@ const ProductCard = ({ p, setParentLoading }) => {
       </section>
 
       <div className="product-card-body">
+        <div className="product-brand-badge-holder">
+          {p.rating > 0 && (
+            <div className="product-rating-badge">{p.rating} ★</div>
+          )}
+          <div className="product-brand-name-holder">
+            <div className="product-brand-badge">{p?.brand}</div>
+          </div>
+        </div>
         <div className="product-card-header">
           <p className="product-card-names">{p?.name}</p>
-          <p className="product-card-price">{formatCurrency(p?.price)}</p>
         </div>
+       <div className="product-price-contents-holder">
+        <p className="">{formatCurrency(p?.price)}</p>
 
-        <div className="pro-in">
-          {p.IGST > 0 ? (
+        {p.IGST > 0 ? (
             <p className="product-gst">GST: {p.IGST}%</p>
           ) : p.CGST > 0 || p.SGST > 0 ? (
             <p className="product-gst">
@@ -61,10 +70,12 @@ const ProductCard = ({ p, setParentLoading }) => {
               {p.SGST > 0 && ` (SGST: ${p.SGST}%)`}
             </p>
           ) : null}
+       </div>
 
-          {p.rating > 0 && (
-            <div className="product-rating-badge">{p.rating} ★</div>
-          )}
+        <div className="pro-in">
+          
+
+          
         </div>
 
         <section className="product-card-actions">
