@@ -67,7 +67,7 @@ const ProductCard = ({ product }) => {
             </p>
           </div>
           <p className="product-card-meta">
-            {formatDate(product?.createdAt)} {formatTime(product?.createdAt)}
+            {formatDate(product?.updatedAt)} {formatTime(product?.updatedAt )}
           </p>
           <p className="product-card-description">
             {product?.description?.substring(0, 60)}...

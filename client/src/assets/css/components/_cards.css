@@ -242,12 +242,14 @@
 }
 
 .product-brand-badge {
+  position: absolute;
+  bottom: var(--space-sm);
+  right: var(--space-sm);
   background-color: var(--color-primary-light);
   color: var(--color-secondary);
   font-size: var(--font-size-xs);
-  padding: 5px 15px;
+  padding: var(--space-xs) var(--space-sm);
   border-radius: var(--radius-full);
-  z-index: 10;
 }
 
 .product-card-body {

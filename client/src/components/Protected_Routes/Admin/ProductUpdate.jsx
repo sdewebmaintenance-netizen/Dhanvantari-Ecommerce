@@ -114,6 +114,8 @@ const AdminProductUpdate = () => {
       ...prev,
       ...files.map((file) => URL.createObjectURL(file)),
     ]);
+
+    e.target.value = null;
   };
 
   const removeImage = (index) => {
