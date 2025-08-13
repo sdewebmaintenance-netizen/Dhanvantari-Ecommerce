@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCreateProductMutation } from "../../../redux/api/productApiSlice";
 import { useFetchCategoriesQuery } from "../../../redux/api/categoryApiSlice";
@@ -30,6 +30,7 @@ const ProductList = () => {
   const [sgst, setSgst] = useState("");
   const [igst, setIgst] = useState("");
   const [discount, setDiscount] = useState("");
+  const fileInputRef = useRef(null);
   const navigate = useNavigate();
 
   const [createProduct] = useCreateProductMutation();
@@ -97,21 +98,24 @@ const ProductList = () => {
       const { data, error } = await createProduct(productData);
 
       if (error) {
-       alert("Product create failed. Try Again.");
+        alert("Product create failed. Try Again.");
       } else {
         navigate("/admin/allproductslist");
       }
     } catch (error) {
-     alert(error);
+      alert(error);
       console.error(error);
     }
   };
 
   const uploadFileHandler = async (e) => {
+
+    console.log("Ssssssssssssssssssssssssssssssssss")
     const files = Array.from(e.target.files).slice(0, 4);
 
     if (files.length + image.length > 4) {
       alert("You can only upload up to 4 images");
+      e.target.value = "";
       return;
     }
 
@@ -123,14 +127,18 @@ const ProductList = () => {
       const newPreviews = files.map((file) => URL.createObjectURL(file));
       setImagePreviews((prev) => [...prev, ...newPreviews]);
     } catch (error) {
-     alert(error?.data?.message || error.error);
+      alert(error?.data?.message || error.error);
     }
+    e.target.value = "";
   };
 
   const removeImage = (index) => {
     setImage((prev) => prev.filter((_, i) => i !== index));
     setImagePreviews((prev) => prev.filter((_, i) => i !== index));
     URL.revokeObjectURL(imagePreviews[index]);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
   };
 
   console.log("asljhasbafsuiqwbkjla", discounts);
@@ -167,6 +175,7 @@ const ProductList = () => {
                     accept="image/*"
                     onChange={uploadFileHandler}
                     className="upload-input"
+                    ref={fileInputRef}
                   />
                   <span className="upload-icon">+</span>
                   <span className="upload-text">

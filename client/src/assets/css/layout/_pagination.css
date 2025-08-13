@@ -6,6 +6,14 @@
   color: var(--color-secondary-lighter);;
 }
 
+@media (max-width: 768px) {
+  .table-controls {
+    flex-direction: column;
+    align-items: flex-start; 
+    gap: var(--space-sm); 
+  }
+}
+
 .entries-per-page {
   display: flex;
   align-items: center;
@@ -37,7 +45,17 @@
   align-items: center;
   margin-top: var(--space-md);
   padding: var(--space-sm) 0;
+  flex-wrap: wrap;
 }
+
+@media (max-width: 768px) {
+  .pagination-controls {
+    flex-direction: column;
+    align-items: flex-start; 
+    gap: var(--space-md); 
+  }
+}
+
 
 .entries-info {
   color: var(--color-secondary-lighter);

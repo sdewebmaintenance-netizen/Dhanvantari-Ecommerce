@@ -68,6 +68,8 @@ const ProductDetails = () => {
       }).unwrap();
       refetch();
       alert("Review created successfully");
+      setRating(0);
+    setComment("");
     } catch (error) {
       alert(error?.data.error || error.message);
     }

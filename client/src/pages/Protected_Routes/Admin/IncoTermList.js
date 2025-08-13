@@ -67,9 +67,9 @@ const IncoTermList = () => {
       await refetch();
 
       if (result.error) {
-      alert(result.error);
+        alert(result.error);
       } else {
-       alert(`${result.inco_term_name} is updated`);
+        alert(`${result.inco_term_name} is updated`);
         setSelectedIncoTerm(null);
         setName("");
         setModalVisible(false);
@@ -87,15 +87,16 @@ const IncoTermList = () => {
       const result = await deleteIncoTerm(selectedIncoTerm.id).unwrap();
       await refetch();
       if (result.error) {
-alert(result.error);
+        alert(result.error);
       } else {
         alert(`Deleted Successfully.`);
+        setName("");
         setSelectedIncoTerm(null);
         setModalVisible(false);
       }
     } catch (error) {
       console.error(error);
-alert("IncoTerm deletion failed. Try again.");
+      alert("IncoTerm deletion failed. Try again.");
     } finally {
       setLoading(false);
     }
@@ -140,7 +141,14 @@ alert("IncoTerm deletion failed. Try again.");
               ))}
             </div>
 
-            <Modal isOpen={modalVisible} onClose={() => setModalVisible(false)}>
+            <Modal
+              isOpen={modalVisible}
+              onClose={() => {
+                setName("");
+                setModalVisible(false);
+                
+              }}
+            >
               <IncoTermForm
                 value={name}
                 setValue={setName}

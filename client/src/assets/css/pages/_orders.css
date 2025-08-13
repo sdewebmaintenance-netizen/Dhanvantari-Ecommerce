@@ -220,6 +220,7 @@
   background-color: var(--color-secondary-light);
   color: var(--color-text);
   border-bottom: 2px solid var(--color-border);
+  
 }
 
 .table-row {
@@ -233,7 +234,17 @@
 .table-cell {
   padding: var(--space-md) var(--space-sm);
   vertical-align: middle;
+  max-width: 12rem;
+  
 }
+
+@media (max-width: 768px) {
+  .table-cell {
+    min-width: 6rem;
+  }
+}
+
+
 
 .order-item-image {
   width: 6rem;
