@@ -234,6 +234,10 @@ const Shipping = () => {
   const handleSelectAddress = async (addressId) => {
     try {
       setIsLoading(true);
+      if (!cart || !cart.id) {
+        alert("Cart not found. Please try again later.");
+        return;
+      }
       console.log("sss", addressId, cart.id);
       const isUnselecting = selectedAddressId === addressId;
       await updateCart({
