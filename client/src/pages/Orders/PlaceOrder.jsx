@@ -536,12 +536,14 @@ const PlaceOrder = () => {
                 <h4 className="title text-animation">Customer Address</h4>
                 <p className="info-text">
                   <strong>Address:</strong>{" "}
+                  <div className="address-text">
                   {cart[0]?.CartShippingAddress?.addressLine1},
                   {cart[0]?.CartShippingAddress?.addressLine2},{" "}
                   {cart[0]?.CartShippingAddress?.district},
                   {cart[0]?.CartShippingAddress?.country}-{" "}
                   {cart[0]?.CartShippingAddress?.pincode},{" "}
                   {cart[0]?.CartShippingAddress?.state}
+                  </div>
                 </p>
                 <p className="info-text">
                   <strong>Contact Number:</strong>{" "}
@@ -551,10 +553,12 @@ const PlaceOrder = () => {
                 <h4 className="title text-animation">Shipping Details</h4>
                 <p className="info-text">
                   <strong>Address:</strong>{" "}
+                  <div className="address-text">
                   {cart[0]?.CartShippingAddress?.deliveryDistrict},
                   {cart[0]?.CartShippingAddress?.deliveryCountry}-,
                   {cart[0]?.CartShippingAddress?.deliveryPincode},{" "}
                   {cart[0]?.CartShippingAddress?.deliveryState}
+                  </div>
                 </p>
               </div>
 

@@ -78,6 +78,11 @@
 .info-text {
   color: var(--color-primary-dark);
   line-height: 1.6;
+  /* text-align: left; */
+}
+
+.address-text{
+  text-align: left;
 }
 
 .place-order-container {
@@ -294,5 +299,9 @@
 .pdf-Container{
   display: flex;
   flex-direction: column;
+}
+
+.summary-details{
+  padding: var(--space-sm);
 }
 }
