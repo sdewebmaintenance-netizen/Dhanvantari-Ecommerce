@@ -209,6 +209,8 @@ model ShippingAddress {
   deliveryState    String?
   deliveryDistrict String?
   deliveryPincode  String?
+  deliveryAddressLine1     String?
+  deliveryAddressLine2     String?
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
 

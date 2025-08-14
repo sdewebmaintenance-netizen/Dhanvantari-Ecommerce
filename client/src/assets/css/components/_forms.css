@@ -43,6 +43,10 @@
     box-shadow var(--transition-fast);
 }
 
+.ship-checkbox{
+  height: 20px;
+}
+
 .form-control:focus {
   color: var(--color-secondary);
   background-color: var(--color-bg-light);
