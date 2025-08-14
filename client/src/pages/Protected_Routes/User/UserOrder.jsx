@@ -93,14 +93,14 @@ const UserOrder = () => {
       ) : (
         <div className="orders-table-container">
           <div className="table-controls">
-            <div className="entries-per-page">
+            <div className="entries-per-page entries-control">
               <span>Show:</span>
               <select
                 value={pagination.entriesPerPage}
                 onChange={(e) =>
                   handleEntriesPerPageChange(Number(e.target.value))
                 }
-                className="form-control"
+                className="form-control select-control"
               >
                 {[5, 10, 20, 50, 100].map((size) => (
                   <option key={size} value={size}>
@@ -151,17 +151,18 @@ const UserOrder = () => {
             </thead>
 
             <tbody>
+              {console.log("data:", orders)}
               {paginatedData.map((order) => (
                 <tr key={order.id} className="table-row">
-                  <td className="order-table-cell">
+                  <td className="order-table-cell order-img-cell">
                     <img
-                      src={order?.orderItems[0]?.image_url}
+                      src={order?.orderItems[0]?.OrderItemProduct?.ProductImages[0]?.image_url}
                       alt={order.user}
-                      className="order-item-image"
+                      className="order-item-image-table"
                     />
                   </td>
                   <td className="order-table-cell">{order.id}</td>
-                  <td className="order-table-cell">
+                  <td className="order-table-cell date-cell">
                     {formatDate(order.createdAt)}
                   </td>
                   <td className="order-table-cell">
@@ -189,7 +190,7 @@ const UserOrder = () => {
                     </span>
                   </td>
                   <td className="order-table-cell">
-                    <Link to={`/order/${order.id}`} className="btn-customized">
+                    <Link to={`/order/${order.id}`} className="btn-customized btn-view-details">
                       View Details
                     </Link>
                   </td>
@@ -197,8 +198,9 @@ const UserOrder = () => {
               ))}
             </tbody>
           </table>
-
-          <PaginationControls
+        </div>
+      )}
+      <PaginationControls
             currentPage={pagination.currentPage}
             totalPages={Math.ceil(
               filteredData.length / pagination.entriesPerPage
@@ -207,8 +209,6 @@ const UserOrder = () => {
             entriesPerPage={pagination.entriesPerPage}
             totalEntries={filteredData.length}
           />
-        </div>
-      )}
     </div>
   );
 };
