@@ -4,6 +4,7 @@ import {
   useGetProductDetailsQuery,
   useCreateReviewMutation,
 } from "../../../../redux/api/productApiSlice";
+import { useDispatch, useSelector } from "react-redux";
 import Loader from "../../../Common/Loader";
 import Message from "../../../Common/Message";
 import { FaBox, FaShoppingCart, FaStar, FaStore } from "react-icons/fa";
@@ -13,6 +14,7 @@ import { useGetUserInfoQuery } from "../../../../redux/api/usersApiSlice";
 import formatCurrency from "../../../../Utils/FormatCurrency";
 import { useCreateCartMutation } from "../../../../redux/api/cartApiSlice";
 import ProductImageCarousel from "./ProductImageCarousel";
+import { setCartItems } from "../../../../redux/features/cart/cartSlice";
 
 const ProductDetails = () => {
   const { id: productId } = useParams();
@@ -22,6 +24,8 @@ const ProductDetails = () => {
   const [comment, setComment] = useState("");
   const [discountedPrice, setDiscountedPrice] = useState(null);
   const [appliedDiscount, setAppliedDiscount] = useState(null);
+    const dispatch = useDispatch();
+    const cartItems = useSelector((state) => state.cart.cartItems);
 
   const {
     data: product,
@@ -68,6 +72,8 @@ const ProductDetails = () => {
       }).unwrap();
       refetch();
       alert("Review created successfully");
+      setRating(0);
+      setComment("");
     } catch (error) {
       alert(error?.data.error || error.message);
     }
@@ -81,10 +87,12 @@ const ProductDetails = () => {
     }
 
     try {
-      await createCart({
+       const addedItem =  await createCart({
         product_id: product.id,
         quantity: parseInt(qty),
       }).unwrap();
+
+      dispatch(setCartItems([...cartItems, addedItem]));
 
       alert("Item added to cart successfully");
     } catch (error) {
@@ -226,16 +234,18 @@ const ProductDetails = () => {
               </div>
 
               <div>
-                <button
-                  onClick={addToCartHandler}
-                  disabled={
-                    product.countInStock === 0 ||
-                    (product.moq && qty < product.moq)
-                  }
-                  className="btn-customized"
-                >
-                  Add To Cart
-                </button>
+                {product.countInStock === 0 ||
+                (product.moq && product.countInStock < product.moq) ? (
+                  <span className="out-of-stock-label">Out of Stock</span>
+                ) : (
+                  <button
+                    onClick={addToCartHandler}
+                    disabled={product.countInStock === 0}
+                    className="btn-customized"
+                  >
+                    Add To Cart
+                  </button>
+                )}
               </div>
             </div>
           </div>

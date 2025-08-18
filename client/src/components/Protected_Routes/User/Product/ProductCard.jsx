@@ -1,24 +1,31 @@
 import { Link } from "react-router-dom";
 import { AiOutlineShoppingCart } from "react-icons/ai";
 import formatCurrency from "../../../../Utils/FormatCurrency";
-import { useCreateCartMutation, useUpdateCartMutation } from "../../../../redux/api/cartApiSlice";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  useCreateCartMutation,
+  useUpdateCartMutation,
+} from "../../../../redux/api/cartApiSlice";
+import { setCartItems } from "../../../../redux/features/cart/cartSlice";
 import ProductImageCarousel from "./ProductImageCarousel";
 
 const ProductCard = ({ p, setParentLoading }) => {
   const qty = 1;
   const [createCart] = useCreateCartMutation();
+  const dispatch = useDispatch();
+  const cartItems = useSelector((state) => state.cart.cartItems);
 
   const addToCartHandler = async (e) => {
     e.preventDefault();
     setParentLoading(true);
     try {
-      await createCart({
+      const addedItem = await createCart({
         product_id: p.id,
         quantity: parseInt(qty),
       }).unwrap();
+      dispatch(setCartItems([...cartItems, addedItem]));
+    
       alert("Item added to cart successfully");
-      // update card state
-      
     } catch (error) {
       alert(error?.data?.error || "Adding to cart failed, try again.");
     } finally {
@@ -49,34 +56,32 @@ const ProductCard = ({ p, setParentLoading }) => {
       <div className="product-card-body">
         <div className="product-brand-badge-holder">
           {p.rating > 0 && (
-            <div className="product-rating-badge">{p.rating.toFixed(1)} ★</div>
+
+            <div className="product-rating-badge">
+              {Number.isInteger(p.rating) ? p.rating : p.rating.toFixed(2)} ★
+            </div>
           )}
           <div className="product-brand-name-holder">
-            <div className="product-brand-badge">{p?.brand}</div>
+            <div className="product-brand-badges">{p?.brand}</div>
           </div>
         </div>
         <div className="product-card-header">
           <p className="product-card-names">{p?.name}</p>
         </div>
-       <div className="product-price-contents-holder">
-        <p className="">{formatCurrency(p?.price)}</p>
+        <div className="product-price-contents-holder">
+          <p className="">{formatCurrency(p?.price)}</p>
 
-        {p.IGST > 0 ? (
+          {p.IGST > 0 ? (
             <p className="product-gst">GST: {p.IGST}%</p>
           ) : p.CGST > 0 || p.SGST > 0 ? (
             <p className="product-gst">
-              GST: {p.CGST + p.SGST}%
-              {p.CGST > 0 && ` (CGST: ${p.CGST}%)`}
+              GST: {p.CGST + p.SGST}%{p.CGST > 0 && ` (CGST: ${p.CGST}%)`}
               {p.SGST > 0 && ` (SGST: ${p.SGST}%)`}
             </p>
           ) : null}
-       </div>
-
-        <div className="pro-in">
-          
-
-          
         </div>
+
+        <div className="pro-in"></div>
 
         <section className="product-card-actions">
           <Link

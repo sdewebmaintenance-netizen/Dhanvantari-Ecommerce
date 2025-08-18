@@ -12,6 +12,14 @@ const createCart = asyncHandler(async (req, res) => {
         .json({ error: "Product ID, Quantity, and User ID are required" });
     }
 
+    const product = await prisma.Product.findUnique({
+      where: { id: parseInt(product_id) },
+    });
+
+    if (!product) {
+      return res.status(404).json({ error: "Product not found" });
+    }
+
     const existingCartItem = await prisma.Cart.findFirst({
       where: {
         product_id: parseInt(product_id),
@@ -22,6 +30,14 @@ const createCart = asyncHandler(async (req, res) => {
     let cart;
 
     if (existingCartItem) {
+      const newQty = parseInt(req.body.quantity);
+
+      if (newQty > (product.countInStock - existingCartItem.quantity)) {
+        return res
+          .status(400)
+          .json({ error: "Quantity exceeds available stock" });
+      }
+
       cart = await prisma.Cart.update({
         where: { id: existingCartItem.id },
         data: {
@@ -29,6 +45,12 @@ const createCart = asyncHandler(async (req, res) => {
         },
       });
     } else {
+      if (parseInt(quantity) > product.countInStock) {
+        return res
+          .status(400)
+          .json({ error: "Quantity exceeds available stock" });
+      }
+
       cart = await prisma.Cart.create({
         data: {
           product_id: parseInt(product_id),
@@ -53,18 +75,29 @@ const updateCart = asyncHandler(async (req, res) => {
   try {
     const cart = await prisma.Cart.findUnique({
       where: { id: parseInt(cartId) },
+      include: { Products: true },
     });
 
     if (!cart) {
       return res.status(404).json({ error: "Cart item not found" });
     }
 
+    console.log("Sssssssssssss", cart);
+
     let updatedCart;
 
     if (req.body.quantity) {
+      const newQty = parseInt(req.body.quantity);
+
+      if (newQty > cart.Products.countInStock - cart.quantity) {
+        return res
+          .status(400)
+          .json({ error: "Quantity exceeds available stock" });
+      }
+
       updatedCart = await prisma.Cart.update({
         where: { id: parseInt(cartId) },
-        data: { quantity: parseInt(quantity) },
+        data: { quantity: parseInt(req.body.quantity) },
         include: {
           Products: true,
         },
@@ -77,7 +110,7 @@ const updateCart = asyncHandler(async (req, res) => {
         data: {
           shipping_address_id: req.body.shipping_address_id,
         },
-      })
+      });
     }
 
     res.json(updatedCart);

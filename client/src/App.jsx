@@ -50,6 +50,7 @@ import DiscountList from "./pages/Protected_Routes/Admin/DiscountList";
 import AboutUs from "./components/UnProtected_Routes/AboutUs";
 import TermsAndConditions from "./components/UnProtected_Routes/TermsConditions";
 import ContactUs from "./components/UnProtected_Routes/ContactUs";
+import PublicRoute from "./components/Auth/PublicRoute";
 
 const App = () => {
   const { data } = useGetUserInfoQuery();
@@ -80,22 +81,24 @@ const App = () => {
       <div className="container">
         <ScrollToTop />
         <Routes>
-          <Route path="/" element={<LandingPage />} />
-          <Route path="/food-starch" element={<FoodStarch />} />
-          <Route path="/wholesale" element={<Product />} />
-          <Route path="/retail" element={<RetailInfo />} />
-          <Route path="/exports" element={<ProductQuoteTable />} />
-          <Route path="/about-us" element={<AboutUs />} />
+          <Route element={<PublicRoute />}>
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/food-starch" element={<FoodStarch />} />
+            <Route path="/wholesale" element={<Product />} />
+            <Route path="/retail" element={<RetailInfo />} />
+            <Route path="/exports" element={<ProductQuoteTable />} />
+            <Route path="/about-us" element={<AboutUs />} />
+            <Route path="/login-options" element={<LoginOptions />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/sign-up" element={<Signup />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/callback" element={<GoogleCallback />} />
+          </Route>
           <Route
             path="/terms-and-conditions"
             element={<TermsAndConditions />}
           />
           <Route path="/contact-us" element={<ContactUs />} />
-          <Route path="/login-options" element={<LoginOptions />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/sign-up" element={<Signup />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route path="/callback" element={<GoogleCallback />} />
 
           <Route element={<PrivateRoute />}>
             <Route path="/home" element={<Home />} />

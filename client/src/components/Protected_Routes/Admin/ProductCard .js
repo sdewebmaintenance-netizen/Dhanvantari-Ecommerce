@@ -36,30 +36,43 @@ const ProductCard = ({ product }) => {
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
         >
-          <span className="product-brand-badge">{product?.brand}</span>
-          <Link to={`/admin/product/update/${product.id}`}>
-            <img
-              className="product-card-image"
-              src={getDisplayImage()}
-              alt={product.name}
-            />
+          <Link
+            to={`/admin/product/update/${product.id}`}
+            className="product-card-link"
+          >
+            <section className={`product-card-image-section `}>
+              <img
+                className="product-card-image"
+                src={getDisplayImage()}
+                alt={product.name}
+              />
+            </section>
+            {product.ProductImages.length > 1 && (
+              <div className="image-indicator">
+                {product.ProductImages.map((_, index) => (
+                  <span
+                    key={index}
+                    className={`indicator-dot ${
+                      index === currentImageIndex ? "active" : ""
+                    }`}
+                  />
+                ))}
+              </div>
+            )}
           </Link>
-
-          {product.ProductImages.length > 1 && (
-            <div className="image-indicator">
-              {product.ProductImages.map((_, index) => (
-                <span
-                  key={index}
-                  className={`indicator-dot ${
-                    index === currentImageIndex ? "active" : ""
-                  }`}
-                />
-              ))}
-            </div>
-          )}
         </section>
 
         <div className="product-card-body">
+          <div className="product-brand-badge-holder">
+            {product.rating > 0 && (
+              <div className="product-rating-badge">
+                {Number.isInteger(product.rating) ? product.rating : product.rating.toFixed(2)} ★
+              </div>
+            )}
+            <div className="product-brand-name-holder">
+              <div className="product-brand-badges">{product?.brand}</div>
+            </div>
+          </div>  
           <div className="product-card-header">
             <p className="product-card-names">{product?.name}</p>
             <p className="product-card-price">
@@ -67,7 +80,7 @@ const ProductCard = ({ product }) => {
             </p>
           </div>
           <p className="product-card-meta">
-            {formatDate(product?.createdAt)} {formatTime(product?.createdAt)}
+            {formatDate(product?.updatedAt)} {formatTime(product?.updatedAt)}
           </p>
           <p className="product-card-description">
             {product?.description?.substring(0, 60)}...

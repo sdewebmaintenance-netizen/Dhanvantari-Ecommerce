@@ -17,6 +17,7 @@ import InvoiceTemplate from "../../components/Template/InvoiceTemplate";
 import formatCurrency from "../../Utils/FormatCurrency";
 import formatTime from "../../Utils/FormatTime";
 import { FaTag } from "react-icons/fa";
+import { useSelector } from "react-redux";
 
 const Order = () => {
   const { id: orderId } = useParams();
@@ -26,6 +27,11 @@ const Order = () => {
     isLoading,
     error,
   } = useGetOrderDetailsQuery(orderId);
+
+  const cartItems = useSelector((state) => state.cart.cartItems);
+
+  console.log("cart", cartItems);
+  
 
   const invoiceRef = useRef();
 
@@ -99,13 +105,14 @@ const Order = () => {
 
   useEffect(() => {
     const redirectUrl = localStorage.getItem("redirect_url");
-
+   
     if (redirectUrl === "Order_Placed" && order && order.isPaid) {
       setTimeout(() => {
         handleDownloadInvoice();
       }, 5000);
     }
   }, [order]);
+
 
   const [deliverOrder, { isLoading: loadingDeliver }] =
     useDeliverOrderMutation();
@@ -147,20 +154,25 @@ const Order = () => {
     };
   };
 
+  const isAdmin = localStorage.getItem("isAdmin") === "true";
+
   return isLoading ? (
     <Loader />
   ) : error ? (
     <Messsage variant="danger">{error.data.message}</Messsage>
   ) : (
     <>
-      <div style={{ position: "absolute", left: "-9999px" }} >
+      <div style={{ position: "absolute", left: "-9999px" }}>
         <div ref={invoiceRef}>
           <InvoiceTemplate order={order} />
         </div>
       </div>
-      <div className="pdf-Container"> 
+      <div className="pdf-Container">
         <div>
-          <Link to="/user-orders" className="btn-customized">
+          <Link
+            to={isAdmin ? "/admin/orderlist" : "/user-orders"}
+            className="btn-customized"
+          >
             Go Back
           </Link>
         </div>

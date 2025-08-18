@@ -195,7 +195,6 @@ const EmailTemplates = {
     `,
   },
 
-  // 2. Invoice Download - Sent to user
   invoiceDownloadTemplate: (userName, orderDetails, invoiceUrl) => `
     <!DOCTYPE html>
     <html>
@@ -369,7 +368,7 @@ const EmailTemplates = {
           <table>
             <thead>
               <tr>
-                <th>Product</th><th>Qty</th><th>Original</th><th>Discount</th>
+                <th>Product</th><th>Qty</th><th>Weight</th><th>Unit Price</th><th>Discount</th>
                 ${
                   order.withinTN
                     ? "<th>SGST</th><th>CGST</th>"
@@ -384,7 +383,8 @@ const EmailTemplates = {
                   (i) => `
                 <tr>
                   <td>${i.name}</td>
-                  <td>${i.quantity} ${i.unit}</td>
+                  <td>${i.quantity}</td>
+                  <td>${i.weight} ${i.unit}</td>
                   <td>${i.originalPrice}</td>
                   <td class="discount">${i.discountAmount || "-"}</td>
                   ${
@@ -472,7 +472,7 @@ const EmailTemplates = {
 
           <table>
             <thead>
-              <tr><th>Product</th><th>Qty</th><th>Price</th><th>Discount</th></tr>
+              <tr><th>Product</th><th>Qty</th><th>Weight</th><th>Unit Price</th><th>Price</th><th>Discount</th></tr>
             </thead>
             <tbody>
               ${order.items
@@ -480,7 +480,9 @@ const EmailTemplates = {
                   (i) => `
                 <tr>
                   <td>${i.name}</td>
-                  <td>${i.quantity} ${i.unit}</td>
+                   <td>${i.quantity}</td>
+                  <td>${i.weight} ${i.unit}</td>
+                   <td>${i.originalPrice}</td>
                   <td>${i.price}</td>
                   <td class="discount">${i.discount || "-"}</td>
                 </tr>
@@ -669,6 +671,73 @@ const EmailTemplates = {
   </html>
 `,
   },
+  outOfStockTemplate: (order) => `
+  <!DOCTYPE html>
+  <html>
+    <head>
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width,initial-scale=1" />
+      <title>Out of Stock – Sri Dhanvantari Exports</title>
+      <style>
+        body  { font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif; background:#fdf5e1; line-height:1.6; color:#4e474a; }
+        .container { max-width:600px; margin:0 auto; background:#fdf5e1; border-radius:8px; overflow:hidden; box-shadow:0 0 20px rgba(0,0,0,0.1); }
+        .header    { background:#b02a37; color:#fff; padding:30px 20px; text-align:center; }
+        .content   { padding:30px; }
+        table      { width:100%; border-collapse:collapse; margin:20px 0; }
+        th,td      { padding:12px; text-align:left; border-bottom:1px solid #4e474a; }
+        th         { background:#fff; }
+        .footer    { text-align:center; padding:20px; font-size:12px; color:#777; background:#f5f5f5; }
+        .highlight { color:#b02a37; font-weight:700; }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <h1>Out of Stock Notification</h1>
+        </div>
+
+        <div class="content">
+        
+          <h3>Product Details</h3>
+          
+          <table>
+            <thead>
+              <tr>
+                <th>Product</th><th>Qty</th><th>Weight</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${order.items
+                .filter((i) => i.isOutOfStock) 
+                .map(
+                  (i) => `
+                <tr>
+                  <td>${i.name}</td>
+                  <td>${i.quantity}</td>
+                  <td>${i.weight} ${i.unit}</td>
+                </tr>
+              `
+                )
+                .join("")}
+            </tbody>
+          </table>
+
+          <h3>Immediate actions recommended:</h3>
+          
+          <ul>
+            <li>Refill the stock as soon as possible.</li>
+          </ul>
+
+          <p>Please address this urgently to prevent out of stock product status for upcoming orders and maintain customer satisfaction.</p>
+        </div>
+
+        <div class="footer">
+          © ${new Date().getFullYear()} Sri Dhanvantari Exports. All rights reserved.
+        </div>
+      </div>
+    </body>
+  </html>
+`,
 };
 
 module.exports = EmailTemplates;

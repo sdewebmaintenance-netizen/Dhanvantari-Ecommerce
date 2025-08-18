@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { logout } from "../../../redux/features/auth/authSlice";
@@ -74,25 +74,25 @@ const AdminHeader = () => {
             setMenuOpen(false);
           }}
         >
-          <Link to="/admin/dashboard">Dashboard</Link>
-          <Link to="/admin/orderlist">Orders</Link>
-          <Link to="/admin/allproductslist">Products</Link>
-          <Link to="/admin/categorylist">Category</Link>
-          <Link to="/admin/incotermlist">Inco Term</Link>
-          <Link to="/admin/portlist">Port</Link>
-          <Link to="/admin/discount">Discount</Link>
-          <Link to="/admin/userlist">Users</Link>
+          <NavLink to="/admin/dashboard" className={({ isActive }) => isActive ? "active-link" : ""}>Dashboard</NavLink>
+          <NavLink to="/admin/orderlist" className={({ isActive }) => isActive ? "active-link" : ""}>Orders</NavLink>
+          <NavLink to="/admin/allproductslist" className={({ isActive }) => isActive ? "active-link" : ""}>Products</NavLink>
+          <NavLink to="/admin/categorylist" className={({ isActive }) => isActive ? "active-link" : ""}>Category</NavLink>
+          <NavLink to="/admin/incotermlist" className={({ isActive }) => isActive ? "active-link" : ""}>Inco Term</NavLink>
+          <NavLink to="/admin/portlist" className={({ isActive }) => isActive ? "active-link" : ""}>Port</NavLink>
+          <NavLink to="/admin/discount" className={({ isActive }) => isActive ? "active-link" : ""}>Discount</NavLink>
+          <NavLink to="/admin/userlist" className={({ isActive }) => isActive ? "active-link" : ""}>Users</NavLink>
           
           {isMobile ? (
             <>
-              <Link to="/profile" className="dropdown-item">
+              <NavLink to="/profile" className={({ isActive }) => isActive ? "dropdown-item active-link" : "dropdown-item"}>
                 <FiUser className="dropdown-icon" />
                 Profile
-              </Link>
-              <Link onClick={logoutHandler}>
+              </NavLink>
+              <NavLink onClick={logoutHandler}>
                 <FiLogOut className="dropdown-icon" />
                 Logout
-              </Link>
+              </NavLink>
             </>
           ) : (
             <div className="avatar-menu-container" ref={avatarRef}>
@@ -107,14 +107,14 @@ const AdminHeader = () => {
 
               {avatarMenuOpen && (
                 <div className="avatar-dropdown">
-                  <Link
+                  <NavLink
                     to="/profile"
-                    className="dropdown-item"
+                    className={({ isActive }) => isActive ? "dropdown-item active-link" : "dropdown-item"}
                     onClick={() => setAvatarMenuOpen(false)}
                   >
                     <FiUser className="dropdown-icon" />
                     Profile
-                  </Link>
+                  </NavLink>
                   <div
                     className="dropdown-item"
                     onClick={() => {

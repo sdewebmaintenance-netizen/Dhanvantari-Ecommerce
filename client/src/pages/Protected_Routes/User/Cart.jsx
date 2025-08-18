@@ -6,13 +6,15 @@ import {
   useDeleteCartMutation,
   useClearCartMutation,
 } from "../../../redux/api/cartApiSlice";
-import getImage from "../../../Utils/GetImage";
 import formatCurrency from "../../../Utils/FormatCurrency";
 import { useState, useEffect, useMemo } from "react";
 import Loader from "../../../components/Common/Loader";
+import { useDispatch } from "react-redux";
+import { setCartItems, clearCartItems } from "../../../redux/features/cart/cartSlice";
 
 const Cart = () => {
   const navigate = useNavigate();
+   const dispatch = useDispatch();
   const {
     data: cart = [],
     refetch,
@@ -114,6 +116,7 @@ const Cart = () => {
     try {
       await deleteCart(cartItemId).unwrap();
       await refetch();
+       dispatch(setCartItems(cart.filter(item => item.id !== cartItemId)));
       alert("Item removed from cart successfully");
     } catch (error) {
       console.error(error);
@@ -128,6 +131,7 @@ const Cart = () => {
     try {
       await clearCart().unwrap();
       await refetch();
+       dispatch(clearCartItems());
       alert("Cart emptied successfully");
     } catch (error) {
       console.error(error);
@@ -235,7 +239,7 @@ const Cart = () => {
                   </div>
                 </div>
 
-                <div className="cart-item-quantity">
+                 <div className="cart-item-quantity">
                   <select
                     className="quantity-select"
                     value={item.quantity}
@@ -255,7 +259,7 @@ const Cart = () => {
                         </option>
                       ))}
                   </select>
-                </div>
+                </div> 
 
                 <div className="cart-item-remove">
                   <button

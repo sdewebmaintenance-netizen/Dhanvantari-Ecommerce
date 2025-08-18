@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../../redux/features/auth/authSlice";
@@ -13,15 +13,15 @@ import { FaUser } from "react-icons/fa";
 const UserHeader = () => {
   const { data: userInfo } = useGetUserInfoQuery();
   const { data: cart = [] } = useFetchCartForUserQuery();
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-  console.log("cart", cart, cart.length);
+  const cartItems = useSelector((state) => state.cart.cartItems);
+
   const [menuOpen, setMenuOpen] = useState(false);
   const [avatarMenuOpen, setAvatarMenuOpen] = useState(false);
   const avatarRef = useRef(null);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 1024);
-
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
 
   const logoutHandler = async () => {
     try {
@@ -52,7 +52,7 @@ const UserHeader = () => {
   }, []);
 
   const handleLogoClick = () => {
-    navigate("/home"); 
+    navigate("/home");
   };
 
   return (
@@ -79,30 +79,51 @@ const UserHeader = () => {
             setMenuOpen(false);
           }}
         >
-          <Link to="/home">HOME</Link>
+          <NavLink
+            to="/home"
+            className={({ isActive }) => (isActive ? "active-link" : "")}
+          >
+            HOME
+          </NavLink>
 
-          <Link to="/shop">SHOP</Link>
-          <Link to="/user-orders"  >
+          <NavLink
+            to="/shop"
+            className={({ isActive }) => (isActive ? "active-link" : "")}
+          >
+            SHOP
+          </NavLink>
+          <NavLink
+            to="/user-orders"
+            className={({ isActive }) => (isActive ? "active-link" : "")}
+          >
             My Orders
-          </Link>
+          </NavLink>
 
-          <Link to="/cart">
+          <NavLink
+            to="/cart"
+            className={({ isActive }) => (isActive ? "active-link" : "")}
+          >
             CART
-            {cart.length > 0 && (
-              <span className="cart-badge">{cart.length}</span>
+            {cartItems?.length > 0 && (
+              <span className="cart-badge">{cartItems.length}</span>
             )}
-          </Link>
+          </NavLink>
 
           {isMobile ? (
             <>
-              <Link to="/profile" className="dropdown-item">
+              <NavLink
+                to="/profile"
+                className={({ isActive }) =>
+                  isActive ? "dropdown-item active-link" : "dropdown-item"
+                }
+              >
                 <FiUser className="dropdown-icon" />
                 Profile
-              </Link>
-              <Link onClick={logoutHandler}>
+              </NavLink>
+              <NavLink onClick={logoutHandler}>
                 <FiLogOut className="dropdown-icon" />
                 Logout
-              </Link>
+              </NavLink>
             </>
           ) : (
             <div className="avatar-menu-container" ref={avatarRef}>
@@ -123,14 +144,16 @@ const UserHeader = () => {
 
               {avatarMenuOpen && (
                 <div className="avatar-dropdown">
-                  <Link
+                  <NavLink
                     to="/profile"
-                    className="dropdown-item"
+                    className={({ isActive }) =>
+                      isActive ? "dropdown-item active-link" : "dropdown-item"
+                    }
                     onClick={() => setAvatarMenuOpen(false)}
                   >
                     <FiUser className="dropdown-icon" />
                     Profile
-                  </Link>
+                  </NavLink>
                   <div
                     className="dropdown-item"
                     onClick={() => {

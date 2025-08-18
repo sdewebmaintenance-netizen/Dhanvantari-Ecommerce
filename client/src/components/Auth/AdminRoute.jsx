@@ -7,14 +7,12 @@ const AdminRoute = () => {
     data: userInfo,
     isLoading,
     isFetching,
-    isError,
-    error,
+    isError,   
   } = useGetUserInfoQuery();
 
   if (isLoading || isFetching) {
     return <Loader />; 
   }
-
   if (isError || !userInfo || !userInfo.isAdmin) {
     return <Navigate to="/" replace />;
   }
