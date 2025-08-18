@@ -61,6 +61,13 @@
   justify-content: space-between;
 }
 
+@media (max-width: 768px) {
+  .btn-address {
+    flex-direction: column; 
+    gap: var(--space-sm); 
+  }
+}
+
 .btn-address .btn-icon{
   padding: var(--space-sm);
   font-size: var(--font-size-lg);

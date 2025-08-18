@@ -3,6 +3,9 @@ import Message from "../../components/Common/Message";
 import ProgressSteps from "../../components/Protected_Routes/User/Cart/ProgressSteps";
 import Loader from "../../components/Common/Loader";
 
+import { useDispatch } from "react-redux";
+import { clearCartItems } from "../../redux/features/cart/cartSlice";
+
 import {
   useCreateRazorPayOrderMutation,
   useDeleteOrderMutation,
@@ -26,6 +29,8 @@ const PlaceOrder = () => {
   useEffect(() => {
     refetch();
   }, []);
+
+  const dispatch = useDispatch();
 
   const [createRazorPayOrder, { isLoading, error }] =
     useCreateRazorPayOrderMutation();
@@ -250,7 +255,6 @@ const PlaceOrder = () => {
       };
 
       if (paymentMethod === "Pay_Direct") {
-        // Skip Razorpay and place order directly
         setLoading(true);
         const createdOrder = await createOrder({
           orderItems,
@@ -262,7 +266,7 @@ const PlaceOrder = () => {
           IGST: orderSummary.igstTotal,
           totalPrice: orderSummary.totalPrice,
           appliedDiscounts,
-          paymentId: null, // No Razorpay payment
+          paymentId: null,
         }).unwrap();
 
         setOrder(createdOrder.order);
@@ -273,10 +277,10 @@ const PlaceOrder = () => {
         }).unwrap();
 
         setLoading(false);
+       dispatch(clearCartItems()); 
         alert("Order placed successfully via Pay Direct!");
         navigate(`/order/${createdOrder.order.id}`);
       } else {
-        // Razorpay flow
         const res = await createRazorPayOrder({
           totalPrice: orderSummary.totalPrice,
         }).unwrap();
@@ -301,7 +305,7 @@ const PlaceOrder = () => {
                 IGST: orderSummary.igstTotal,
                 totalPrice: orderSummary.totalPrice,
                 appliedDiscounts,
-                paymentId:  res.payment.id,
+                paymentId: res.payment.id,
               }).unwrap();
 
               setOrder(createdOrder.order);
@@ -312,6 +316,7 @@ const PlaceOrder = () => {
               }).unwrap();
 
               setLoading(false);
+              dispatch(clearCartItems()); 
               alert("Payment successful!");
               navigate(`/order/${createdOrder.order.id}`);
             } catch (err) {

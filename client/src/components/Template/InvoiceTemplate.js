@@ -73,16 +73,16 @@ const InvoiceTemplate = ({ order }) => {
   const taxTotal = withinTN ? sgstTotal + cgstTotal : igstTotal;
   const grandTotal = subtotal + taxTotal;
 
-
   const generateInvoiceNumber = (order) => {
-  if (!order || !order.createdAt) return "SDE-WEB-XXXX-XXXX-000";
+    if (!order || !order.createdAt) return "SDE-WEB-XXXX-XXXX-000";
 
-  const date = new Date(order.createdAt);
-  const month = date.toLocaleString("en-US", { month: "short" }).toUpperCase(); 
-  const year = date.getFullYear(); 
-  return `SDE-WEB-${month}-${year}-${order.id}`;
-};
-
+    const date = new Date(order.createdAt);
+    const month = date
+      .toLocaleString("en-US", { month: "short" })
+      .toUpperCase();
+    const year = date.getFullYear();
+    return `SDE-WEB-${month}-${year}-${order.id}`;
+  };
 
   return (
     <div className="invoice-container">
@@ -173,13 +173,30 @@ const InvoiceTemplate = ({ order }) => {
               <td>Bag</td>
               <td>{formatCurrency(item.OrderItemProduct.price)}</td>
               <td>
-                {withinTN
-                  ? `SGST ${item.OrderItemProduct.SGST}% + CGST ${
-                      item.OrderItemProduct.CGST
-                    }% = 
-                  ${item.OrderItemProduct.SGST + item.OrderItemProduct.CGST}%`
-                  : `IGST ${item.OrderItemProduct.IGST}%`}
+                {withinTN ? (
+                  <>
+                    {formatCurrency(
+                      item.OrderItemProduct.price *
+                        ((item.OrderItemProduct.SGST +
+                          item.OrderItemProduct.CGST) /
+                          100)
+                    )}
+                    <div>
+                      (SGST {item.OrderItemProduct.SGST}% + CGST{" "}
+                      {item.OrderItemProduct.CGST}%)
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    {formatCurrency(
+                      item.OrderItemProduct.price *
+                        (1 + item.OrderItemProduct.IGST / 100)
+                    )}
+                    <div>(IGST {item.OrderItemProduct.IGST}%)</div>
+                  </>
+                )}
               </td>
+
               <td>{formatCurrency(item.itemTotal)}</td>
             </tr>
           ))}

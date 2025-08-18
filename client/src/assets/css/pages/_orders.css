@@ -27,6 +27,9 @@
   padding: var(--space-sm);
   vertical-align: middle;
   color: var(--color-primary-dark);
+  white-space: normal;  
+  word-wrap: break-word; 
+  word-break: break-word; 
 }
 
 .product-thumbnail {
@@ -231,16 +234,17 @@
   background-color: var(--color-bg-light);
 }
 
-.table-cell {
-  padding: var(--space-md) var(--space-sm);
-  vertical-align: middle;
-  max-width: 12rem;
-  
+.table-cell select.form-control {
+  width: 100%;        
+  min-width: 6rem;    
+  white-space: nowrap; 
 }
 
 @media (max-width: 768px) {
-  .table-cell {
-    min-width: 6rem;
+  .table-cell select.form-control {
+    width: 100%;       
+    min-width: auto;  
+    font-size: var(--font-size-sm);
   }
 }
 
@@ -280,6 +284,9 @@
   .table-cell {
     padding: var(--space-sm) var(--space-xs);
     font-size: var(--font-size-sm);
+    min-width: 6rem;
+    white-space: normal;  
+    word-break: break-word;
   }
 
   .order-item-image {

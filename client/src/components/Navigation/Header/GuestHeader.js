@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { FiMoreVertical } from "react-icons/fi";
-import { Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import getImage from "../../../Utils/GetImage";
 import { useNavigate } from "react-router-dom";
 
@@ -37,14 +37,14 @@ const GuestHeader = () => {
             setMenuOpen(false);
           }}
         >
-          <Link to="/">HOME</Link>
-          <Link to="/about-us">ABOUT US</Link>
-          <Link to="/food-starch">FOOD STARCH</Link>
-          <Link to="/retail">RETAIL</Link>
-          <Link to="/wholesale">WHOLESALE</Link>
-          <Link to="/exports">EXPORTS</Link>
-          <Link to="/contact-us">CONTACT US</Link>
-          <Link to="/login-options">LOGIN</Link>
+          <NavLink to="/" className={({ isActive }) => isActive ? "active-link" : ""}>HOME</NavLink>
+          <NavLink to="/about-us" className={({ isActive }) => isActive ? "active-link" : ""}>ABOUT US</NavLink>
+          <NavLink to="/food-starch" className={({ isActive }) => isActive ? "active-link" : ""}>FOOD STARCH</NavLink>
+          <NavLink to="/retail" className={({ isActive }) => isActive ? "active-link" : ""}>RETAIL</NavLink>
+          <NavLink to="/wholesale" className={({ isActive }) => isActive ? "active-link" : ""}>WHOLESALE</NavLink>
+          <NavLink to="/exports" className={({ isActive }) => isActive ? "active-link" : ""}>EXPORTS</NavLink>
+          <NavLink to="/contact-us" className={({ isActive }) => isActive ? "active-link" : ""}>CONTACT US</NavLink>
+          <NavLink to="/login-options" className={({ isActive }) => isActive ? "active-link" : ""}>LOGIN</NavLink>
         </nav>
       </div>
     </header>
