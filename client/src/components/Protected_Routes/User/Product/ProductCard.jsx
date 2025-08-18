@@ -49,7 +49,7 @@ const ProductCard = ({ p, setParentLoading }) => {
       <div className="product-card-body">
         <div className="product-brand-badge-holder">
           {p.rating > 0 && (
-            <div className="product-rating-badge">{p.rating} ★</div>
+            <div className="product-rating-badge">{p.rating.toFixed(1)} ★</div>
           )}
           <div className="product-brand-name-holder">
             <div className="product-brand-badge">{p?.brand}</div>

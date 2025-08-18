@@ -309,7 +309,7 @@ const Order = () => {
               Name:{" "}
               <strong className="highlight-text">
                 {" "}
-                {order.OrderShippingAddress.customerName}
+                <div>{order.OrderShippingAddress.customerName}</div>
               </strong>
             </p>
 
@@ -317,7 +317,7 @@ const Order = () => {
               Email:{" "}
               <strong className="highlight-text">
                 {" "}
-                {order.OrderUser.email}
+                <div>{order.OrderUser.email}</div>  
               </strong>
             </p>
 
@@ -325,47 +325,57 @@ const Order = () => {
               Address:{" "}
               <strong className="highlight-text">
                 {" "}
+                <div>
                 {order.OrderShippingAddress.addressLine1},{" "}
                 {order.OrderShippingAddress.district} -{" "}
                 {order.OrderShippingAddress.pincode},{" "}
                 {order.OrderShippingAddress.country},{" "}
                 {order.OrderShippingAddress.state}
+                </div>
               </strong>
             </p>
             <p className="order-info-item">
-              Contact Number :{" "}
-              <strong className="highlight-text">
-                {order.OrderShippingAddress.contactNumber}
-              </strong>
+              Contact Number :
+              <div>
+                <strong className="highlight-text">
+                  {order.OrderShippingAddress.contactNumber}
+                </strong>
+              </div>
             </p>
 
             {order.OrderShippingAddress.deliveryDistrict ? (
               <p className="order-info-item">
-                Delivery:{" "}
+                Delivery:
+                <div>
                 <strong className="highlight-text">
                   {order.OrderShippingAddress.deliveryDistrict} -{" "}
                   {order.OrderShippingAddress.deliveryPincode},{" "}
                   {order.OrderShippingAddress.deliveryCountry},{" "}
                   {order.OrderShippingAddress.deliveryState},
                 </strong>
+                </div>
               </p>
             ) : (
               <></>
             )}
 
             <p className="order-info-item">
-              Tranportation:{" "}
+              Tranportation:
+              <div>
               <strong className="highlight-text">
                 {order.OrderShippingAddress.transportation},{" "}
                 {order.OrderShippingAddress.vehicleNumber
                   ? order.OrderShippingAddress.vehicleNumber
                   : ""}
               </strong>
+              </div>
             </p>
 
             <p className="order-info-item">
-              Method:{" "}
+              Method:
+              <div>
               <strong className="highlight-text">{order.paymentMethod}</strong>
+              </div>
             </p>
 
             {order.isPaid ? (
