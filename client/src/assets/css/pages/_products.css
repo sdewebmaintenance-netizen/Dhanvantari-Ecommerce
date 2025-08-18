@@ -20,7 +20,8 @@
 }
 
 .product-image-wrapper {
-  min-width: 20rem;
+  max-width: 650px;
+  width: 100%;
 }
 
 .product-card {
@@ -642,9 +643,13 @@
   cursor: pointer;
 }
 
+.carousel-container{
+  position: relative;
+}
+
 .image-indicator {
   position: absolute;
-  bottom: 10px;
+  padding: 10px;
   left: 0;
   right: 0;
   display: flex;
