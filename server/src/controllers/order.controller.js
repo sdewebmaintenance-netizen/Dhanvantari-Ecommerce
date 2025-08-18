@@ -482,7 +482,18 @@ const getUserOrders = asyncHandler(async (req, res) => {
   const orders = await prisma.order.findMany({
     where: { user_id: req.user.user_id },
     include: {
-      orderItems: true,
+      orderItems: {
+        include: {
+          // OrderDiscount: true,
+          OrderItemProduct: {
+            include: {
+              ProductImages: true,
+            },
+          },
+        },
+      },
+      // OrderShippingAddress: true,
+      // OrderPaymentResult: true,
     },
   });
 

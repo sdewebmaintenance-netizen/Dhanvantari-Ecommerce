@@ -28,7 +28,7 @@ const ProductImageCarousel = ({
   const displayImage = images[imageIndex]?.image_url
 
   return (
-    <div>
+    <div className="carousel-container">
     <section
       className={`product-card-image-section ${className}`}
       onMouseEnter={() => setHovered(true)}

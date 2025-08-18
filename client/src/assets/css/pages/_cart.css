@@ -7,6 +7,14 @@
 .cart-header{
   display: flex;
   justify-content: space-between;
+  align-items: center;
+
+}
+
+.empty-cart-btn{
+  padding: 5px 10px;
+  display: flex;
+  align-items: center;
 }
 
 .cart-content {
@@ -220,4 +228,8 @@
 
 .cart-item-subtotal {
   text-align: right;
+}
+
+.cart-container{
+  padding: 0;
 }

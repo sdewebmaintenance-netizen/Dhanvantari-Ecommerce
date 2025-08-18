@@ -56,6 +56,7 @@ const ProductCard = ({ p, setParentLoading }) => {
       <div className="product-card-body">
         <div className="product-brand-badge-holder">
           {p.rating > 0 && (
+
             <div className="product-rating-badge">
               {Number.isInteger(p.rating) ? p.rating : p.rating.toFixed(2)} ★
             </div>

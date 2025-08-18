@@ -81,6 +81,11 @@
 .info-text {
   color: var(--color-primary-dark);
   line-height: 1.6;
+  /* text-align: left; */
+}
+
+.address-text{
+  text-align: left;
 }
 
 .place-order-container {
@@ -127,15 +132,28 @@
 }
 
 .order-table-cell {
-  padding: var(--space-xs);
+  padding: var(--space-md);
   vertical-align: middle;
   color: var(--color-primary-dark);
 }
 
-.order-item-image {
+.btn-view-details{
+  white-space: nowrap;
+}
+
+
+
+.date-cell{
+  white-space: nowrap;
+}
+
+.order-item-image-table {
   width: 4rem;
-  height: 4rem;
   object-fit: cover;
+}
+
+.order-img-cell{
+  padding: 5px;
 }
 
 .order-item-link {
@@ -313,4 +331,18 @@
   display: flex;
   flex-direction: column;
 }
+
+.summary-details{
+  padding: var(--space-sm);
+}
+
+.entries-control select{
+  width: fit-content;
+  margin: 5px;
+}
+
+.table-controls{
+  display: block;
+}
+
 }

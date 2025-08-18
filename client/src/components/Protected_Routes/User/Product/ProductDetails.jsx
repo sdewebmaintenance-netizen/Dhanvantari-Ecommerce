@@ -182,7 +182,7 @@ const ProductDetails = () => {
                     {product.numReviews}
                   </p>
                   <p className="stat-item">
-                    <FaStar className="stats-icon" /> Ratings: {rating}
+                    <FaStar className="stats-icon" /> Ratings: {product.rating.toFixed(1)}
                   </p>
                 </div>
 
