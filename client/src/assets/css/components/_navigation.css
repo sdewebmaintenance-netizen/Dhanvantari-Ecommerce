@@ -119,3 +119,18 @@
     color: #FABF3C;
   }
 }
+
+.nav-links a.active-link {
+  color: #FABF3C !important; 
+  font-weight: bold; 
+}
+
+.nav-links a.active-link::after {
+  width: 100% !important; 
+}
+
+.avatar-dropdown .dropdown-item.active-link {
+  background-color: var(--color-secondary-lighter); 
+  color: #fff; 
+  border-radius: 4px; 
+}

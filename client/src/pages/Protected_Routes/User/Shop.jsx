@@ -11,7 +11,7 @@ import {
 import Loader from "../../../components/Common/Loader";
 import ProductCard from "../../../components/Protected_Routes/User/Product/ProductCard";
 
-const Shop = () => {
+const   Shop = () => {
   const dispatch = useDispatch();
   const { categories, products, checked, radio } = useSelector(
     (state) => state.shop

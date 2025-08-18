@@ -1,59 +1,31 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { updateCart } from "../../../Utils/cartUtils";
 
-const initialState = localStorage.getItem("cart")
-  ? JSON.parse(localStorage.getItem("cart"))
-  : { cartItems: [], shippingAddress: {}, paymentMethod: "RazorPay" };
 
 const cartSlice = createSlice({
   name: "cart",
-  initialState,
+   initialState: {
+    cartItems: []
+  },
   reducers: {
+    setCartItems: (state, action) => {
+      state.cartItems = action.payload; 
+    },
+
     addToCart: (state, action) => {
-      const { user, rating, numReviews, reviews, ...item } = action.payload;
-      const existItem = state.cartItems.find((x) => x.id === item.id);
-
-      if (existItem) {
-        state.cartItems = state.cartItems.map((x) =>
-          x.id === existItem.id ? item : x
-        );
-      } else {
-        state.cartItems = [...state.cartItems, item];
-      }
-      return updateCart(state, item);
+      state.cartItems.push(action.payload); 
     },
 
-    removeFromCart: (state, action) => {
-      state.cartItems = state.cartItems.filter((x) => x.id !== action.payload);
-      return updateCart(state);
-    },
-
-    saveShippingAddress: (state, action) => {
-      state.shippingAddress = action.payload;
-      localStorage.setItem("cart", JSON.stringify(state));
-    },
-
-    savePaymentMethod: (state, action) => {
-      state.paymentMethod = action.payload;
-      localStorage.setItem("cart", JSON.stringify(state));
-    },
-
-    clearCartItems: (state, action) => {
+    clearCartItems: (state) => {
       state.cartItems = [];
-      localStorage.setItem("cart", JSON.stringify(state));
+      localStorage.setItem("cart", JSON.stringify([]));
     },
-
-    resetCart: (state) => (state = initialState),
   },
 });
 
 export const {
+  setCartItems,
   addToCart,
-  removeFromCart,
-  savePaymentMethod,
-  saveShippingAddress,
   clearCartItems,
-  resetCart,
 } = cartSlice.actions;
 
 export default cartSlice.reducer;

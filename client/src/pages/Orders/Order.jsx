@@ -17,6 +17,7 @@ import InvoiceTemplate from "../../components/Template/InvoiceTemplate";
 import formatCurrency from "../../Utils/FormatCurrency";
 import formatTime from "../../Utils/FormatTime";
 import { FaTag } from "react-icons/fa";
+import { useSelector } from "react-redux";
 
 const Order = () => {
   const { id: orderId } = useParams();
@@ -26,6 +27,11 @@ const Order = () => {
     isLoading,
     error,
   } = useGetOrderDetailsQuery(orderId);
+
+  const cartItems = useSelector((state) => state.cart.cartItems);
+
+  console.log("cart", cartItems);
+  
 
   const invoiceRef = useRef();
 
@@ -99,13 +105,14 @@ const Order = () => {
 
   useEffect(() => {
     const redirectUrl = localStorage.getItem("redirect_url");
-
+   
     if (redirectUrl === "Order_Placed" && order && order.isPaid) {
       setTimeout(() => {
         handleDownloadInvoice();
       }, 5000);
     }
   }, [order]);
+
 
   const [deliverOrder, { isLoading: loadingDeliver }] =
     useDeliverOrderMutation();
@@ -163,7 +170,7 @@ const Order = () => {
       <div className="pdf-Container">
         <div>
           <Link
-            to={isAdmin ? "/admin/orderlist" : "/user/user-orders"}
+            to={isAdmin ? "/admin/orderlist" : "/user-orders"}
             className="btn-customized"
           >
             Go Back

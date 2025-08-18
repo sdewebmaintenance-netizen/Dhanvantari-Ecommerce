@@ -60,10 +60,6 @@
   font-size: var(--font-size-sm);
 }
 
-/* .product-price {
-  font-weight: 700;
-}
- */
 .cart-item-quantity {
   flex-shrink: 0;
   width: 6rem;

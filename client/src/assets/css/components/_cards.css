@@ -202,6 +202,14 @@
   font-size: var(--font-size-sm);
 }
 
+@media (max-width: 768px) {
+  .small-product-title {
+    flex-direction: column; 
+    align-items: flex-start; 
+    gap: var(--space-sm); 
+  }
+}
+
 .small-product-price {
   background-color: var(--color-secondary);
   color: var(--color-bg-light);
@@ -240,6 +248,17 @@
   justify-content: end;
   margin-left: auto;
 }
+
+.product-brand-badges {
+  bottom: var(--space-sm);
+  right: var(--space-sm);
+  background-color: var(--color-primary-light);
+  color: var(--color-secondary);
+  font-size: var(--font-size-xs);
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--radius-full);
+}
+
 
 .product-brand-badge {
   position: absolute;

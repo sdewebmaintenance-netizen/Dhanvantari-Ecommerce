@@ -113,9 +113,11 @@ const createOrder = asyncHandler(async (req, res) => {
       },
     });
 
+     const outOfStockItems = [];
+
     await Promise.all(
       orderItems.map(async (item) => {
-        await prisma.Product.update({
+        const updatedProduct = await prisma.Product.update({
           where: { id: item.product_id },
           data: {
             countInStock: {
@@ -123,12 +125,44 @@ const createOrder = asyncHandler(async (req, res) => {
             },
           },
         });
+
+        if (updatedProduct.countInStock < updatedProduct.moq) {
+          outOfStockItems.push(updatedProduct);
+        }
       })
     );
 
     await prisma.cart.deleteMany({
       where: { user_id: parseInt(user_id) },
     });
+
+     if (outOfStockItems.length > 0) {
+      const outOfStockData = {
+        orderNumber: order.id,
+        customer: {
+          name: order.OrderUser.username,
+          email: order.OrderUser.email,
+          phone: order.OrderUser.phone,
+        },
+        items: outOfStockItems.map((p) => ({
+          name: p.name,
+          quantity: orderItems.find((oi) => oi.product_id === p.id)?.quantity,
+          weight: p.weight,
+          unit: "kg",
+          isOutOfStock: true,
+        })),
+      };
+
+      const outOfStockHtml = EmailTemplates.outOfStockTemplate(outOfStockData);
+
+      await EmailTransmitter(
+        NODEMAILER_USERNAME, 
+        `Out of Stock Alert`,
+        outOfStockHtml,
+        []
+      );
+    }
+
 
     res.status(200).json({
       message: "Order Created successfully",
@@ -218,6 +252,7 @@ const orderConfirmationViaEmails = asyncHandler(async (req, res) => {
         return {
           name: item.name,
           quantity: item.qty.toString(),
+          weight: item.OrderItemProduct.weight.toString(),
           unit: "kg",
           originalPrice: `₹${originalPrice.toFixed(2)}`,
           discountedPrice: item.OrderDiscount
@@ -255,7 +290,9 @@ const orderConfirmationViaEmails = asyncHandler(async (req, res) => {
       totalAmount: `₹${order.totalPrice.toFixed(2)}`,
       paymentMethod: order.paymentMethod,
       paymentStatus: "Paid",
-      transactionId: order.OrderPaymentResult?.transactionId ? order.OrderPaymentResult?.transactionId : "N/A – Direct payment method selected.",
+      transactionId: order.OrderPaymentResult?.transactionId
+        ? order.OrderPaymentResult?.transactionId
+        : "N/A – Direct payment method selected.",
       expectedShipment: expectedShipment,
       withinTN: withinTN,
     };
@@ -265,6 +302,8 @@ const orderConfirmationViaEmails = asyncHandler(async (req, res) => {
       orderDate: orderDate,
       estimatedDelivery: expectedShipment,
       items: order.orderItems.map((item) => {
+        const originalPrice = item.OrderItemProduct.price * item.qty;
+
         const discountedPrice = item.OrderDiscount
           ? (item.OrderItemProduct.price -
               item.OrderDiscount.pricetobereduced) *
@@ -285,7 +324,9 @@ const orderConfirmationViaEmails = asyncHandler(async (req, res) => {
         return {
           name: item.name,
           quantity: item.qty.toString(),
+          weight: item.OrderItemProduct.weight.toString(),
           unit: "kg",
+          originalPrice: `₹${originalPrice.toFixed(2)}`,
           price: `₹${itemTotal.toFixed(2)}`,
           discount: item.OrderDiscount
             ? `₹${(item.OrderDiscount.pricetobereduced * item.qty).toFixed(2)}`

@@ -508,7 +508,7 @@ const Shipping = () => {
                 />
               </div>
 
-              <div className="form-row">
+              <div className="form-row ismobile">
                 <div className="form-group">
                   <label className="form-label">State</label>
                   <select
@@ -586,7 +586,7 @@ const Shipping = () => {
                     />
                   </div>
 
-                  <div className="form-row">
+                  <div className="form-row ismobile">
                     <div className="form-group">
                       <label className="form-label">State</label>
                       <select

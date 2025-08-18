@@ -43,7 +43,15 @@ const Product = ({ product }) => {
         ) : null}
 
         {product.rating > 0 && (
-          <div className="product-rating-badge">{product.rating} ★</div>
+          <div className="product-rating-badge">
+            {" "}
+            {product.rating != null
+              ? Number.isInteger(Number(product.rating))
+                ? Number(product.rating)
+                : Number(product.rating).toFixed(2)
+              : "-"}{" "}
+            ★
+          </div>
         )}
       </div>
     </div>
