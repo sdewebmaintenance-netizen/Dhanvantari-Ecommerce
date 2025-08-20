@@ -95,11 +95,12 @@
   width: 100%;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 830px) {
   .place-order-container {
     flex-direction: column;
   }
 }
+
 
 .order-items-section {
   flex: 2;
@@ -183,6 +184,7 @@
 
 .highlight-text {
   color: var(--color-primary-dark);
+  text-align: left;
 }
 
 .price-summary-item {

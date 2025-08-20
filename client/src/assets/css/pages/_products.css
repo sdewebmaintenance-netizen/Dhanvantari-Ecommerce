@@ -641,10 +641,6 @@
   cursor: pointer;
 }
 
-.carousel-container{
-  position: relative;
-}
-
 .image-indicator {
    position: relative; 
   margin-top: 10px;

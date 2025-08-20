@@ -51,9 +51,24 @@ import AboutUs from "./components/UnProtected_Routes/AboutUs";
 import TermsAndConditions from "./components/UnProtected_Routes/TermsConditions";
 import ContactUs from "./components/UnProtected_Routes/ContactUs";
 import PublicRoute from "./components/Auth/PublicRoute";
+import { useFetchCartForUserQuery } from "./redux/api/cartApiSlice";
+import { useDispatch } from "react-redux";
+import { useEffect } from "react";
+import { setCartItems } from "./redux/features/cart/cartSlice";
 
 const App = () => {
+
+  const dispatch = useDispatch();
   const { data } = useGetUserInfoQuery();
+  const {
+    data: cart = [],
+    refetch,
+  } = useFetchCartForUserQuery();
+
+  useEffect(() => {
+      refetch();
+      dispatch(setCartItems(cart));
+    }, [cart]);
 
   const renderHeader = () => {
     if (!data) {

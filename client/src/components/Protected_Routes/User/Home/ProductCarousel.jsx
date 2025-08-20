@@ -48,7 +48,7 @@ const ProductCarousel = () => {
         </Message>
       ) : (
         <div>
-          <div className="carousel-container">
+          <div className="carousels-container">
             {products.map((product, index) => (
               <div
                 key={product.id}

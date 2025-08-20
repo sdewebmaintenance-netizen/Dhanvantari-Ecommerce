@@ -83,11 +83,14 @@ const UserList = () => {
     }));
   };
 
-  const filteredData = getSortedData().filter(
-    (order) =>
-      order?.username?.toString().includes(searchTerm) ||
-      order?.email?.toString().includes(searchTerm)
+  const filteredData = getSortedData().filter((user) => {
+  const search = searchTerm.toLowerCase();
+  return (
+    user?.username?.toLowerCase().includes(search) ||
+    user?.email?.toLowerCase().includes(search)
   );
+});
+
 
   const paginatedData = filteredData.slice(
     (pagination.currentPage - 1) * pagination.entriesPerPage,
@@ -100,7 +103,7 @@ const UserList = () => {
         await deleteUser(id);
         refetch();
       } catch (err) {
-       alert(err?.data?.error || err.error);
+        alert(err?.data?.error || err.error);
       }
     }
   };
@@ -113,7 +116,7 @@ const UserList = () => {
       });
       refetch();
     } catch (err) {
-alert(err?.data?.error || err.error);
+      alert(err?.data?.error || err.error);
     }
   };
 

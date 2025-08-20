@@ -174,12 +174,6 @@
   white-space: normal;
 }
 
-.links {
-  word-wrap: break-word;
-  overflow-wrap: break-word;
-  white-space: normal;
-}
-
 .bank-details p {
   margin: 3px 0;
 }

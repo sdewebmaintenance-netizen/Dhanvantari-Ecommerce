@@ -3,6 +3,12 @@
   width: 100%;
   overflow: hidden;
 }
+.carousels-container {
+  position: relative;
+  width: 100%;
+  height: 80vh;
+  overflow: hidden;
+}
 
 .carousel-slide {
   position: absolute;

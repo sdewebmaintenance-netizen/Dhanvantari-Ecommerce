@@ -23,19 +23,14 @@ model User {
   createdAt       DateTime          @default(now())
   updatedAt       DateTime          @updatedAt
   display_picture String?
-  phone           String?           @unique
   password        String?
+  phone           String?           @unique
   GSTIN           String?
-  reviews         Review[]
-  orders          Order[]
-  loginHistory    LoginHistory[]
   Cart            Cart[]
+  loginHistory    LoginHistory[]
+  orders          Order[]
+  reviews         Review[]
   ShippingAddress ShippingAddress[]
-}
-
-enum LoginMethod {
-  GOOGLE
-  PHONE
 }
 
 model LoginHistory {
@@ -44,60 +39,65 @@ model LoginHistory {
   loginMethod LoginMethod
   loginTime   DateTime    @default(now())
   user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
 
-enum ProductType {
-  WHOLESALE
-  EXPORT
+  @@index([userId], map: "LoginHistory_userId_fkey")
 }
 
 model Product {
   id              Int            @id @default(autoincrement())
   name            String
-  pcode           String?
   brand           String
-  weight          Int            @default(0)
   category_id     Int
   description     String         @db.LongText
   rating          Float          @default(0)
   numReviews      Int            @default(0)
   price           Float          @default(0)
-  moq             Float          @default(1)
   countInStock    Int            @default(0)
-  inco_term_id    Int?
-  discount_id     Int?
-  port_id         Int?
-  variant         String?
-  productType     ProductType?
-  CGST            Float?
-  SGST            Float?
-  IGST            Float?
-  hsnSac          Int?
-  isVisible       Boolean        @default(true)
   createdAt       DateTime       @default(now())
   updatedAt       DateTime       @updatedAt
-  ProductIncoTerm IncoTerm?      @relation(fields: [inco_term_id], references: [id])
-  ProductDiscount Discount?      @relation(fields: [discount_id], references: [id])
-  ProductPort     Port?          @relation(fields: [port_id], references: [id])
-  ProductCategory Category       @relation(fields: [category_id], references: [id], onDelete: Cascade)
-  reviews         Review[]
-  orderItems      OrderItem[]
-  ProductImages   ProductImage[]
+  inco_term_id    Int?
+  port_id         Int?
+  productType     ProductType?
+  variant         String?
+  weight          Int            @default(0)
+  CGST            Float?
+  SGST            Float?
+  hsnSac          Int?
+  isVisible       Boolean        @default(true)
+  IGST            Float?
+  moq             Float          @default(1)
+  discount_id     Int?
+  pcode           String?
   Cart            Cart[]
+  orderItems      OrderItem[]
+  ProductCategory Category       @relation(fields: [category_id], references: [id], onDelete: Cascade)
+  ProductDiscount Discount?      @relation(fields: [discount_id], references: [id])
+  ProductIncoTerm IncoTerm?      @relation(fields: [inco_term_id], references: [id])
+  ProductPort     Port?          @relation(fields: [port_id], references: [id])
+  ProductImages   ProductImage[]
+  reviews         Review[]
+
+  @@index([category_id], map: "Product_category_id_fkey")
+  @@index([discount_id], map: "Product_discount_id_fkey")
+  @@index([inco_term_id], map: "Product_inco_term_id_fkey")
+  @@index([port_id], map: "Product_port_id_fkey")
 }
 
 model Cart {
-  id                  Int      @id @default(autoincrement())
+  id                  Int              @id @default(autoincrement())
   product_id          Int
-  shipping_address_id Int?
+  createdAt           DateTime         @default(now())
+  updatedAt           DateTime         @updatedAt
   quantity            Int
   user_id             Int
-  createdAt           DateTime @default(now())
-  updatedAt           DateTime @updatedAt
-
-  Products            Product?         @relation(fields: [product_id], references: [id], onDelete: Cascade)
-  CartUser            User             @relation(fields: [user_id], references: [id])
+  shipping_address_id Int?
+  Products            Product          @relation(fields: [product_id], references: [id], onDelete: Cascade)
   CartShippingAddress ShippingAddress? @relation(fields: [shipping_address_id], references: [id], onDelete: Cascade)
+  CartUser            User             @relation(fields: [user_id], references: [id])
+
+  @@index([product_id], map: "Cart_product_id_fkey")
+  @@index([shipping_address_id], map: "Cart_shipping_address_id_fkey")
+  @@index([user_id], map: "Cart_user_id_fkey")
 }
 
 model IncoTerm {
@@ -110,50 +110,57 @@ model IncoTerm {
 
 model Port {
   id        Int       @id @default(autoincrement())
-  country   String
-  district  String
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
+  country   String
+  district  String
   Products  Product[]
 }
 
 model ProductImage {
   id         Int      @id @default(autoincrement())
+  createdAt  DateTime @default(now())
+  product_id Int
+  updatedAt  DateTime @updatedAt
   image_url  String
   public_id  String
-  product_id Int
   product    Product  @relation(fields: [product_id], references: [id], onDelete: Cascade)
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+
+  @@index([product_id], map: "ProductImage_product_id_fkey")
 }
 
 model Review {
-  id         Int    @id @default(autoincrement())
-  name       String
-  rating     Float
-  comment    String
-  user_id    Int
-  product_id Int
-
-  ReviewProduct Product  @relation(fields: [product_id], references: [id], onDelete: Cascade)
-  ReviewUser    User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  id            Int      @id @default(autoincrement())
+  name          String
+  rating        Float
+  comment       String
+  user_id       Int
+  product_id    Int
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
+  ReviewProduct Product  @relation(fields: [product_id], references: [id], onDelete: Cascade)
+  ReviewUser    User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([product_id], map: "Review_product_id_fkey")
+  @@index([user_id], map: "Review_user_id_fkey")
 }
 
 model OrderItem {
-  id          Int      @id @default(autoincrement())
-  name        String
-  qty         Int
-  product_id  Int
-  order_id    Int
-  discount_id Int?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  OrderItemProduct Product   @relation(fields: [product_id], references: [id], onDelete: Cascade)
-  OrdersRecord     Order     @relation(fields: [order_id], references: [id], onDelete: Cascade)
+  id               Int       @id @default(autoincrement())
+  name             String
+  qty              Int
+  product_id       Int
+  order_id         Int
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  discount_id      Int?
   OrderDiscount    Discount? @relation(fields: [discount_id], references: [id], onDelete: Cascade)
+  OrdersRecord     Order     @relation(fields: [order_id], references: [id], onDelete: Cascade)
+  OrderItemProduct Product   @relation(fields: [product_id], references: [id], onDelete: Cascade)
+
+  @@index([discount_id], map: "OrderItem_discount_id_fkey")
+  @@index([order_id], map: "OrderItem_order_id_fkey")
+  @@index([product_id], map: "OrderItem_product_id_fkey")
 }
 
 model Order {
@@ -162,11 +169,6 @@ model Order {
   shippingAddress_id   Int
   paymentMethod        String
   paymentResult_id     Int?
-  invoicePath          String?
-  itemsUnitPrice       Float           @default(0)
-  SGST                 Float           @default(0)
-  CGST                 Float           @default(0)
-  IGST                 Float           @default(0)
   totalPrice           Float           @default(0)
   isPaid               Boolean         @default(false)
   paidAt               DateTime
@@ -174,59 +176,77 @@ model Order {
   deliveredAt          DateTime?
   createdAt            DateTime        @default(now())
   updatedAt            DateTime        @updatedAt
-  orderItems           OrderItem[]
-  OrderPaymentResult   PaymentResult?   @relation(fields: [paymentResult_id], references: [id], onDelete: Cascade)
+  CGST                 Float           @default(0)
+  SGST                 Float           @default(0)
+  itemsUnitPrice       Float           @default(0)
+  IGST                 Float           @default(0)
+  invoicePath          String?
+  OrderPaymentResult   PaymentResult?  @relation(fields: [paymentResult_id], references: [id], onDelete: Cascade)
   OrderShippingAddress ShippingAddress @relation(fields: [shippingAddress_id], references: [id], onDelete: Cascade)
   OrderUser            User            @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  orderItems           OrderItem[]
+
+  @@index([paymentResult_id], map: "Order_paymentResult_id_fkey")
+  @@index([shippingAddress_id], map: "Order_shippingAddress_id_fkey")
+  @@index([user_id], map: "Order_user_id_fkey")
 }
 
 model Discount {
-  id               Int      @id @default(autoincrement())
+  id               Int         @id @default(autoincrement())
   qty              Int
   pricetobereduced Float
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
-
-  OrderItem OrderItem[]
-  Products  Product[]
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @updatedAt
+  OrderItem        OrderItem[]
+  Products         Product[]
 }
 
 model ShippingAddress {
-  id               Int      @id @default(autoincrement())
-  user_id          Int?
-  addressLine1     String?
-  addressLine2     String?
-  customerName     String?
-  country          String
-  state            String
-  district         String?
-  pincode          String?
-  gstin            String?
-  contactNumber    String?
-  transportation   String?
-  vehicleNumber    String?
-  deliveryCountry  String?
-  deliveryState    String?
-  deliveryDistrict String?
-  deliveryPincode  String?
-  deliveryAddressLine1     String?
-  deliveryAddressLine2     String?
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
+  id                   Int      @id @default(autoincrement())
+  country              String
+  state                String
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+  addressLine1         String?
+  addressLine2         String?
+  contactNumber        String?
+  deliveryCountry      String?
+  deliveryDistrict     String?
+  deliveryPincode      String?
+  deliveryState        String?
+  district             String?
+  gstin                String?
+  pincode              String?
+  transportation       String?
+  vehicleNumber        String?
+  user_id              Int?
+  customerName         String?
+  deliveryAddressLine1 String?
+  deliveryAddressLine2 String?
+  Cart                 Cart[]
+  Order                Order[]
+  ShippingAddressUser  User?    @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
-  Order               Order[]
-  Cart                Cart[]
-  ShippingAddressUser User?    @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  @@index([user_id], map: "ShippingAddress_user_id_fkey")
 }
 
 model PaymentResult {
-  id            Int      @id @default(autoincrement())
-  transactionId String
-  status        String
-  updateTime    DateTime @default(now())
-  emailAddress  String
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-
+  id                 Int      @id @default(autoincrement())
+  transactionId      String
+  status             String
+  updateTime         DateTime @default(now())
+  emailAddress       String
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
   OrderPaymentResult Order[]
+}
+
+enum LoginMethod {
+  GOOGLE
+  PHONE
+}
+
+enum ProductType {
+  WHOLESALE
+  EXPORT
 }

@@ -372,7 +372,7 @@ const Order = () => {
             )}
 
             <p className="order-info-item">
-              Tranportation:
+              Transportation:
               <div>
               <strong className="highlight-text">
                 {order.OrderShippingAddress.transportation},{" "}

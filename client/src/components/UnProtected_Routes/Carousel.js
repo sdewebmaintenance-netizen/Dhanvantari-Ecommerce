@@ -63,7 +63,7 @@ const Carousel = () => {
   }, []);
 
   return (
-    <div className="carousel-container">
+    <div className="carousels-container">
       {slides.map((slide, index) => (
         <div
           key={slide.id}
