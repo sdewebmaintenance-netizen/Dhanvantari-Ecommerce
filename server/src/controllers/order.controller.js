@@ -113,7 +113,7 @@ const createOrder = asyncHandler(async (req, res) => {
       },
     });
 
-     const outOfStockItems = [];
+    const outOfStockItems = [];
 
     await Promise.all(
       orderItems.map(async (item) => {
@@ -136,7 +136,7 @@ const createOrder = asyncHandler(async (req, res) => {
       where: { user_id: parseInt(user_id) },
     });
 
-     if (outOfStockItems.length > 0) {
+    if (outOfStockItems.length > 0) {
       const outOfStockData = {
         orderNumber: order.id,
         customer: {
@@ -156,13 +156,12 @@ const createOrder = asyncHandler(async (req, res) => {
       const outOfStockHtml = EmailTemplates.outOfStockTemplate(outOfStockData);
 
       await EmailTransmitter(
-        NODEMAILER_USERNAME, 
+        NODEMAILER_USERNAME,
         `Out of Stock Alert`,
         outOfStockHtml,
         []
       );
     }
-
 
     res.status(200).json({
       message: "Order Created successfully",
@@ -351,19 +350,26 @@ const orderConfirmationViaEmails = asyncHandler(async (req, res) => {
 
     const attachments = [];
 
-    await EmailTransmitter(
-      Order.OrderUser.email,
-      `Your Order #${Order.id} Confirmation`,
-      customerHtml,
-      attachments
-    );
+    if (Order.OrderUser.email) {
+      await EmailTransmitter(
+        Order.OrderUser.email,
+        `Your Order #${Order.id} Confirmation`,
+        customerHtml,
+        attachments
+      );
 
-    await EmailTransmitter(
-      NODEMAILER_USERNAME,
-      `New Order #${Order.id}`,
-      adminHtml,
-      attachments
-    );
+      await EmailTransmitter(
+        NODEMAILER_USERNAME,
+        `New Order #${Order.id}`,
+        adminHtml,
+        attachments
+      );
+    } else {
+      res.json({
+        success: true,
+        message: "Order Placed But Emails not sent. Please update Email in Profile",
+      });
+    }
 
     res.json({ success: true, message: "Emails sent successfully" });
   } catch (error) {

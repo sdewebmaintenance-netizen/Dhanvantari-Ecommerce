@@ -93,7 +93,7 @@ const InvoiceTemplate = ({ order }) => {
           <p>Tapioca, Maize, Potato and Sabudana Sago items</p>
           <p>Phone: 9943760055</p>
           <p>Email: srdhanvantariexports@gmail.com</p>
-          <p>GSTIN: 3382LRP29211220</p>
+          <p>GSTIN: 33BZLPR2921L2Z0</p>
           <p>State: Tamil Nadu</p>
         </div>
         <img src={Dhanvantari} alt={"Dhanvanatri"} className="Logo-pdf" />
