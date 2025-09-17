@@ -228,7 +228,7 @@ const orderConfirmationViaEmails = asyncHandler(async (req, res) => {
         email: order.OrderUser.email,
         phone: order.OrderUser.phone || "N/A",
       },
-      shippingAddress: `${order.OrderShippingAddress.addressLine1}, ${order.OrderShippingAddress.district}, ${order.OrderShippingAddress.state} - ${order.OrderShippingAddress.pincode}, ${order.OrderShippingAddress.country}`,
+      shippingAddress: `${order.OrderShippingAddress.addressLine1}, ${order.OrderShippingAddress.district}, ${order.OrderShippingAddress.state} - ${order.OrderShippingAddress.pincode}, ${order.OrderShippingAddress.country}, Contact: ${order.OrderShippingAddress.contactNumber}`,
       items: order.orderItems.map((item) => {
         const originalPrice = item.OrderItemProduct.price * item.qty;
         const discountedPrice = item.OrderDiscount
