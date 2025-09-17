@@ -148,8 +148,8 @@ const Shipping = () => {
     setDeliveryPincode(address.deliveryPincode || "");
     setUseSameAddress(
       address.deliveryAddressLine1 === addressLine1 &&
-      address.deliveryAddressLine2 === addressLine2 &&
-      address.deliveryCountry === address.country &&
+        address.deliveryAddressLine2 === addressLine2 &&
+        address.deliveryCountry === address.country &&
         address.deliveryState === address.state &&
         address.deliveryDistrict === address.district &&
         address.deliveryPincode === address.pincode
@@ -158,6 +158,11 @@ const Shipping = () => {
 
   const submitHandler = async (e) => {
     e.preventDefault();
+
+    if (!contactNumber) {
+      alert("Phone number is required!");
+      return;
+    }
     setIsLoading(true);
 
     const shippingData = {
@@ -173,8 +178,12 @@ const Shipping = () => {
       contactNumber,
       transportation,
       vehicleNumber,
-      deliveryAddressLine1: useSameAddress ? addressLine1 : deliveryAddressLine1,
-      deliveryAddressLine2: useSameAddress ? addressLine2 : deliveryAddressLine2,
+      deliveryAddressLine1: useSameAddress
+        ? addressLine1
+        : deliveryAddressLine1,
+      deliveryAddressLine2: useSameAddress
+        ? addressLine2
+        : deliveryAddressLine2,
       deliveryCountry: useSameAddress ? country : deliveryCountry,
       deliveryState: useSameAddress ? state : deliveryState,
       deliveryDistrict: useSameAddress ? district : deliveryDistrict,
@@ -372,7 +381,9 @@ const Shipping = () => {
                       <div className="address-section">
                         <h2>Delivery Address</h2>
                         <p>{address.deliveryAddressLine1}</p>
-                        {address.deliveryAddressLine2 && <p>{address.deliveryAddressLine2}</p>}
+                        {address.deliveryAddressLine2 && (
+                          <p>{address.deliveryAddressLine2}</p>
+                        )}
                         {address.deliveryDistrict && address.deliveryState ? (
                           <p>
                             {address.deliveryDistrict}, {address.deliveryState}
@@ -468,7 +479,7 @@ const Shipping = () => {
                   value={contactNumber}
                   onChange={setContactNumber}
                   className="form-control"
-                  required
+                  inputProps={{ required: true }}
                 />
               </div>
 
@@ -550,7 +561,7 @@ const Shipping = () => {
                     disabled={!state}
                   >
                     <option value="">-- Select a State First --</option>
-                    
+
                     {districtOptions.map((city) => (
                       <option key={city.name} value={city.name}>
                         {city.name}
@@ -589,27 +600,31 @@ const Shipping = () => {
               {!useSameAddress && (
                 <>
                   <h2 className="section-title">Delivery Address</h2>
-                  
+
                   <div className="form-group">
                     <div>
-                    <label className="form-label">Address Line 1</label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      placeholder="Street no/Landmark"
-                      value={deliveryAddressLine1}
-                      required
-                      onChange={(e) => setDeliveryAddressLine1(e.target.value)}
-                    />
+                      <label className="form-label">Address Line 1</label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        placeholder="Street no/Landmark"
+                        value={deliveryAddressLine1}
+                        required
+                        onChange={(e) =>
+                          setDeliveryAddressLine1(e.target.value)
+                        }
+                      />
                     </div>
                     <div>
-                    <label className="form-label">Address Line 2</label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      value={deliveryAddressLine2}
-                      onChange={(e) => setDeliveryAddressLine2(e.target.value)}
-                    />
+                      <label className="form-label">Address Line 2</label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        value={deliveryAddressLine2}
+                        onChange={(e) =>
+                          setDeliveryAddressLine2(e.target.value)
+                        }
+                      />
                     </div>
                   </div>
 
