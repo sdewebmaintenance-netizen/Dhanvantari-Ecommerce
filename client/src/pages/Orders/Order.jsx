@@ -12,6 +12,7 @@ import getImage from "../../Utils/GetImage";
 import formatDate from "../../Utils/FormatDate";
 import { useRef } from "react";
 import { toPng } from "html-to-image";
+import { toSvg } from "html-to-image";
 import jsPDF from "jspdf";
 import InvoiceTemplate from "../../components/Template/InvoiceTemplate";
 import formatCurrency from "../../Utils/FormatCurrency";
@@ -31,7 +32,6 @@ const Order = () => {
   const cartItems = useSelector((state) => state.cart.cartItems);
 
   console.log("cart", cartItems);
-  
 
   const invoiceRef = useRef();
 
@@ -48,7 +48,42 @@ const Order = () => {
     const invoiceElement = invoiceRef.current;
 
     try {
-      const dataUrl = await toPng(invoiceElement);
+      // const svgDataUrl = await toSvg(invoiceElement, {
+      //   quality: 1.0,
+      //   backgroundColor: "#ffffff",
+      //   skipFonts: true, // Optional: improves performance
+      // });
+
+      // // Create an image from SVG data URL
+      // const img = new Image();
+      // img.src = svgDataUrl;
+
+      // await new Promise((resolve) => {
+      //   img.onload = resolve;
+      // });
+
+      // // Create canvas and draw SVG image
+      // const canvas = document.createElement("canvas");
+      // const ctx = canvas.getContext("2d");
+
+      // // Set high resolution
+      // const scale = 3; // Increase for higher quality
+      // canvas.width = img.width * scale;
+      // canvas.height = img.height * scale;
+
+      // ctx.scale(scale, scale);
+      // ctx.drawImage(img, 0, 0);
+
+      // // Get PNG data URL from canvas
+      // const dataUrl = canvas.toDataURL("image/png", 1.0);
+
+      const dataUrl = await toPng(invoiceElement, {
+        quality: 1.0,
+        scale: 3, // Higher scale = better quality
+        backgroundColor: "#ffffff",
+        pixelRatio: 2, // For high DPI displays
+      });
+
       const pdf = new jsPDF("p", "mm", "a4");
       const imgProps = pdf.getImageProperties(dataUrl);
       const pdfWidth = pdf.internal.pageSize.getWidth();
@@ -105,14 +140,13 @@ const Order = () => {
 
   useEffect(() => {
     const redirectUrl = localStorage.getItem("redirect_url");
-   
+
     if (redirectUrl === "Order_Placed" && order && order.isPaid) {
       setTimeout(() => {
         handleDownloadInvoice();
       }, 5000);
     }
   }, [order]);
-
 
   const [deliverOrder, { isLoading: loadingDeliver }] =
     useDeliverOrderMutation();
@@ -329,7 +363,7 @@ const Order = () => {
               Email:{" "}
               <strong className="highlight-text">
                 {" "}
-                <div>{order.OrderUser.email}</div>  
+                <div>{order.OrderUser.email}</div>
               </strong>
             </p>
 
@@ -338,11 +372,11 @@ const Order = () => {
               <strong className="highlight-text">
                 {" "}
                 <div>
-                {order.OrderShippingAddress.addressLine1},{" "}
-                {order.OrderShippingAddress.district} -{" "}
-                {order.OrderShippingAddress.pincode},{" "}
-                {order.OrderShippingAddress.country},{" "}
-                {order.OrderShippingAddress.state}
+                  {order.OrderShippingAddress.addressLine1},{" "}
+                  {order.OrderShippingAddress.district} -{" "}
+                  {order.OrderShippingAddress.pincode},{" "}
+                  {order.OrderShippingAddress.country},{" "}
+                  {order.OrderShippingAddress.state}
                 </div>
               </strong>
             </p>
@@ -359,12 +393,12 @@ const Order = () => {
               <p className="order-info-item">
                 Delivery:
                 <div>
-                <strong className="highlight-text">
-                  {order.OrderShippingAddress.deliveryDistrict} -{" "}
-                  {order.OrderShippingAddress.deliveryPincode},{" "}
-                  {order.OrderShippingAddress.deliveryCountry},{" "}
-                  {order.OrderShippingAddress.deliveryState},
-                </strong>
+                  <strong className="highlight-text">
+                    {order.OrderShippingAddress.deliveryDistrict} -{" "}
+                    {order.OrderShippingAddress.deliveryPincode},{" "}
+                    {order.OrderShippingAddress.deliveryCountry},{" "}
+                    {order.OrderShippingAddress.deliveryState},
+                  </strong>
                 </div>
               </p>
             ) : (
@@ -374,19 +408,21 @@ const Order = () => {
             <p className="order-info-item">
               Transportation:
               <div>
-              <strong className="highlight-text">
-                {order.OrderShippingAddress.transportation},{" "}
-                {order.OrderShippingAddress.vehicleNumber
-                  ? order.OrderShippingAddress.vehicleNumber
-                  : ""}
-              </strong>
+                <strong className="highlight-text">
+                  {order.OrderShippingAddress.transportation},{" "}
+                  {order.OrderShippingAddress.vehicleNumber
+                    ? order.OrderShippingAddress.vehicleNumber
+                    : ""}
+                </strong>
               </div>
             </p>
 
             <p className="order-info-item">
               Method:
               <div>
-              <strong className="highlight-text">{order.paymentMethod}</strong>
+                <strong className="highlight-text">
+                  {order.paymentMethod}
+                </strong>
               </div>
             </p>
 

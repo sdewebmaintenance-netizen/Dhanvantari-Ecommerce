@@ -248,7 +248,7 @@ const InvoiceTemplate = ({ order }) => {
             <li className="bank-details">
               <p className="bank-details-title">Pay To:</p>
               <p>Bank Account No.: 0135386000000211</p>
-              <p>Bank IFSC code: DBSSOlN0135</p>
+              <p>Bank IFSC code: DBSS0lN0135</p>
               <p>Account Holder's Name: Sri Dhanvantari Exports</p>
             </li>
             <div className="payment-method">
