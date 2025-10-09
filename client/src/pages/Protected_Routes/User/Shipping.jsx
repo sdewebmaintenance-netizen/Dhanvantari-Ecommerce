@@ -690,7 +690,7 @@ const Shipping = () => {
                 <input
                   type="text"
                   className="form-control"
-                  placeholder="Enter transportation name"
+                  placeholder="Enter Transportation Name"
                   value={transportation}
                   required
                   onChange={(e) => setTransportation(e.target.value)}
@@ -698,11 +698,11 @@ const Shipping = () => {
               </div>
 
               <div className="form-group">
-                <label className="form-label">Vehicle Number (Optional)</label>
+                <label className="form-label">Transport Delivery Location (Optional)</label>
                 <input
                   type="text"
                   className="form-control"
-                  placeholder="Enter vehicle number"
+                  placeholder="Enter Vehicle Number"
                   value={vehicleNumber}
                   onChange={(e) => setVehicleNumber(e.target.value)}
                 />
