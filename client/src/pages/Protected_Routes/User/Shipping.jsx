@@ -702,7 +702,7 @@ const Shipping = () => {
                 <input
                   type="text"
                   className="form-control"
-                  placeholder="Enter Vehicle Number"
+                  placeholder="Enter Transport Delivery Location"
                   value={vehicleNumber}
                   onChange={(e) => setVehicleNumber(e.target.value)}
                 />
