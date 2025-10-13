@@ -128,13 +128,13 @@ const InvoiceTemplate = ({ order }) => {
               ? order.OrderShippingAddress.vehicleNumber
               : "-"}
           </p>
-          // <p>
-          //   Delivery location:
-          //   {order.OrderShippingAddress.deliveryDistrict},{" "}
-          //   {order.OrderShippingAddress.deliveryCountry} -{" "}
-          //   {order.OrderShippingAddress.deliveryPincode},{" "}
-          //   {order.OrderShippingAddress.deliveryState}{" "}
-          // </p>
+          {/* <p>
+             Delivery location:
+             {order.OrderShippingAddress.deliveryDistrict},{" "}
+             {order.OrderShippingAddress.deliveryCountry} -{" "}
+             {order.OrderShippingAddress.deliveryPincode},{" "}
+             {order.OrderShippingAddress.deliveryState}{" "}
+           </p> */}
         </div>
 
         <div className="invoice-details">
