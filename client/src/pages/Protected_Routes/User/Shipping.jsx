@@ -698,12 +698,13 @@ const Shipping = () => {
               </div>
 
               <div className="form-group">
-                <label className="form-label">Transport Delivery Location (Optional)</label>
+                <label className="form-label">Transport Delivery Location</label>
                 <input
                   type="text"
                   className="form-control"
                   placeholder="Enter Transport Delivery Location"
                   value={vehicleNumber}
+                  required
                   onChange={(e) => setVehicleNumber(e.target.value)}
                 />
               </div>
