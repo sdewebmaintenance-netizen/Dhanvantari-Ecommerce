@@ -417,7 +417,7 @@ const Shipping = () => {
 
                         {address.vehicleNumber && (
                           <p>
-                            <strong>Vehicle No:</strong> {address.vehicleNumber}
+                            <strong>Transport Delivery Location:</strong> {address.vehicleNumber}
                           </p>
                         )}
                       </div>
@@ -798,7 +798,7 @@ const Shipping = () => {
                     )}
                     {shippingAddress.vehicleNumber && (
                       <p>
-                        <strong>Vehicle No:</strong>{" "}
+                        <strong>Transport Delivery Location:</strong>{" "}
                         {shippingAddress.vehicleNumber}
                       </p>
                     )}
