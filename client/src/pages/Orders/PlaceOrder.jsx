@@ -272,9 +272,9 @@ const PlaceOrder = () => {
         setOrder(createdOrder.order);
         localStorage.setItem("redirect_url", "Order_Placed");
 
-        await orderConfirmationViaEmails({
-          order: createdOrder.order,
-        }).unwrap();
+        // await orderConfirmationViaEmails({
+        //   order: createdOrder.order,
+        // }).unwrap();
 
         setLoading(false);
        dispatch(clearCartItems()); 
@@ -311,9 +311,9 @@ const PlaceOrder = () => {
               setOrder(createdOrder.order);
               localStorage.setItem("redirect_url", "Order_Placed");
 
-              await orderConfirmationViaEmails({
-                order: createdOrder.order,
-              }).unwrap();
+              // await orderConfirmationViaEmails({
+              //   order: createdOrder.order,
+              // }).unwrap();
 
               setLoading(false);
               dispatch(clearCartItems()); 
