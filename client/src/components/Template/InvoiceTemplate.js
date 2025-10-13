@@ -123,18 +123,18 @@ const InvoiceTemplate = ({ order }) => {
           <h6>Transportation Details</h6>
           <p>Transport Name: {order.OrderShippingAddress.transportation}</p>
           <p>
-            Vehicle Number:{" "}
+            Transport Delivery Location:{" "}
             {order.OrderShippingAddress.vehicleNumber
               ? order.OrderShippingAddress.vehicleNumber
               : "-"}
           </p>
-          <p>
-            Delivery location:
-            {order.OrderShippingAddress.deliveryDistrict},{" "}
-            {order.OrderShippingAddress.deliveryCountry} -{" "}
-            {order.OrderShippingAddress.deliveryPincode},{" "}
-            {order.OrderShippingAddress.deliveryState}{" "}
-          </p>
+          // <p>
+          //   Delivery location:
+          //   {order.OrderShippingAddress.deliveryDistrict},{" "}
+          //   {order.OrderShippingAddress.deliveryCountry} -{" "}
+          //   {order.OrderShippingAddress.deliveryPincode},{" "}
+          //   {order.OrderShippingAddress.deliveryState}{" "}
+          // </p>
         </div>
 
         <div className="invoice-details">
