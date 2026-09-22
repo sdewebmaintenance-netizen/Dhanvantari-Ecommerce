@@ -74,14 +74,14 @@ const InvoiceTemplate = ({ order }) => {
   const grandTotal = subtotal + taxTotal;
 
   const generateInvoiceNumber = (order) => {
-    if (!order || !order.createdAt) return "SDE-WEB-XXXX-XXXX-000";
+    if (!order || !order.createdAt) return "SDEWEBXXXXXXXX000";
 
     const date = new Date(order.createdAt);
     const month = date
       .toLocaleString("en-US", { month: "short" })
       .toUpperCase();
     const year = date.getFullYear();
-    return `SDE-WEB-${month}-${year}-${order.id}`;
+    return `SDEWEB${month}${year}${order.id}`;
   };
 
   return (
@@ -226,7 +226,7 @@ const InvoiceTemplate = ({ order }) => {
             <li>Our responsibility ceases once goods leave our factory.</li>
             <li>Subject to Salem jurisdiction.</li>
             <li>
-              We do not take responsibility for transportation payments. The
+              We do not take responsibility for transportation payments. The
               buyer should deal directly with the transporter.
             </li>
             <li>

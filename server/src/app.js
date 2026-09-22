@@ -33,9 +33,20 @@ connect();
 
 app.use(morgan("dev"));
 
+const allowedOrigins = [
+  "http://localhost:3000",
+  "https://sridhanvantariexports.com",
+];
+
 const corsOptions = {
-  origin: `${CLIENT_URL}`,
-  methods: ["GET", "POST", "PUT", "DELETE"],
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   credentials: true,
 };
 
